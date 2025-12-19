@@ -8,10 +8,14 @@ type PanelComponentMap = {
   [key: string]: Component
 }
 
+type ComponentInstanceMap = {
+  [key: string]: () => any
+}
+
 import {
   DrText,
   DrTextPanel,
-  DrTextInstance,
+  getDrTextInstance,
   DrTextInteractionDefine,
 } from '@/packages/components/Text/install.ts'
 
@@ -23,7 +27,7 @@ const panelComponents: PanelComponentMap = {
   DrTextPanel,
 }
 
-const componentInstances = { DrTextInstance }
+const componentInstances: ComponentInstanceMap = { getDrTextInstance }
 
 const getPanelComponent = (name: string) => {
   name = `${name}Panel`
@@ -36,10 +40,9 @@ const getComponent = (name: string) => {
   return components[name]
 }
 
-
-
-const getComponentInstance = (name: string) => {
-  return componentInstances[name]
+const getComponentInstance = (name: string): (() => any) | undefined => {
+  name = `get${name}Instance`
+  return componentInstances[name]()
 }
 
 export {

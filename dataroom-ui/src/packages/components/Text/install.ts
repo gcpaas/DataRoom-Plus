@@ -19,7 +19,7 @@ export interface DrTextConfig {
  * 定义获取该组件实例的方法，返回本组件新实例对象
  * @constructor
  */
-const DrTextInstance = () => {
+const getDrTextInstance = () => {
   const config: BasicConfig<DrTextConfig> = {
     id: Math.random().toString(),
     type: 'DrText',
@@ -47,4 +47,4 @@ const DrTextInteractionDefine: Array<Interaction> = [
   },
 ]
 
-export { DrText, DrTextPanel, DrTextInstance, DrTextInteractionDefine }
+export { DrText, DrTextPanel, getDrTextInstance, DrTextInteractionDefine }
