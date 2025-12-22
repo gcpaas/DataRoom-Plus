@@ -1,3 +1,10 @@
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'DrText',
+})
+</script>
 <script setup lang="ts">
 import type { DrTextConfig } from './install.ts'
 import { reactive } from 'vue'
@@ -7,7 +14,6 @@ const { chart } = defineProps<{
 }>()
 // 避免直接修改props数据，编译报错
 const drChart = reactive(chart)
-
 </script>
 
 <template>

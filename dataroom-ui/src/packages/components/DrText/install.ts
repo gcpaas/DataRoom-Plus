@@ -1,9 +1,9 @@
 import { defineAsyncComponent } from 'vue'
 import type { BasicConfig, Interaction } from '../type/define'
 // 注册组件
-const DrText = defineAsyncComponent(() => import('./DrText.vue'))
+const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
-const DrTextPanel = defineAsyncComponent(() => import('./DrTextPanel.vue'))
+const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
 interface DrTextProps {
   // 文本
@@ -49,4 +49,4 @@ const DrTextInteractionDefine: Array<Interaction> = [
   },
 ]
 
-export { DrText, DrTextPanel, getDrTextInstance, DrTextInteractionDefine }
+export { component, controlPanel, getDrTextInstance, DrTextInteractionDefine }

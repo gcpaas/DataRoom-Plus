@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type { BasicConfig } from '@DrPackage/components/type/define.ts'
+import type { BasicConfig, Interaction } from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -13,37 +13,49 @@ type ComponentInstanceMap = {
   [key: string]: () => BasicConfig<unknown>
 }
 
-// 导入 DrText 组件
-import {
-  DrText,
-  DrTextPanel,
-  getDrTextInstance,
-  DrTextInteractionDefine,
-} from '@DrPackage/components/DrText/install.ts'
+// 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
+const installModules = import.meta.glob<{
+  [key: string]: Component | (() => BasicConfig<unknown>) | Array<Interaction>
+}>('./**/install.ts', { eager: true })
 
-import {
-  RemoteComponent,
-  RemoteComponentPanel,
-  getRemoteComponentInstance,
-  RemoteComponentInteractionDefine,
-} from '@DrPackage/components/Remote/install.ts'
+// 存储组件、面板组件、实例方法和交互定义
+const components: ComponentMap = {}
+const panelComponents: PanelComponentMap = {}
+const componentInstances: ComponentInstanceMap = {}
+const interactionDefines: Array<Interaction>[] = []
 
-const components: ComponentMap = {
-  DrText,
-  RemoteComponent,
-}
+// 遍历所有导入的模块进行注册
+Object.entries(installModules).forEach(([path, module]) => {
+  // 从路径中提取组件名称，例如：./DrText/install.ts -> DrText
+  const match = path.match(/\.\/([^/]+)\/install\.ts$/)
+  if (!match) return
+  const componentName = match[1]
+  // 注册主组件
+  // @ts-ignore
+  if (module['component']) {
+    // @ts-ignore
+    components[componentName] = module['component'] as Component
+  }
+  // 注册面板组件
+  const panelName = `${componentName}Panel`
+  if (module['controlPanel']) {
+    panelComponents[panelName] = module['controlPanel'] as Component
+  }
 
-const panelComponents: PanelComponentMap = {
-  DrTextPanel,
-  RemoteComponentPanel,
-}
+  // 注册实例方法
+  const instanceMethodName = `get${componentName}Instance`
+  if (module[instanceMethodName]) {
+    componentInstances[instanceMethodName] = module[
+      instanceMethodName
+    ] as () => BasicConfig<unknown>
+  }
 
-const componentInstances: ComponentInstanceMap = {
-  getDrTextInstance,
-  getRemoteComponentInstance,
-}
-
-const interactionDefines = [DrTextInteractionDefine, RemoteComponentInteractionDefine]
+  // 注册交互定义
+  const interactionDefineName = `${componentName}InteractionDefine`
+  if (module[interactionDefineName]) {
+    interactionDefines.push(module[interactionDefineName] as Array<Interaction>)
+  }
+})
 
 const getPanelComponent = (name: string) => {
   name = `${name}Panel`
