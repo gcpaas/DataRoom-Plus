@@ -1,4 +1,22 @@
 /**
+ * 交互定义
+ */
+export class ChartDefine {
+  // 组件显示名称
+  name: string
+  // 组件信息描述
+  desc?: string
+  // 组件缩略图
+  thumbnail:string
+
+  constructor(name: string, desc: string, thumbnail:string) {
+    this.name = name
+    this.desc = desc
+    this.thumbnail = thumbnail
+  }
+}
+
+/**
  * 组件配置基础类型定义
  */
 export interface BasicConfig<T> {
