@@ -1,7 +1,7 @@
 /**
  * 组件配置基础类型定义
  */
-export interface BasicConfig<T = Record<string, unknown>> {
+export interface BasicConfig<T> {
   // 唯一表示
   id: string
   // 组件类型

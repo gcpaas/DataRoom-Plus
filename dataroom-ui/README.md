@@ -55,3 +55,15 @@ npm run lint
 ## 参考
 * [拖拽工具](https://atlassian.design/components/pragmatic-drag-and-drop/examples/)
 * 
+
+
+```shell
+
+http-server ./public --cors -p 8081
+
+```
+
+## 设计
+* 每个组件有自己的 transformProps 用于将数据集返回的数据转为图表能够识别的prop
+* 
+* 

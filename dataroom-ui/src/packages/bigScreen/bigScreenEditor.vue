@@ -1,31 +1,23 @@
 <script setup lang="ts">
-import {
-  getComponent,
-  getPanelComponent,
-  getComponentInstance,
-} from '@/packages/components/install.ts'
+import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
 import { reactive } from 'vue'
+import type { BasicConfig } from '../components/type/define.ts'
 
-const chartList = reactive([
-  {
-    name: 'DrText',
-  },
-])
-
-chartList.forEach((chart) => {
-  const inst = getComponentInstance(chart.name)
-  console.log(inst)
-})
+const chartList: BasicConfig<unknown>[] = reactive([])
+// 根据组件类型获取配置
+const chartInst1: BasicConfig<unknown> = getComponentInstance('DrText')
+const chartInst2: BasicConfig<unknown> = getComponentInstance('RemoteComponent')
+// 添加到画布
+chartList.push(chartInst1)
+chartList.push(chartInst2)
 </script>
 
 <template>
-  x
   <div>
     画布
-    <template v-for="chart in chartList" :key="chart.name">
-      <div>{{ chart.name }}</div>
-      <component :is="getComponent(chart.name)"></component>
-      <component :is="getPanelComponent(chart.name)"></component>
+    {{ chartList }}
+    <template v-for="chart in chartList" :key="chart.type">
+      <component :is="getComponent(chart.type)" :chart="chart"></component>
     </template>
   </div>
 </template>

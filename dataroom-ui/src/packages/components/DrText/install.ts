@@ -1,26 +1,28 @@
 import { defineAsyncComponent } from 'vue'
 import type { BasicConfig, Interaction } from '../type/define'
 // 注册组件
-const DrText = defineAsyncComponent(() => import('@/packages/components/Text/DrText.vue'))
+const DrText = defineAsyncComponent(() => import('./DrText.vue'))
 // 注册组件配置面板
-const DrTextPanel = defineAsyncComponent(() => import('@/packages/components/Text/DrTextPanel.vue'))
+const DrTextPanel = defineAsyncComponent(() => import('./DrTextPanel.vue'))
+
+interface DrTextProps {
+  // 文本
+  text: string
+  // 字体大小
+  fontSize: number
+}
 
 /**
  * 定义组件配置类型
  */
-export interface DrTextConfig {
-  // 名称
-  name: string
-  // 年龄
-  age: number
-}
+export type DrTextConfig = BasicConfig<DrTextProps>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象
  * @constructor
  */
-const getDrTextInstance = () => {
-  const config: BasicConfig<DrTextConfig> = {
+const getDrTextInstance = (): DrTextConfig => {
+  const config: DrTextConfig = {
     id: Math.random().toString(),
     type: 'DrText',
     w: 100,
@@ -29,8 +31,8 @@ const getDrTextInstance = () => {
     y: 100,
     z: 999,
     props: {
-      name: 'xx',
-      age: 18,
+      text: '我是文本',
+      fontSize: 14,
     },
   }
   return config
