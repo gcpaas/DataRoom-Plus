@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from 'vue'
-import type { BasicConfig, Interaction } from '../type/define'
+import type { BasicConfig, Behavior } from '../type/define'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -21,7 +21,7 @@ export type RemoteComponentConfig = BasicConfig<RemoteComponentProps>
  * 定义获取该组件实例的方法，返回本组件新实例对象
  * @constructor
  */
-const getRemoteComponentInstance = (): RemoteComponentConfig => {
+const getInstance = (): RemoteComponentConfig => {
   const config: RemoteComponentConfig = {
     id: Math.random().toString(),
     type: 'RemoteComponent',
@@ -40,7 +40,7 @@ const getRemoteComponentInstance = (): RemoteComponentConfig => {
 /**
  * 定义组件交互定义
  */
-const RemoteComponentInteractionDefine: Array<Interaction> = [
+const behaviors: Array<Behavior> = [
   {
     name: '点击',
     desc: '鼠标点击文本时触发',
@@ -49,4 +49,4 @@ const RemoteComponentInteractionDefine: Array<Interaction> = [
   },
 ]
 
-export { component, controlPanel, getRemoteComponentInstance, RemoteComponentInteractionDefine }
+export { component, controlPanel, getInstance, behaviors }

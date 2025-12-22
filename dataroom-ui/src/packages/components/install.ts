@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type { BasicConfig, Interaction } from '@DrPackage/components/type/define.ts'
+import type { BasicConfig, Behavior } from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -13,16 +13,20 @@ type ComponentInstanceMap = {
   [key: string]: () => BasicConfig<unknown>
 }
 
+type BehaviorMap = {
+  [key: string]: Behavior
+}
+
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
 const installModules = import.meta.glob<{
-  [key: string]: Component | (() => BasicConfig<unknown>) | Array<Interaction>
+  [key: string]: Component | (() => BasicConfig<unknown>)
 }>('./**/install.ts', { eager: true })
 
 // 存储组件、控制面板组件、实例方法和交互定义
 const components: ComponentMap = {}
 const panelComponents: PanelComponentMap = {}
 const componentInstances: ComponentInstanceMap = {}
-const interactionDefines: Array<Interaction>[] = []
+const behaviors: BehaviorMap = {}
 
 // 组件自动注册
 Object.entries(installModules).forEach(([path, module]) => {
@@ -44,22 +48,19 @@ Object.entries(installModules).forEach(([path, module]) => {
     panelComponents[controlPanelName] = module['controlPanel'] as Component
   }
   // 注册实例方法
-  const instanceMethodName = `get${componentName}Instance`
+  const instanceMethodName = `getInstance`
   if (module[instanceMethodName]) {
-    componentInstances[instanceMethodName] = module[
-      instanceMethodName
-    ] as () => BasicConfig<unknown>
+    componentInstances[componentName] = module[instanceMethodName] as () => BasicConfig<unknown>
   }
 
   // 注册交互定义
-  const interactionDefineName = `${componentName}InteractionDefine`
-  if (module[interactionDefineName]) {
-    interactionDefines.push(module[interactionDefineName] as Array<Interaction>)
+  const behaviorDefineName = `behaviors`
+  if (module[behaviorDefineName]) {
+    behaviors[componentName] = module[behaviorDefineName] as Behavior
   }
 })
 
 const getPanelComponent = (name: string) => {
-  name = `${name}Panel`
   return panelComponents[name]
 }
 
@@ -68,12 +69,11 @@ const getComponent = (name: string) => {
 }
 
 const getComponentInstance = (name: string): BasicConfig<unknown> => {
-  const fnName = `get${name}Instance`
-  const instanceFn = componentInstances[fnName]
+  const instanceFn = componentInstances[name]
   if (instanceFn) {
     return instanceFn()
   }
-  console.error(`未找到组件 ${name} 对应的 ${fnName} 方法`)
+  console.error(`未找到组件 ${name} 对应的实例化方法`)
   return {} as BasicConfig<unknown>
 }
 
@@ -81,7 +81,7 @@ export {
   components,
   panelComponents,
   componentInstances,
-  interactionDefines,
+  behaviors,
   getComponent,
   getPanelComponent,
   getComponentInstance,

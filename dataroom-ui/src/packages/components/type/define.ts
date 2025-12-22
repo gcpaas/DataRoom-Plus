@@ -23,7 +23,7 @@ export interface BasicConfig<T> {
 /**
  * 交互参数定义
  */
-export interface InteractionParam {
+export interface BehaviorParam {
   // 参数名称
   name: string
   // 参数描述
@@ -39,12 +39,12 @@ export interface InteractionParam {
 /**
  * 交互定义
  */
-export interface Interaction {
+export interface Behavior {
   // 事件名称
   name: string
   // 事件描述
   desc: string
   // 事件触发时指定的方法名称
   method: string
-  paramsList: Array<InteractionParam>
+  paramsList: Array<BehaviorParam>
 }
