@@ -1,3 +1,10 @@
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  name: 'RemoteComponent',
+})
+</script>
 <script setup lang="ts">
 import { defineAsyncComponent, reactive } from 'vue'
 import type { RemoteComponentConfig } from './install.ts'
@@ -5,9 +12,10 @@ import type { RemoteComponentConfig } from './install.ts'
 import * as Vue from 'vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
-import {loadModule} from 'vue3-sfc-loader'
+import { loadModule } from 'vue3-sfc-loader'
 // 完整导入 ECharts
-import * as echarts from 'echarts';
+import * as echarts from 'echarts'
+
 const { chart } = defineProps<{
   chart: RemoteComponentConfig
 }>()
@@ -17,7 +25,7 @@ const drChart = reactive(chart)
 const options = {
   moduleCache: {
     vue: Vue,
-    echarts: echarts
+    echarts: echarts,
   },
   async getFile(url: string) {
     const res = await fetch(url)

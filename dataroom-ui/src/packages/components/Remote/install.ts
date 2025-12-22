@@ -1,9 +1,9 @@
 import { defineAsyncComponent } from 'vue'
 import type { BasicConfig, Interaction } from '../type/define'
 // 注册组件
-const RemoteComponent = defineAsyncComponent(() => import('./RemoteComponent.vue'))
+const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
-const RemoteComponentPanel = defineAsyncComponent(() => import('./RemoteComponentPanel.vue'))
+const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
 interface RemoteComponentProps {
   // 文本
@@ -49,4 +49,4 @@ const RemoteComponentInteractionDefine: Array<Interaction> = [
   },
 ]
 
-export { RemoteComponent, RemoteComponentPanel, getRemoteComponentInstance, RemoteComponentInteractionDefine }
+export { component, controlPanel, getRemoteComponentInstance, RemoteComponentInteractionDefine }

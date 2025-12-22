@@ -2,12 +2,14 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'DrTextControlPanel',
+  name: 'RemoteComponentControlPanel',
 })
 </script>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+</script>
 <template>
-  <div>配置面板</div>
+  <div>远程组件配置面板</div>
 </template>
 
 <style scoped></style>
