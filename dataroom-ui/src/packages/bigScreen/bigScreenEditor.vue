@@ -18,19 +18,19 @@ const rightControlPanelShow = ref(true)
 const mainStyle = computed(() => {
   if (leftToolPanelShow.value && rightControlPanelShow.value) {
     return {
-      gridTemplateColumns: '40px 200px auto 200px',
+      gridTemplateColumns: '60px 200px auto 200px',
     }
   } else if (!leftToolPanelShow.value && !rightControlPanelShow.value) {
     return {
-      gridTemplateColumns: '40px  auto ',
+      gridTemplateColumns: '60px  auto ',
     }
   } else if (!leftToolPanelShow.value && rightControlPanelShow.value) {
     return {
-      gridTemplateColumns: '40px auto 200px',
+      gridTemplateColumns: '60px auto 200px',
     }
   } else {
     return {
-      gridTemplateColumns: '40px 200px auto',
+      gridTemplateColumns: '60px 200px auto',
     }
   }
 })
@@ -64,10 +64,22 @@ const rightControlPanelButton = () => {
 
 <template>
   <div class="dr-bs-editor">
-    <div class="header">标题 <el-button @click="rightControlPanelButton">配置</el-button></div>
+    <div class="header">
+      标题
+      <el-button @click="rightControlPanelButton">配置</el-button>
+      <el-button @click="leftToolPanelButton">左侧</el-button>
+    </div>
     <div class="main" :style="mainStyle">
-      <div class="left-tool-bar"><el-button @click="leftToolPanelButton">左侧</el-button></div>
-      <div class="left-tool-panel" :style="leftToolPanelStyle"></div>
+      <div class="left-tool-bar">
+        <div class="bar">图层</div>
+        <div class="bar">组件库</div>
+        <div class="bar">素材库</div>
+        <div class="bar">全局变量</div>
+      </div>
+      <div class="left-tool-panel" :style="leftToolPanelStyle">
+        <div class="panel-header">图层</div>
+        <div>图册树</div>
+      </div>
       <div class="canvas"></div>
       <div class="right-panel" :style="rightControlPanelStyle"></div>
     </div>
@@ -87,14 +99,36 @@ const rightControlPanelButton = () => {
   & .main {
     background-color: aliceblue;
     display: grid;
-    grid-template-columns: 40px 200px auto 200px;
+    grid-template-columns: 60px 200px auto 200px;
 
     & .left-tool-bar {
       background-color: #fcfcfc;
+      border-right: 1px solid #e8e8e8;
+
+      & .bar {
+        font-size: 12px;
+        text-align: center;
+        margin: 4px auto;
+        padding: 8px 0;
+
+        &:hover {
+          cursor: pointer;
+          background-color: #efefef;
+        }
+      }
     }
 
     & .left-tool-panel {
       background-color: white;
+      display: grid;
+      grid-template-rows: 40px auto;
+      & .panel-header {
+        background-color: #fcfcfc;
+        border-bottom: 1px solid #e8e8e8;
+        font-size: 12px;
+        //align-self: center;
+        padding-left: 16px;
+      }
     }
 
     & .canvas {
