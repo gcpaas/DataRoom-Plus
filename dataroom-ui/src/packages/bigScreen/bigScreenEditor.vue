@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
-import { computed, reactive, ref } from 'vue'
+import { type Component, computed, defineAsyncComponent, reactive, ref } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
 import { menuList } from './componentMenuInstall.ts'
 
+const ComponentLib = defineAsyncComponent(() => import('./ComponentLib.vue'))
+const ComponentLayer = defineAsyncComponent(() => import('./ComponentLayer.vue'))
+const GlobalVariable = defineAsyncComponent(() => import('./GlobalVariable.vue'))
+const ResourceLib = defineAsyncComponent(() => import('./ResourceLib.vue'))
+const leftToolBarComponent: Record<string, Component> = {
+  ComponentLib,
+  ComponentLayer,
+  GlobalVariable,
+  ResourceLib,
+}
+const activeLeftToolBarComponent = ref(ComponentLib)
 console.log(menuList)
 const chartList: BasicConfig<unknown>[] = reactive([])
 // 根据组件类型获取配置
@@ -18,7 +29,7 @@ const rightControlPanelShow = ref(true)
 const mainStyle = computed(() => {
   if (leftToolPanelShow.value && rightControlPanelShow.value) {
     return {
-      gridTemplateColumns: '60px 200px auto 200px',
+      gridTemplateColumns: '60px 200px auto 330px',
     }
   } else if (!leftToolPanelShow.value && !rightControlPanelShow.value) {
     return {
@@ -26,7 +37,7 @@ const mainStyle = computed(() => {
     }
   } else if (!leftToolPanelShow.value && rightControlPanelShow.value) {
     return {
-      gridTemplateColumns: '60px auto 200px',
+      gridTemplateColumns: '60px auto 330px',
     }
   } else {
     return {
@@ -60,6 +71,13 @@ const leftToolPanelButton = () => {
 const rightControlPanelButton = () => {
   rightControlPanelShow.value = !rightControlPanelShow.value
 }
+
+const activeLeftToolBarFun = (name: string) => {
+  const component: Component | undefined = leftToolBarComponent[name]
+  if (component) {
+    activeLeftToolBarComponent.value = component
+  }
+}
 </script>
 
 <template>
@@ -71,16 +89,21 @@ const rightControlPanelButton = () => {
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
-        <div class="bar">图层</div>
-        <div class="bar">组件库</div>
-        <div class="bar">素材库</div>
-        <div class="bar">全局变量</div>
+        <div class="bar" @click="activeLeftToolBarFun('ComponentLayer')">图层</div>
+        <div class="bar active" @click="activeLeftToolBarFun('ComponentLib')">组件库</div>
+        <div class="bar" @click="activeLeftToolBarFun('ResourceLib')">素材库</div>
+        <div class="bar" @click="activeLeftToolBarFun('GlobalVariable')">全局变量</div>
       </div>
       <div class="left-tool-panel" :style="leftToolPanelStyle">
-        <div class="panel-header">图层</div>
-        <div>图册树</div>
+        <div class="panel-header">图册名称</div>
+        <div class="panel-body">
+          <component :is="activeLeftToolBarComponent"></component>
+        </div>
       </div>
-      <div class="canvas"></div>
+      <div class="canvas">
+        <div></div>
+        <div class="footer">底部工具</div>
+      </div>
       <div class="right-panel" :style="rightControlPanelStyle"></div>
     </div>
   </div>
@@ -92,7 +115,7 @@ const rightControlPanelButton = () => {
   grid-template-rows: 60px auto;
   height: 100vh; // 设置容器高度为视口高度
   & .header {
-    background-color: #3478f6;
+    background-color: var(--dr-prmary);
     color: white;
   }
 
@@ -116,23 +139,41 @@ const rightControlPanelButton = () => {
           background-color: #efefef;
         }
       }
+
+      & .active {
+        background-color: #3478f620;
+        color: var(--dr-prmary);
+      }
     }
 
     & .left-tool-panel {
       background-color: white;
       display: grid;
       grid-template-rows: 40px auto;
+
       & .panel-header {
         background-color: #fcfcfc;
         border-bottom: 1px solid #e8e8e8;
         font-size: 12px;
-        //align-self: center;
+        line-height: 40px;
+        align-self: center;
         padding-left: 16px;
+      }
+
+      & .panel-body {
+        background-color: #f8f8f8;
+        overflow-y: auto;
       }
     }
 
     & .canvas {
+      display: grid;
       background-color: #e6e6e6;
+      grid-template-rows: auto 40px;
+
+      & .footer {
+        background-color: #f5f5f5;
+      }
     }
 
     & .right-panel {
