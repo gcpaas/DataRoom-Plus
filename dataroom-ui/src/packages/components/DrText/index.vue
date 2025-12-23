@@ -7,21 +7,37 @@ export default defineComponent({
 </script>
 <script setup lang="ts">
 import type { DrTextConfig } from './install.ts'
-import { reactive } from 'vue'
+import { computed, type CSSProperties, inject, getCurrentInstance, onMounted } from 'vue'
+import type { CanvasInst } from '@/packages/bigScreen/type.ts'
 
 const { chart } = defineProps<{
   chart: DrTextConfig
 }>()
-// 避免直接修改props数据，编译报错
-const drChart = reactive(chart)
+onMounted(()=>{
+  const canvasInst = inject('canvasInst') as CanvasInst
+  let currentInstance = getCurrentInstance()
+  console.log(currentInstance)
+  canvasInst.chartInstList.push(currentInstance)
+})
+
+const customStyle = computed<CSSProperties>(() => {
+  const { x = 0, y = 0, w = 0, h = 0 } = chart
+  return {
+    position: 'absolute',
+    left: `${x}px`,
+    top: `${y}px`,
+    width: `${w}px`,
+    height: `${h}px`,
+  }
+})
 </script>
 
 <template>
-  <div class="dr-text">{{ drChart.props.text }}-字体大小: {{ drChart.props.fontSize }}</div>
+  <div class="dr-text" :style="customStyle">{{ chart.props.text }}</div>
 </template>
 
 <style scoped>
 .dr-text {
-  color: red;
+  color: var(--dr-prmary);
 }
 </style>

@@ -1,28 +1,48 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
-import { type Component, computed, defineAsyncComponent, reactive, ref } from 'vue'
+import { type ComponentInternalInstance } from 'vue'
+
+import Moveable from 'vue3-moveable'
+import {
+  type Component,
+  computed,
+  defineAsyncComponent,
+  reactive,
+  ref,
+  shallowRef,
+  provide,
+} from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
-import { menuList } from './componentMenuInstall.ts'
+
+const chartList: BasicConfig<unknown>[] = reactive([])
+
+const addChart = (type: string) => {
+  const chartInst: BasicConfig<unknown> = getComponentInstance(type)
+  chartList.push(chartInst)
+}
+
+const chartInstList: ComponentInternalInstance = []
+provide('canvasInst', {
+  addChart: addChart,
+  chartInstList: chartInstList,
+})
 
 const ComponentLib = defineAsyncComponent(() => import('./ComponentLib.vue'))
 const ComponentLayer = defineAsyncComponent(() => import('./ComponentLayer.vue'))
 const GlobalVariable = defineAsyncComponent(() => import('./GlobalVariable.vue'))
 const ResourceLib = defineAsyncComponent(() => import('./ResourceLib.vue'))
-const leftToolBarComponent: Record<string, Component> = {
-  ComponentLib,
-  ComponentLayer,
-  GlobalVariable,
-  ResourceLib,
+// 映射左侧组件
+const leftToolBarComponent: Record<string, unknown> = {
+  ComponentLib: ComponentLib,
+  ComponentLayer: ComponentLayer,
+  GlobalVariable: GlobalVariable,
+  ResourceLib: ResourceLib,
 }
-const activeLeftToolBarComponent = ref(ComponentLib)
-console.log(menuList)
-const chartList: BasicConfig<unknown>[] = reactive([])
-// 根据组件类型获取配置
-const chartInst1: BasicConfig<unknown> = getComponentInstance('DrText')
-const chartInst2: BasicConfig<unknown> = getComponentInstance('Remote')
+// 当前激活的左侧组件
+const activeLeftToolBarComponent = shallowRef<Component>(ComponentLib)
+const activeLeftToolBarComponentName = ref('ComponentLib')
+
 // 添加到画布
-chartList.push(chartInst1)
-chartList.push(chartInst2)
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
 // 核心：使用计算属性生成main区域的样式对象
@@ -73,11 +93,45 @@ const rightControlPanelButton = () => {
 }
 
 const activeLeftToolBarFun = (name: string) => {
-  const component: Component | undefined = leftToolBarComponent[name]
+  activeLeftToolBarComponentName.value = name
+  const component = leftToolBarComponent[name]
   if (component) {
     activeLeftToolBarComponent.value = component
   }
 }
+
+const onChartClick = (e: any) => {
+  console.log(e)
+}
+const onDrag = (e: any) => {
+  console.log(e)
+}
+
+const onResize = (e: any) => {
+  console.log(e)
+}
+
+const onRotate = (e: any) => {
+  console.log(e)
+}
+
+const onDragStart = (e: any) => {
+  console.log(e)
+}
+const onDragEnd = (e: any) => {
+  console.log(e)
+}
+
+const onResizeEnd = (e: any) => {
+  console.log(e)
+}
+const onRotateEnd = (e: any) => {
+  console.log(e)
+}
+
+const targets = computed(() => {
+  return chartInstList
+})
 </script>
 
 <template>
@@ -89,10 +143,30 @@ const activeLeftToolBarFun = (name: string) => {
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
-        <div class="bar" @click="activeLeftToolBarFun('ComponentLayer')">图层</div>
-        <div class="bar active" @click="activeLeftToolBarFun('ComponentLib')">组件库</div>
-        <div class="bar" @click="activeLeftToolBarFun('ResourceLib')">素材库</div>
-        <div class="bar" @click="activeLeftToolBarFun('GlobalVariable')">全局变量</div>
+        <div
+          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLayer' }"
+          @click="activeLeftToolBarFun('ComponentLayer')"
+        >
+          图层
+        </div>
+        <div
+          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLib' }"
+          @click="activeLeftToolBarFun('ComponentLib')"
+        >
+          组件库
+        </div>
+        <div
+          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ResourceLib' }"
+          @click="activeLeftToolBarFun('ResourceLib')"
+        >
+          素材库
+        </div>
+        <div
+          :class="{ bar: true, active: activeLeftToolBarComponentName === 'GlobalVariable' }"
+          @click="activeLeftToolBarFun('GlobalVariable')"
+        >
+          全局变量
+        </div>
       </div>
       <div class="left-tool-panel" :style="leftToolPanelStyle">
         <div class="panel-header">图册名称</div>
@@ -102,7 +176,47 @@ const activeLeftToolBarFun = (name: string) => {
       </div>
       <div class="canvas">
         <div class="canvas-main">
-
+          <component
+            v-for="item in chartList"
+            :key="item.id"
+            :is="getComponent(item.type)"
+            :chart="item"
+          ></component>
+          <Moveable
+            ref="moveableRef"
+            :draggable="true"
+            :rotatable="true"
+            :resizable="true"
+            :target="targets"
+            :snappable="true"
+            :bounds="{ left: 0, top: 0, right: 0, bottom: 0, position: 'css' }"
+            :snap-directions="{
+              top: true,
+              left: true,
+              bottom: true,
+              right: true,
+              center: true,
+              middle: true,
+            }"
+            :element-snap-directions="{
+              top: true,
+              left: true,
+              bottom: true,
+              right: true,
+              center: true,
+              middle: true,
+            }"
+            :max-snap-element-guideline-distance="70"
+            :render-directions="['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w']"
+            @click="onChartClick"
+            @drag="onDrag"
+            @resize="onResize"
+            @rotate="onRotate"
+            @dragStart="onDragStart"
+            @dragEnd="onDragEnd"
+            @resizeEnd="onResizeEnd"
+            @rotateEnd="onRotateEnd"
+          />
         </div>
         <div class="footer">底部工具</div>
       </div>
@@ -172,6 +286,10 @@ const activeLeftToolBarFun = (name: string) => {
       display: grid;
       background-color: #e6e6e6;
       grid-template-rows: auto 40px;
+
+      & .canvas-main {
+        position: relative;
+      }
 
       & .footer {
         background-color: #f5f5f5;

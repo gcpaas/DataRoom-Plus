@@ -25,7 +25,7 @@ const getInstance = (): DrTextConfig => {
   const config: DrTextConfig = {
     id: Math.random().toString(),
     type: 'DrText',
-    w: 100,
+    w: 150,
     h: 100,
     x: 100,
     y: 100,
