@@ -101,7 +101,9 @@ const activeLeftToolBarFun = (name: string) => {
         </div>
       </div>
       <div class="canvas">
-        <div></div>
+        <div class="canvas-main">
+
+        </div>
         <div class="footer">底部工具</div>
       </div>
       <div class="right-panel" :style="rightControlPanelStyle"></div>
