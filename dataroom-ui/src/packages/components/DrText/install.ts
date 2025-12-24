@@ -27,7 +27,7 @@ const getInstance = (): DrTextConfig => {
     type: 'DrText',
     w: 150,
     h: 100,
-    x: 100,
+    x: Math.random()*100+100,
     y: 100,
     z: 999,
     props: {

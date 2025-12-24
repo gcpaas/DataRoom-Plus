@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
-import { type ComponentInternalInstance } from 'vue'
+import { type ComponentInternalInstance, type CSSProperties, onMounted } from 'vue'
 
 import Moveable from 'vue3-moveable'
+import { VueSelecto } from 'vue3-selecto'
 import {
   type Component,
   computed,
@@ -13,6 +14,7 @@ import {
   provide,
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
+import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
 
 const chartList: BasicConfig<unknown>[] = reactive([])
 
@@ -101,42 +103,73 @@ const activeLeftToolBarFun = (name: string) => {
 }
 
 const onChartClick = (e: any) => {
-  console.log(e)
+  console.log('onChartClick', e)
 }
 const onDrag = (e: any) => {
-  console.log(e)
-}
-
-const onResize = (e: any) => {
-  console.log(e)
+  console.log('onDrag', e)
+  e.target.style.transform = e.transform
 }
 
 const onRotate = (e: any) => {
-  console.log(e)
+  console.log('onRotate', e)
 }
 
 const onDragStart = (e: any) => {
-  console.log(e)
+  console.log('onDragStart ', e)
 }
+
 const onDragEnd = (e: any) => {
-  console.log(e)
+  console.log('onDragEnd', e)
+  // 获取target中el的id
+  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
+  const transform: string = e.target.style.transform
+  const { x, y } = extractPositionFromTransform(transform)
+  chart.x = x
+  chart.y = y
+}
+
+const onResize = (e: any) => {
+  console.log('onResize', e)
+  // 获取target中el的id
+  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
+  chart.w = e.width
+  chart.h = e.height
 }
 
 const onResizeEnd = (e: any) => {
-  console.log(e)
+  console.log('onResizeEnd', e)
+  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
+  // chart.w = e.width
+  // chart.h = e.height
 }
 const onRotateEnd = (e: any) => {
-  console.log(e)
+  console.log('onRotateEnd', e)
+}
+const target = ref([])
+setTimeout(() => {
+  let elementsByClassName = document.getElementsByClassName('chart-wrapper')
+  target.value = elementsByClassName
+}, 2000)
+
+const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
+  return {
+    position: 'absolute',
+    transform: `translate(${chart.x}px,${chart.y}px)`,
+    width: `${chart.w}px`,
+    height: `${chart.h}px`,
+  }
 }
 
-const targets = computed(() => {
-  return chartInstList
-})
+const canvasContainer = document.getElementById('canvas-main')
+
+const onSelect = (e: any) => {
+  console.log('选中', e)
+}
 </script>
 
 <template>
   <div class="dr-bs-editor">
-    <div class="header">
+    <div class="header" ref="titleRef">
       标题
       <el-button @click="rightControlPanelButton">配置</el-button>
       <el-button @click="leftToolPanelButton">左侧</el-button>
@@ -175,19 +208,22 @@ const targets = computed(() => {
         </div>
       </div>
       <div class="canvas">
-        <div class="canvas-main">
-          <component
+        <div class="canvas-main" id="canvas-main">
+          <div
+            class="chart-wrapper"
             v-for="item in chartList"
             :key="item.id"
-            :is="getComponent(item.type)"
-            :chart="item"
-          ></component>
+            :data-dr-id="item.id"
+            :style="computedChartStyle(item)"
+          >
+            <component :is="getComponent(item.type)" :chart="item"></component>
+          </div>
           <Moveable
             ref="moveableRef"
             :draggable="true"
             :rotatable="true"
             :resizable="true"
-            :target="targets"
+            :target="target"
             :snappable="true"
             :bounds="{ left: 0, top: 0, right: 0, bottom: 0, position: 'css' }"
             :snap-directions="{
@@ -216,6 +252,16 @@ const targets = computed(() => {
             @dragEnd="onDragEnd"
             @resizeEnd="onResizeEnd"
             @rotateEnd="onRotateEnd"
+          />
+          <VueSelecto
+            :container="canvasContainer"
+            :selectableTargets="['.dr-text']"
+            :selectByClick="true"
+            :selectFromInside="true"
+            :continueSelect="false"
+            :toggleContinueSelect="'shift'"
+            :hitRate="100"
+            @select="onSelect"
           />
         </div>
         <div class="footer">底部工具</div>
