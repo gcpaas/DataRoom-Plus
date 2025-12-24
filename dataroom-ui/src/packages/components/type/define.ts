@@ -7,9 +7,9 @@ export class ChartDefine {
   // 组件信息描述
   desc?: string
   // 组件缩略图
-  thumbnail:string
+  thumbnail: string
 
-  constructor(name: string, desc: string, thumbnail:string) {
+  constructor(name: string, desc: string, thumbnail: string) {
     this.name = name
     this.desc = desc
     this.thumbnail = thumbnail
@@ -34,6 +34,12 @@ export interface BasicConfig<T> {
   y: number
   // 组件层级、层级越大、越靠前显示
   z: number
+  // X轴旋转角度
+  rotateX: number
+  // Y轴旋转角度
+  rotateY: number
+  // Z轴旋转角度
+  rotateZ: number
   // 自定义配置
   props: T
 }

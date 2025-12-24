@@ -31,13 +31,27 @@ import type { BasicConfig } from '../components/type/define.ts'
 import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
 import VanillaSelecto from 'selecto'
 
+const canvasContainer = document.getElementById('canvas-main')
+const activeChart = ref<BasicConfig<unknown>>()
 const chartList: BasicConfig<unknown>[] = reactive([])
+/**
+ * 被框选中的组件、可以进行拖拽、旋转、缩放
+ */
+const moveableTargets: ComputedRef<(HTMLElement | null)[]> = computed(() => {
+  if (!activeChart.value) {
+    return []
+  }
+  const dom = document.getElementById(activeChart.value.id)
+  return [dom]
+})
 
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
   chartList.push(chartInst)
 }
-
+/**
+ * 子组件注入使用
+ */
 provide('canvasInst', {
   addChart: addChart,
 })
@@ -56,10 +70,9 @@ const leftToolBarComponent: Record<string, unknown> = {
 // 当前激活的左侧组件
 const activeLeftToolBarComponent = shallowRef<Component>(ComponentLib)
 const activeLeftToolBarComponentName = ref('ComponentLib')
-
-// 添加到画布
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
+
 // 核心：使用计算属性生成main区域的样式对象
 const mainStyle = computed(() => {
   if (leftToolPanelShow.value && rightControlPanelShow.value) {
@@ -80,7 +93,9 @@ const mainStyle = computed(() => {
     }
   }
 })
-
+/**
+ * 左侧工具面版样式
+ */
 const leftToolPanelStyle = computed(() => {
   if (!leftToolPanelShow.value) {
     return {
@@ -89,7 +104,9 @@ const leftToolPanelStyle = computed(() => {
   }
   return {}
 })
-
+/**
+ * 右侧配置面版样式
+ */
 const rightControlPanelStyle = computed(() => {
   if (!rightControlPanelShow.value) {
     return {
@@ -107,103 +124,140 @@ const rightControlPanelButton = () => {
   rightControlPanelShow.value = !rightControlPanelShow.value
 }
 
-const activeLeftToolBarFun = (name: string) => {
+const onActiveLeftToolBar = (name: string) => {
   activeLeftToolBarComponentName.value = name
   const component = leftToolBarComponent[name]
   if (component) {
     activeLeftToolBarComponent.value = component
   }
 }
-
+/**
+ * 单击组件
+ * @param e
+ */
 const onChartClick = (e: OnClick) => {
   console.log('onChartClick', e)
 }
+/**
+ * 拖拽组件开始
+ * @param e
+ */
+const onDragStart = (e: OnDragStart) => {
+  console.log('onDragStart ', e)
+}
+
+/**
+ * 拖拽组件中
+ * @param e
+ */
 const onDrag = (e: OnDrag) => {
   // console.log('onDrag', e)
   e.target.style.transform = e.transform
   updateTransform(e, e.transform, e.width, e.height)
 }
-
-const onRotate = (e: OnRotate) => {
-  console.log('onRotate', e.drag.transform)
-}
-
-const onDragStart = (e: OnDragStart) => {
-  console.log('onDragStart ', e)
-}
-
-const onSelectorDragStart = (e: import('selecto').OnDragStart<VanillaSelecto>) => {
-  console.log('onDragStart ', e)
-}
-
+/**
+ * 拖拽组件结束
+ * @param e
+ */
 const onDragEnd = (e: OnDragEnd) => {
   console.log('onDragEnd', e)
-  // 获取target中el的id
-  // const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  // const transform: string = e.target.style.transform
-  // const { x, y } = extractPositionFromTransform(transform)
-  // chart.x = x
-  // chart.y = y
 }
 
 const _updateTransform = (e: OnEvent, transform: string, width: number, height: number) => {
-  console.log(e)
+  console.log('updateTransform', width)
   const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  const { x, y } = extractPositionFromTransform(transform)
+  const { x, y, rotateX, rotateY, rotateZ } = extractPositionFromTransform(transform)
   chart.x = x
   chart.y = y
   chart.w = width
   chart.h = height
+  chart.rotateX = rotateX
+  chart.rotateY = rotateY
+  chart.rotateZ = rotateZ
 }
 const updateTransform = debounce((e: OnEvent, transform: string, width: number, height: number) => {
   _updateTransform(e, transform, width, height)
-}, 500)
-
+}, 100)
+/**
+ * 缩放组件中
+ * @param e
+ */
 const onResize = (e: OnResize) => {
   e.target.style.width = `${e.width}px`
   e.target.style.height = `${e.height}px`
   e.target.style.transform = e.drag.transform
   updateTransform(e, e.drag.transform, e.width, e.height)
 }
-
+/**
+ * 缩放组件结束
+ * @param e
+ */
 const onResizeEnd = (e: OnResizeEnd) => {
   console.log('onResizeEnd', e)
   return null
 }
+/**
+ * 旋转组件中
+ * @param e
+ */
+const onRotate = (e: OnRotate) => {
+  console.log('onRotate', e.drag.transform)
+  e.target.style.transform = e.drag.transform
+}
+
+/**
+ * 旋转组件结束
+ * @param e
+ */
 const onRotateEnd = (e: OnRotateEnd) => {
   console.log('onRotateEnd', e)
+  const width: number = parseInt(e.target.style.width.replace('px', ''))
+  const height: number = parseInt(e.target.style.height.replace('px', ''))
+  updateTransform(e, e.target.style.transform, width, height)
 }
-
-const target: ComputedRef<(HTMLElement | null)[]> = computed(() => {
-  if (!activeChart.value) {
-    return []
-  }
-  const dom = document.getElementById(activeChart.value.id)
-  return [dom]
-})
-
-const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
-  return {
-    position: 'absolute',
-    transform: `translate(${chart.x}px,${chart.y}px)`,
-    width: `${chart.w}px`,
-    height: `${chart.h}px`,
-  }
+/**
+ * 框选开始
+ * @param e
+ */
+const onSelectDragStart = (e: import('selecto').OnDragStart<VanillaSelecto>) => {
+  console.log('onSelectorDragStart ', e)
 }
-
-const canvasContainer = document.getElementById('canvas-main')
-const activeChart = ref<BasicConfig<unknown>>()
+/**
+ * 框选结束
+ * @param e
+ */
 const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
-  console.log('选中', e)
-  //   let elementsByClassName = document.getElementsByClassName('chart-wrapper')
-  //   target.value = elementsByClassName
+  console.log('onSelectEnd', e)
   if (e.selected.length <= 0) {
+    activeChart.value = undefined
     return
   }
   const target = e.selected[0]
   if (target) {
     const active = getChartById(target, chartList)
     activeChart.value = active
+  }
+}
+/**
+ * 计算组件坐标样式
+ * @param chart
+ */
+const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
+  let transform = `translate(${chart.x}px,${chart.y}px)`
+  if (chart.rotateX) {
+    transform += ` rotateX(${chart.rotateX}deg)`
+  }
+  if (chart.rotateY) {
+    transform += ` rotateY(${chart.rotateY}deg)`
+  }
+  if (chart.rotateZ) {
+    transform += ` rotateZ(${chart.rotateZ}deg)`
+  }
+  return {
+    position: 'absolute',
+    transform: transform,
+    width: `${chart.w}px`,
+    height: `${chart.h}px`,
   }
 }
 </script>
@@ -219,25 +273,25 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
       <div class="left-tool-bar">
         <div
           :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLayer' }"
-          @click="activeLeftToolBarFun('ComponentLayer')"
+          @click="onActiveLeftToolBar('ComponentLayer')"
         >
           图层
         </div>
         <div
           :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLib' }"
-          @click="activeLeftToolBarFun('ComponentLib')"
+          @click="onActiveLeftToolBar('ComponentLib')"
         >
           组件库
         </div>
         <div
           :class="{ bar: true, active: activeLeftToolBarComponentName === 'ResourceLib' }"
-          @click="activeLeftToolBarFun('ResourceLib')"
+          @click="onActiveLeftToolBar('ResourceLib')"
         >
           素材库
         </div>
         <div
           :class="{ bar: true, active: activeLeftToolBarComponentName === 'GlobalVariable' }"
-          @click="activeLeftToolBarFun('GlobalVariable')"
+          @click="onActiveLeftToolBar('GlobalVariable')"
         >
           全局变量
         </div>
@@ -265,7 +319,7 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
             :draggable="true"
             :rotatable="true"
             :resizable="true"
-            :target="target"
+            :target="moveableTargets"
             :snappable="true"
             :bounds="{ left: 0, top: 0, right: 0, bottom: 0, position: 'css' }"
             :snap-directions="{
@@ -299,11 +353,12 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
             :container="canvasContainer"
             :selectableTargets="['.chart-wrapper']"
             :selectByClick="true"
-            :selectFromInside="true"
+            :selectFromInside="false"
             :continueSelect="false"
             :toggleContinueSelect="'shift'"
             :hitRate="100"
-            @dragStart="onSelectorDragStart"
+            :ratio="0"
+            @dragStart="onSelectDragStart"
             @selectEnd="onSelectEnd"
           />
         </div>

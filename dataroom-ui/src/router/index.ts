@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'bigScreenEditor',
-      component: () => import('@/packages/bigScreen/bigScreenEditor.vue'),
+      component: () => import('@/packages/bigScreen/PageEditor.vue'),
     },
   ],
 })

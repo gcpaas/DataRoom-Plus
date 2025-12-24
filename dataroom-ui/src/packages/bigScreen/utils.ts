@@ -12,24 +12,64 @@ export const getChartById = (
   const dataDrId: string | null = e.getAttribute('data-dr-id')
   const chart = chartList.find((item) => item.id === dataDrId)
   if (!chart) {
-    console.error(`未找到data-dr-id = ${dataDrId} 组件`,e)
+    console.error(`未找到data-dr-id = ${dataDrId} 组件`, e)
     throw new Error(`未找到data-dr-id = ${dataDrId} 组件`)
   }
   return chart
 }
 /**
- * 从transform中提取坐标信息
- * @param transform 格式：translate(xpx, ypx)
+ * 从transform中提取坐标、旋转信息
+ * @param transform 格式：translate(60px, 60px) rotateZ(60deg) rotateX(60deg) rotateY(60deg)
  */
-export const extractPositionFromTransform = (transform: string): { x: number; y: number } => {
-  const match = transform.match(/translate\((.*), (.*)\)/)
-  if (!match) {
-    console.error(`未能够从${transform}中提取到坐标信息`)
-    return { x: 0, y: 0 }
+export const extractPositionFromTransform = (
+  transformStr: string,
+): {
+  x: number
+  y: number
+  rotateX: number
+  rotateY: number
+  rotateZ: number
+} => {
+  const result = {
+    x: 0,
+    y: 0,
+    rotateX: 0,
+    rotateY: 0,
+    rotateZ: 0,
   }
-  // @ts-expect-error ignore
-  const x = parseInt(match[1].replace('px', ''))
-  // @ts-expect-error ignore
-  const y = parseInt(match[2].replace('px', ''))
-  return { x, y }
+  const translateReg =
+    /translate\s*\(\s*([-+]?\d+(\.\d+)?)(?:px)?\s*,\s*([-+]?\d+(\.\d+)?)(?:px)?\s*\)/i
+  const translateMatch = transformStr.match(translateReg)
+  if (translateMatch) {
+    // @ts-expect-error ignore
+    result.x = parseInt(translateMatch[1])
+    // @ts-expect-error ignore
+    result.y = parseInt(translateMatch[3])
+  }
+  const rotateXReg = /rotateX\s*\(\s*([-+]?\d+(\.\d+)?)(?:deg)?\s*\)/i
+  const rotateXMatch = transformStr.match(rotateXReg)
+  if (rotateXMatch) {
+    // @ts-expect-error ignore
+    result.rotateX = parseInt(rotateXMatch[1])
+  }
+  const rotateYReg = /rotateY\s*\(\s*([-+]?\d+(\.\d+)?)(?:deg)?\s*\)/i
+  const rotateYMatch = transformStr.match(rotateYReg)
+  if (rotateYMatch) {
+    // @ts-expect-error ignore
+    result.rotateY = parseInt(rotateYMatch[1])
+  }
+  const rotateReg = /rotate\s*\(\s*([-+]?\d+(\.\d+)?)(?:deg)?\s*\)/i
+  const rotateMatch = transformStr.match(rotateReg)
+  if (rotateMatch) {
+    // @ts-expect-error ignore
+    result.rotateZ = parseInt(rotateMatch[1])
+  } else {
+    const rotateZReg = /rotateZ\s*\(\s*([-+]?\d+(\.\d+)?)(?:deg)?\s*\)/i
+    const rotateZMatch = transformStr.match(rotateZReg)
+    if (rotateZMatch) {
+      // @ts-expect-error ignore
+      result.rotateZ = parseInt(rotateZMatch[1])
+    }
+  }
+  return result
 }
