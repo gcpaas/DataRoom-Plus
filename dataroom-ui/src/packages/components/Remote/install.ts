@@ -30,6 +30,9 @@ const getInstance = (): RemoteComponentConfig => {
     x: 100,
     y: 100,
     z: 999,
+    rotateX: 0,
+    rotateY: 0,
+    rotateZ: 0,
     props: {
       text: '我是远程组件啊',
       fontSize: 14,
