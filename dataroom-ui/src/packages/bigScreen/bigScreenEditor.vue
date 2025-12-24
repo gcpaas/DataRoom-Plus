@@ -4,15 +4,16 @@ import {
   getComponentInstance,
   getPanelComponent,
 } from '@DrPackage/components/install.ts'
-import { type ComponentInternalInstance, type CSSProperties, onMounted } from 'vue'
+import { type ComponentInternalInstance, type CSSProperties } from 'vue'
 import { debounce } from 'lodash'
 import Moveable, {
   type OnClick,
   type OnDrag,
   type OnDragEnd,
-  type OnDragStart,
   type OnRotate,
   type OnRotateEnd,
+  type OnResize,
+  type OnResizeEnd, type OnDragStart
 } from 'vue3-moveable'
 import { VueSelecto } from 'vue3-selecto'
 import {
@@ -26,7 +27,7 @@ import {
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
 import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
-import { OnResize, type OnResizeEnd } from 'react-moveable/src/types.ts'
+import VanillaSelecto from 'selecto'
 
 const chartList: BasicConfig<unknown>[] = reactive([])
 
@@ -128,6 +129,10 @@ const onRotate = (e: OnRotate) => {
 }
 
 const onDragStart = (e: OnDragStart) => {
+  console.log('onDragStart ', e)
+}
+
+const onSelectorDragStart = (e: import("selecto").OnDragStart<VanillaSelecto>) => {
   console.log('onDragStart ', e)
 }
 
@@ -300,7 +305,7 @@ const onSelectEnd = (e: any) => {
             :continueSelect="false"
             :toggleContinueSelect="'shift'"
             :hitRate="100"
-            @dragStart="onDragStart"
+            @dragStart="onSelectorDragStart"
             @selectEnd="onSelectEnd"
           />
         </div>
