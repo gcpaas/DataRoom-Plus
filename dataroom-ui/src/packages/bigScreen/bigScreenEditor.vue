@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
+import {
+  getComponent,
+  getComponentInstance,
+  getPanelComponent,
+} from '@DrPackage/components/install.ts'
 import { type ComponentInternalInstance, type CSSProperties, onMounted } from 'vue'
-
+import { debounce } from 'lodash'
 import Moveable from 'vue3-moveable'
 import { VueSelecto } from 'vue3-selecto'
 import {
@@ -15,6 +19,7 @@ import {
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
 import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
+import { OnResize } from 'react-moveable/src/types.ts'
 
 const chartList: BasicConfig<unknown>[] = reactive([])
 
@@ -106,12 +111,13 @@ const onChartClick = (e: any) => {
   console.log('onChartClick', e)
 }
 const onDrag = (e: any) => {
-  console.log('onDrag', e)
+  // console.log('onDrag', e)
   e.target.style.transform = e.transform
+  updateTransform(e, e.transform, e.width, e.height)
 }
 
 const onRotate = (e: any) => {
-  console.log('onRotate', e)
+  console.log('onRotate', e.drag.transform)
 }
 
 const onDragStart = (e: any) => {
@@ -121,35 +127,50 @@ const onDragStart = (e: any) => {
 const onDragEnd = (e: any) => {
   console.log('onDragEnd', e)
   // 获取target中el的id
+  // const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
+  // const transform: string = e.target.style.transform
+  // const { x, y } = extractPositionFromTransform(transform)
+  // chart.x = x
+  // chart.y = y
+}
+
+const _updateTransform = (e: OnResize, transform: string, width: number, height: number) => {
+  console.log(e)
   const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  const transform: string = e.target.style.transform
   const { x, y } = extractPositionFromTransform(transform)
   chart.x = x
   chart.y = y
+  chart.w = width
+  chart.h = height
 }
+const updateTransform = debounce(
+  (e: OnResize, transform: string, width: number, height: number) => {
+    _updateTransform(e, transform, width, height)
+  },
+  500,
+)
 
-const onResize = (e: any) => {
-  console.log('onResize', e)
-  // 获取target中el的id
-  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  chart.w = e.width
-  chart.h = e.height
+const onResize = (e: OnResize) => {
+  e.target.style.width = `${e.width}px`
+  e.target.style.height = `${e.height}px`
+  e.target.style.transform = e.drag.transform
+  updateTransform(e, e.drag.transform, e.width, e.height)
 }
 
 const onResizeEnd = (e: any) => {
   console.log('onResizeEnd', e)
-  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  // chart.w = e.width
-  // chart.h = e.height
 }
 const onRotateEnd = (e: any) => {
   console.log('onRotateEnd', e)
 }
-const target = ref([])
-setTimeout(() => {
-  let elementsByClassName = document.getElementsByClassName('chart-wrapper')
-  target.value = elementsByClassName
-}, 2000)
+
+const target: [] = computed(() => {
+  if (!activeChart.value) {
+    return []
+  }
+  let dom = document.getElementById(activeChart.value.id)
+  return [dom]
+})
 
 const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
   return {
@@ -161,9 +182,18 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
 }
 
 const canvasContainer = document.getElementById('canvas-main')
-
-const onSelect = (e: any) => {
+const activeChart = ref<BasicConfig<unknown>>()
+const onSelectEnd = (e: any) => {
   console.log('选中', e)
+  //   let elementsByClassName = document.getElementsByClassName('chart-wrapper')
+  //   target.value = elementsByClassName
+  if (e.selected.length <= 0) {
+    return
+  }
+  const target = e.selected[0]
+  const active = getChartById(target, chartList)
+  activeChart.value = active
+  console.log(activeChart)
 }
 </script>
 
@@ -213,6 +243,7 @@ const onSelect = (e: any) => {
             class="chart-wrapper"
             v-for="item in chartList"
             :key="item.id"
+            :id="item.id"
             :data-dr-id="item.id"
             :style="computedChartStyle(item)"
           >
@@ -255,18 +286,21 @@ const onSelect = (e: any) => {
           />
           <VueSelecto
             :container="canvasContainer"
-            :selectableTargets="['.dr-text']"
+            :selectableTargets="['.chart-wrapper']"
             :selectByClick="true"
             :selectFromInside="true"
             :continueSelect="false"
             :toggleContinueSelect="'shift'"
             :hitRate="100"
-            @select="onSelect"
+            @dragStart="onDragStart"
+            @selectEnd="onSelectEnd"
           />
         </div>
         <div class="footer">底部工具</div>
       </div>
-      <div class="right-panel" :style="rightControlPanelStyle"></div>
+      <div class="right-panel" :style="rightControlPanelStyle">
+        <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
+      </div>
     </div>
   </div>
 </template>

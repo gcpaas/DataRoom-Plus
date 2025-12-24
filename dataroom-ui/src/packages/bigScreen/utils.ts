@@ -13,6 +13,7 @@ export const getChartById = (
   const dataDrId: string | null = e.getAttribute('data-dr-id')
   const chart = chartList.find((item) => item.id === dataDrId)
   if (!chart) {
+    console.error(`未找到data-dr-id = ${dataDrId} 组件`,e)
     throw new Error(`未找到data-dr-id = ${dataDrId} 组件`)
   }
   return chart

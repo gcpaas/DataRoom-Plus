@@ -43,9 +43,8 @@ Object.entries(installModules).forEach(([path, module]) => {
     components[componentName] = module['component'] as Component
   }
   // 注册控制面板组件
-  const controlPanelName = `${componentName}ControlPanel`
   if (module['controlPanel']) {
-    panelComponents[controlPanelName] = module['controlPanel'] as Component
+    panelComponents[componentName] = module['controlPanel'] as Component
   }
   // 注册实例方法
   const instanceMethodName = `getInstance`
@@ -60,8 +59,12 @@ Object.entries(installModules).forEach(([path, module]) => {
   }
 })
 
-const getPanelComponent = (name: string) => {
-  return panelComponents[name]
+const getPanelComponent = (name: string|undefined) => {
+  console.log("获取配置面板",name,panelComponents)
+  if (name) {
+    return panelComponents[name]
+  }
+  return null
 }
 
 const getComponent = (name: string) => {
