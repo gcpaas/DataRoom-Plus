@@ -6,7 +6,14 @@ import {
 } from '@DrPackage/components/install.ts'
 import { type ComponentInternalInstance, type CSSProperties, onMounted } from 'vue'
 import { debounce } from 'lodash'
-import Moveable from 'vue3-moveable'
+import Moveable, {
+  type OnClick,
+  type OnDrag,
+  type OnDragEnd,
+  type OnDragStart,
+  type OnRotate,
+  type OnRotateEnd,
+} from 'vue3-moveable'
 import { VueSelecto } from 'vue3-selecto'
 import {
   type Component,
@@ -19,7 +26,7 @@ import {
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
 import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
-import { OnResize } from 'react-moveable/src/types.ts'
+import { OnResize, type OnResizeEnd } from 'react-moveable/src/types.ts'
 
 const chartList: BasicConfig<unknown>[] = reactive([])
 
@@ -107,24 +114,24 @@ const activeLeftToolBarFun = (name: string) => {
   }
 }
 
-const onChartClick = (e: any) => {
+const onChartClick = (e: OnClick) => {
   console.log('onChartClick', e)
 }
-const onDrag = (e: any) => {
+const onDrag = (e: OnDrag) => {
   // console.log('onDrag', e)
   e.target.style.transform = e.transform
   updateTransform(e, e.transform, e.width, e.height)
 }
 
-const onRotate = (e: any) => {
+const onRotate = (e: OnRotate) => {
   console.log('onRotate', e.drag.transform)
 }
 
-const onDragStart = (e: any) => {
+const onDragStart = (e: OnDragStart) => {
   console.log('onDragStart ', e)
 }
 
-const onDragEnd = (e: any) => {
+const onDragEnd = (e: OnDragEnd) => {
   console.log('onDragEnd', e)
   // 获取target中el的id
   // const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
@@ -157,10 +164,11 @@ const onResize = (e: OnResize) => {
   updateTransform(e, e.drag.transform, e.width, e.height)
 }
 
-const onResizeEnd = (e: any) => {
+const onResizeEnd = (e: OnResizeEnd) => {
   console.log('onResizeEnd', e)
+  return null
 }
-const onRotateEnd = (e: any) => {
+const onRotateEnd = (e: OnRotateEnd) => {
   console.log('onRotateEnd', e)
 }
 

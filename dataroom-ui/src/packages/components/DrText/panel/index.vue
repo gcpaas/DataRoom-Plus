@@ -12,9 +12,7 @@ import { computed } from 'vue'
 const { chart } = defineProps<{
   chart: DrTextConfig
 }>()
-const chartConfig: DrTextConfig = computed(():DrTextConfig => {
-  return chart
-})
+const chartConfig = computed(() => chart)
 </script>
 <template>
   <div>
