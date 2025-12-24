@@ -1,5 +1,4 @@
 import type { BasicConfig } from '@/packages/components/type/define.ts'
-import { type ElementType } from 'selecto/src/types.ts'
 
 /**
  * 根据图表HTML对象获取对应的图表配置
@@ -7,7 +6,7 @@ import { type ElementType } from 'selecto/src/types.ts'
  * @param chartList
  */
 export const getChartById = (
-  e: ElementType,
+  e: HTMLElement | SVGElement,
   chartList: BasicConfig<unknown>[],
 ): BasicConfig<unknown> => {
   const dataDrId: string | null = e.getAttribute('data-dr-id')

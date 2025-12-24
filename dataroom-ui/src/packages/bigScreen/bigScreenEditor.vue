@@ -14,7 +14,8 @@ import Moveable, {
   type OnRotateEnd,
   type OnResize,
   type OnResizeEnd,
-  type OnDragStart, type OnEvent
+  type OnDragStart,
+  type OnEvent,
 } from 'vue3-moveable'
 import { VueSelecto } from 'vue3-selecto'
 import {
@@ -192,7 +193,7 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
 
 const canvasContainer = document.getElementById('canvas-main')
 const activeChart = ref<BasicConfig<unknown>>()
-const onSelectEnd = (e: any) => {
+const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
   console.log('选中', e)
   //   let elementsByClassName = document.getElementsByClassName('chart-wrapper')
   //   target.value = elementsByClassName
