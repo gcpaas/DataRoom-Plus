@@ -54,7 +54,7 @@ npm run lint
 
 ## 参考
 * [拖拽工具](https://atlassian.design/components/pragmatic-drag-and-drop/examples/)
-* 
+* [vue-grid-layout-v3](https://merfais.github.io/vue-grid-layout-v3/guide/)
 
 
 ```shell
