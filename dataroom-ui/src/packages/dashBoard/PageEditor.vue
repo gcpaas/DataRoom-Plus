@@ -9,7 +9,6 @@ import {
   type Component,
   computed,
   defineAsyncComponent,
-  reactive,
   ref,
   shallowRef,
   provide,
@@ -19,7 +18,7 @@ import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/dashBoard/utils.ts'
 
 const activeChart = ref<BasicConfig<unknown>>()
-const chartList: BasicConfig<unknown>[] = reactive([])
+const chartList = ref<BasicConfig<unknown>[]>([])
 const layout = [
   { x: 0, y: 0, w: 2, h: 2, i: '0' },
   { x: 2, y: 0, w: 2, h: 4, i: '1' },
@@ -34,7 +33,7 @@ layout.forEach((item) => {
   inst.y = item.y
   inst.w = item.w
   inst.h = item.h
-  chartList.push(inst)
+  chartList.value.push(inst)
 })
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
@@ -45,7 +44,7 @@ const addChart = (type: string) => {
   chartInst.i = (chartIndex.value++)+''
   chartInst.id = chartInst.i
   console.log('新增组件', chartInst)
-  chartList.push(chartInst)
+  chartList.value.push(chartInst)
 }
 /**
  * 子组件注入使用
@@ -146,7 +145,7 @@ const onResized = (i: string, newH: number, newW: number, newHPx: string, newWPx
   console.log(
     'onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
   )
-  const chart: BasicConfig<unknown> = getChartById(i, chartList)
+  const chart: BasicConfig<unknown> = getChartById(i, chartList.value)
   chart.w = newW
   chart.h = newH
 }
@@ -157,7 +156,7 @@ const onMove = (i: string, newX: number, newY: number) => {
 
 const onMoved = (i: string, newX: number, newY: number) => {
   console.log('onMoved i=' + i + ', X=' + newX + ', Y=' + newY)
-  const chart: BasicConfig<unknown> = getChartById(i, chartList)
+  const chart: BasicConfig<unknown> = getChartById(i, chartList.value)
   chart.x = newX
   chart.y = newY
 }
@@ -211,7 +210,6 @@ const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: 
       </div>
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
-          {{chartList}}
           <GridLayout
             v-model:layout="chartList"
             :col-num="12"
