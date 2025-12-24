@@ -10,8 +10,18 @@ const router = createRouter({
     },
     {
       path: '/',
+      name: 'home',
+      component: () => import('@/packages/dashBoard/PageEditor.vue'),
+    },
+    {
+      path: '/bigScreenEditor',
       name: 'bigScreenEditor',
       component: () => import('@/packages/bigScreen/PageEditor.vue'),
+    },
+    {
+      path: '/dashBoardEditor',
+      name: 'dashBoardEditor',
+      component: () => import('@/packages/dashBoard/PageEditor.vue'),
     },
   ],
 })
