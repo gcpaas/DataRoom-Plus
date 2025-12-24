@@ -4,14 +4,9 @@ const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
       path: '/',
       name: 'home',
-      component: () => import('@/packages/dashBoard/PageEditor.vue'),
+      redirect: '/pagePreviewer'
     },
     {
       path: '/bigScreenEditor',
@@ -19,9 +14,14 @@ const router = createRouter({
       component: () => import('@/packages/bigScreen/PageEditor.vue'),
     },
     {
-      path: '/dashBoardEditor',
-      name: 'dashBoardEditor',
-      component: () => import('@/packages/dashBoard/PageEditor.vue'),
+      path: '/pageDesigner',
+      name: 'pageDesigner',
+      component: () => import('@/packages/PageDesigner/PageDesigner.vue'),
+    },
+    {
+      path: '/pagePreviewer',
+      name: 'pagePreviewer',
+      component: () => import('@/packages/PageDesigner/preview/PagePreviewer.vue'),
     },
   ],
 })

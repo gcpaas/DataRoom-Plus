@@ -15,7 +15,7 @@ import {
 } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
-import { getChartById } from '@/packages/dashBoard/utils.ts'
+import { getChartById } from '@/packages/PageDesigner/utils.ts'
 
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
@@ -166,6 +166,11 @@ const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: 
     'onContainerResized H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
   )
 }
+
+const onChartClick = (chart: BasicConfig<unknown>) => {
+  console.log('onChartClick', chart)
+  activeChart.value = chart
+}
 </script>
 
 <template>
@@ -233,6 +238,7 @@ const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: 
               @resized="onResized"
               @container-resized="onContainerResized"
               @moved="onMoved"
+              @click="onChartClick(item)"
             >
               <div
                 class="chart-wrapper"
