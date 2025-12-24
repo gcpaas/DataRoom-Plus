@@ -24,6 +24,7 @@ export type RemoteComponentConfig = BasicConfig<RemoteComponentProps>
 const getInstance = (): RemoteComponentConfig => {
   const config: RemoteComponentConfig = {
     id: Math.random().toString(),
+    i: Math.random().toString(),
     type: 'RemoteComponent',
     w: 100,
     h: 100,
