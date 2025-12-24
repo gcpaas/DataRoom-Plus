@@ -24,6 +24,7 @@ export type DrTextConfig = BasicConfig<DrTextProps>
 const getInstance = (): DrTextConfig => {
   const config: DrTextConfig = {
     id: Math.random().toString(),
+    i: Math.random().toString(),
     type: 'DrText',
     w: 150,
     h: 100,

@@ -22,6 +22,7 @@ export class ChartDefine {
 export interface BasicConfig<T> {
   // 唯一表示
   id: string
+  i: string
   // 组件类型
   type: string
   // 宽度

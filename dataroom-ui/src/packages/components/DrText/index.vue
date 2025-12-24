@@ -15,7 +15,7 @@ const { chart } = defineProps<{
 </script>
 
 <template>
-  <div class="dr-text">{{ chart.props.text }}</div>
+  <div class="dr-text">{{ chart.props.text }}{{chart.id}}</div>
 </template>
 
 <style scoped>

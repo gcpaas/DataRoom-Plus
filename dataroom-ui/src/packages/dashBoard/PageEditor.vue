@@ -4,20 +4,7 @@ import {
   getComponentInstance,
   getPanelComponent,
 } from '@DrPackage/components/install.ts'
-import { type ComputedRef, type CSSProperties } from 'vue'
-import { debounce } from 'lodash'
-import Moveable, {
-  type OnClick,
-  type OnDrag,
-  type OnDragEnd,
-  type OnRotate,
-  type OnRotateEnd,
-  type OnResize,
-  type OnResizeEnd,
-  type OnDragStart,
-  type OnEvent,
-} from 'vue3-moveable'
-import { VueSelecto } from 'vue3-selecto'
+import { type CSSProperties } from 'vue'
 import {
   type Component,
   computed,
@@ -27,26 +14,37 @@ import {
   shallowRef,
   provide,
 } from 'vue'
+import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
-import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
-import VanillaSelecto from 'selecto'
+import { getChartById } from '@/packages/dashBoard/utils.ts'
 
-const canvasContainer = document.getElementById('canvas-main')
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList: BasicConfig<unknown>[] = reactive([])
-/**
- * 被框选中的组件、可以进行拖拽、旋转、缩放
- */
-const moveableTargets: ComputedRef<(HTMLElement | null)[]> = computed(() => {
-  if (!activeChart.value) {
-    return []
-  }
-  const dom = document.getElementById(activeChart.value.id)
-  return [dom]
+const layout = [
+  { x: 0, y: 0, w: 2, h: 2, i: '0' },
+  { x: 2, y: 0, w: 2, h: 4, i: '1' },
+  { x: 4, y: 0, w: 2, h: 5, i: '2' },
+]
+const chartIndex = ref(3)
+layout.forEach((item) => {
+  const inst: BasicConfig<unknown> = getComponentInstance('DrText')
+  inst.id = item.i
+  inst.i = item.i
+  inst.x = item.x
+  inst.y = item.y
+  inst.w = item.w
+  inst.h = item.h
+  chartList.push(inst)
 })
-
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
+  chartInst.w = 3
+  chartInst.h = 3
+  chartInst.x = 0
+  chartInst.y = 0
+  chartInst.i = (chartIndex.value++)+''
+  chartInst.id = chartInst.i
+  console.log('新增组件', chartInst)
   chartList.push(chartInst)
 }
 /**
@@ -132,133 +130,42 @@ const onActiveLeftToolBar = (name: string) => {
   }
 }
 /**
- * 单击组件
- * @param e
- */
-const onChartClick = (e: OnClick) => {
-  console.log('onChartClick', e)
-}
-/**
- * 拖拽组件开始
- * @param e
- */
-const onDragStart = (e: OnDragStart) => {
-  console.log('onDragStart ', e)
-}
-
-/**
- * 拖拽组件中
- * @param e
- */
-const onDrag = (e: OnDrag) => {
-  // console.log('onDrag', e)
-  e.target.style.transform = e.transform
-  updateTransform(e, e.transform, e.width, e.height)
-}
-/**
- * 拖拽组件结束
- * @param e
- */
-const onDragEnd = (e: OnDragEnd) => {
-  console.log('onDragEnd', e)
-}
-
-const _updateTransform = (e: OnEvent, transform: string, width: number, height: number) => {
-  console.log('updateTransform', width)
-  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
-  const { x, y, rotateX, rotateY, rotateZ } = extractPositionFromTransform(transform)
-  chart.x = x
-  chart.y = y
-  chart.w = width
-  chart.h = height
-  chart.rotateX = rotateX
-  chart.rotateY = rotateY
-  chart.rotateZ = rotateZ
-}
-const updateTransform = debounce((e: OnEvent, transform: string, width: number, height: number) => {
-  _updateTransform(e, transform, width, height)
-}, 100)
-/**
- * 缩放组件中
- * @param e
- */
-const onResize = (e: OnResize) => {
-  e.target.style.width = `${e.width}px`
-  e.target.style.height = `${e.height}px`
-  e.target.style.transform = e.drag.transform
-  updateTransform(e, e.drag.transform, e.width, e.height)
-}
-/**
- * 缩放组件结束
- * @param e
- */
-const onResizeEnd = (e: OnResizeEnd) => {
-  console.log('onResizeEnd', e)
-  return null
-}
-/**
- * 旋转组件中
- * @param e
- */
-const onRotate = (e: OnRotate) => {
-  console.log('onRotate', e.drag.transform)
-  e.target.style.transform = e.drag.transform
-}
-
-/**
- * 旋转组件结束
- * @param e
- */
-const onRotateEnd = (e: OnRotateEnd) => {
-  console.log('onRotateEnd', e)
-  const width: number = parseInt(e.target.style.width.replace('px', ''))
-  const height: number = parseInt(e.target.style.height.replace('px', ''))
-  updateTransform(e, e.target.style.transform, width, height)
-}
-/**
- * 框选开始
- * @param e
- */
-const onSelectDragStart = (e: import('selecto').OnDragStart<VanillaSelecto>) => {
-  console.log('onSelectorDragStart ', e)
-}
-/**
- * 框选结束
- * @param e
- */
-const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
-  console.log('onSelectEnd', e)
-  if (e.selected.length <= 0) {
-    activeChart.value = undefined
-    return
-  }
-  const target = e.selected[0]
-  if (target) {
-    const active = getChartById(target, chartList)
-    activeChart.value = active
-  }
-}
-/**
  * 计算组件坐标样式
  * @param chart
  */
 const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
-  let transform = `translate(${chart.x}px,${chart.y}px)`
-  if (chart.rotateX) {
-    transform += ` rotateX(${chart.rotateX}deg)`
-  }
-  if (chart.rotateY) {
-    transform += ` rotateY(${chart.rotateY}deg)`
-  }
-  if (chart.rotateZ) {
-    transform += ` rotateZ(${chart.rotateZ}deg)`
-  }
-  return {
-    position: 'absolute',
-    transform: transform,
-    width: `${chart.w}px`,
-    height: `${chart.h}px`,
-  }
+  return {}
+}
+
+const onResize = (i: string, newH: string, newW: string, newHPx: string, newWPx: string) => {
+  console.log(
+    'onResize i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
+  )
+}
+const onResized = (i: string, newH: number, newW: number, newHPx: string, newWPx: string) => {
+  console.log(
+    'onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
+  )
+  const chart: BasicConfig<unknown> = getChartById(i, chartList)
+  chart.w = newW
+  chart.h = newH
+}
+
+const onMove = (i: string, newX: number, newY: number) => {
+  console.log('onMove i=' + i + ', X=' + newX + ', Y=' + newY)
+}
+
+const onMoved = (i: string, newX: number, newY: number) => {
+  console.log('onMoved i=' + i + ', X=' + newX + ', Y=' + newY)
+  const chart: BasicConfig<unknown> = getChartById(i, chartList)
+  chart.x = newX
+  chart.y = newY
+}
+
+const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: string) => {
+  console.log(
+    'onContainerResized H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
+  )
 }
 </script>
 
@@ -304,63 +211,42 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
       </div>
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
-          <div
-            class="chart-wrapper"
-            v-for="item in chartList"
-            :key="item.id"
-            :id="item.id"
-            :data-dr-id="item.id"
-            :style="computedChartStyle(item)"
+          {{chartList}}
+          <GridLayout
+            v-model:layout="chartList"
+            :col-num="12"
+            :row-height="30"
+            :is-draggable="true"
+            :is-resizable="true"
+            :vertical-compact="true"
+            :use-css-transforms="true"
           >
-            <component :is="getComponent(item.type)" :chart="item"></component>
-          </div>
-          <Moveable
-            ref="moveableRef"
-            :draggable="true"
-            :rotatable="true"
-            :resizable="true"
-            :target="moveableTargets"
-            :snappable="true"
-            :bounds="{ left: 0, top: 0, right: 0, bottom: 0, position: 'css' }"
-            :snap-directions="{
-              top: true,
-              left: true,
-              bottom: true,
-              right: true,
-              center: true,
-              middle: true,
-            }"
-            :element-snap-directions="{
-              top: true,
-              left: true,
-              bottom: true,
-              right: true,
-              center: true,
-              middle: true,
-            }"
-            :max-snap-element-guideline-distance="70"
-            :render-directions="['nw', 'ne', 'sw', 'se', 'n', 's', 'e', 'w']"
-            @click="onChartClick"
-            @drag="onDrag"
-            @resize="onResize"
-            @rotate="onRotate"
-            @dragStart="onDragStart"
-            @dragEnd="onDragEnd"
-            @resizeEnd="onResizeEnd"
-            @rotateEnd="onRotateEnd"
-          />
-          <VueSelecto
-            :container="canvasContainer"
-            :selectableTargets="['.chart-wrapper']"
-            :selectByClick="true"
-            :selectFromInside="false"
-            :continueSelect="false"
-            :toggleContinueSelect="'shift'"
-            :hitRate="100"
-            :ratio="0"
-            @dragStart="onSelectDragStart"
-            @selectEnd="onSelectEnd"
-          />
+            <GridItem
+              v-for="(item, index) in chartList"
+              :key="index"
+              :static="false"
+              :x="item.x"
+              :y="item.y"
+              :w="item.w"
+              :h="item.h"
+              :i="item.id"
+              @resize="onResize"
+              @move="onMove"
+              @resized="onResized"
+              @container-resized="onContainerResized"
+              @moved="onMoved"
+            >
+              <div
+                class="chart-wrapper"
+                :key="item.id"
+                :id="item.id"
+                :data-dr-id="item.id"
+                :style="computedChartStyle(item)"
+              >
+                <component :is="getComponent(item.type)" :chart="item"></component>
+              </div>
+            </GridItem>
+          </GridLayout>
         </div>
         <div class="footer">底部工具</div>
       </div>
@@ -430,11 +316,15 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
 
     & .canvas {
       display: grid;
-      background-color: #e6e6e6;
+      background-color: #f5f7fa;
       grid-template-rows: auto 40px;
 
       & .canvas-main {
-        position: relative;
+        & .chart-wrapper {
+          background-color: white;
+          height: 100%;
+          width: 100%;
+        }
       }
 
       & .footer {
