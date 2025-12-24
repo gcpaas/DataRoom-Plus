@@ -4,7 +4,7 @@ import {
   getComponentInstance,
   getPanelComponent,
 } from '@DrPackage/components/install.ts'
-import { type ComponentInternalInstance, type CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 import { debounce } from 'lodash'
 import Moveable, {
   type OnClick,
@@ -13,7 +13,8 @@ import Moveable, {
   type OnRotate,
   type OnRotateEnd,
   type OnResize,
-  type OnResizeEnd, type OnDragStart
+  type OnResizeEnd,
+  type OnDragStart, type OnEvent
 } from 'vue3-moveable'
 import { VueSelecto } from 'vue3-selecto'
 import {
@@ -36,10 +37,8 @@ const addChart = (type: string) => {
   chartList.push(chartInst)
 }
 
-const chartInstList: ComponentInternalInstance = []
 provide('canvasInst', {
   addChart: addChart,
-  chartInstList: chartInstList,
 })
 
 const ComponentLib = defineAsyncComponent(() => import('./ComponentLib.vue'))
@@ -132,7 +131,7 @@ const onDragStart = (e: OnDragStart) => {
   console.log('onDragStart ', e)
 }
 
-const onSelectorDragStart = (e: import("selecto").OnDragStart<VanillaSelecto>) => {
+const onSelectorDragStart = (e: import('selecto').OnDragStart<VanillaSelecto>) => {
   console.log('onDragStart ', e)
 }
 
@@ -146,7 +145,7 @@ const onDragEnd = (e: OnDragEnd) => {
   // chart.y = y
 }
 
-const _updateTransform = (e: OnResize, transform: string, width: number, height: number) => {
+const _updateTransform = (e: OnEvent, transform: string, width: number, height: number) => {
   console.log(e)
   const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
   const { x, y } = extractPositionFromTransform(transform)
@@ -155,12 +154,9 @@ const _updateTransform = (e: OnResize, transform: string, width: number, height:
   chart.w = width
   chart.h = height
 }
-const updateTransform = debounce(
-  (e: OnResize, transform: string, width: number, height: number) => {
-    _updateTransform(e, transform, width, height)
-  },
-  500,
-)
+const updateTransform = debounce((e: OnEvent, transform: string, width: number, height: number) => {
+  _updateTransform(e, transform, width, height)
+}, 500)
 
 const onResize = (e: OnResize) => {
   e.target.style.width = `${e.width}px`
