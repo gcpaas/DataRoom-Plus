@@ -4,7 +4,7 @@ import {
   getComponentInstance,
   getPanelComponent,
 } from '@DrPackage/components/install.ts'
-import { type CSSProperties } from 'vue'
+import { type ComputedRef, type CSSProperties } from 'vue'
 import { debounce } from 'lodash'
 import Moveable, {
   type OnClick,
@@ -174,11 +174,11 @@ const onRotateEnd = (e: OnRotateEnd) => {
   console.log('onRotateEnd', e)
 }
 
-const target: [] = computed(() => {
+const target: ComputedRef<(HTMLElement | null)[]> = computed(() => {
   if (!activeChart.value) {
     return []
   }
-  let dom = document.getElementById(activeChart.value.id)
+  const dom = document.getElementById(activeChart.value.id)
   return [dom]
 })
 
