@@ -201,9 +201,10 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
     return
   }
   const target = e.selected[0]
-  const active = getChartById(target, chartList)
-  activeChart.value = active
-  console.log(activeChart)
+  if (target) {
+    const active = getChartById(target, chartList)
+    activeChart.value = active
+  }
 }
 </script>
 
