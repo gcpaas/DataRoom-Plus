@@ -12,13 +12,22 @@ const searchName = ref('')
 const selectedTag = ref<string[]>([])
 const resourceLibList = ref<ResourceLibType[]>([])
 const resourceLibTagList = ref<ResourceLibTagType[]>([])
+
+for (let i = 0; i < 40; i++) {
+  resourceLibList.value.push({
+    name: '图片' + i,
+    type: 'image',
+    url: 'https://picsum.photos/200/300?random=' + i,
+  })
+}
+
 /**
  * 添加组件到画布
  * @param type
  */
 const addChart = (item: ResourceLibType) => {
   console.log(item)
-  canvasInst.addChart('image')
+  canvasInst.addChart('DrImage')
 }
 
 const onSelected = (item: ResourceLibTagType) => {
@@ -30,7 +39,7 @@ const onClose = () => {
 }
 </script>
 <template>
-  <el-dialog v-model="resourceLibVisible" title="素材库" width="60%">
+  <el-dialog v-model="resourceLibVisible" title="素材库" width="80%">
     <div class="resource-lib-wrapper">
       <div class="search">
         <el-input v-model="searchName" :suffix-icon="Search" size="large"></el-input>
@@ -38,12 +47,14 @@ const onClose = () => {
       <div class="tag-wrapper">
         <span :class="{ tag: true, active: selectedTag.includes(item.code) }" v-for="item in resourceLibTagList" :key="item.code" @click="onSelected(item)">{{ item.name }}</span>
       </div>
-      <div class="resource-card">
-        <div class="card" v-for="item in resourceLibList" :key="item.name" @click="addChart(item)">
-          <div class="image"><img :src="item.url" /></div>
-          <div class="desc">{{ item.name }}</div>
+      <el-scrollbar>
+        <div class="resource-card">
+          <div class="card" v-for="item in resourceLibList" :key="item.name" @click="addChart(item)">
+            <div class="image"><img :src="item.url" /></div>
+            <div class="desc">{{ item.name }}</div>
+          </div>
         </div>
-      </div>
+      </el-scrollbar>
     </div>
     <template #footer>
       <el-button @click="onClose">取消</el-button>
@@ -86,9 +97,10 @@ const onClose = () => {
   & .resource-card {
     display: grid;
     grid-template-columns: repeat(auto-fit, 240px);
+    justify-content: center;
     gap: 16px;
     margin: 16px 0;
-
+    height: 500px;
     & .card {
       background-color: var(--dr-bg2);
       height: 200px;
@@ -108,8 +120,9 @@ const onClose = () => {
       }
 
       & img {
-        width: 100%;
-        height: 100%;
+        width: 95%;
+        height: 95%;
+        object-fit: contain;
       }
 
       & .desc {

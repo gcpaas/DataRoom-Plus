@@ -109,6 +109,7 @@ const onClose = () => {
   & .component-card {
     display: grid;
     grid-template-columns: repeat(auto-fit, 240px);
+    justify-content: center;
     gap: 16px;
     margin: 16px 0;
 
@@ -131,8 +132,9 @@ const onClose = () => {
       }
 
       & img {
-        width: 100%;
-        height: 100%;
+        width: 95%;
+        height: 95%;
+        object-fit: contain;
       }
 
       & .desc {
