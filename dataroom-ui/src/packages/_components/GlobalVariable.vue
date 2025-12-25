@@ -5,13 +5,14 @@ import type { CanvasInst, GlobalVariable } from '@/packages/_type/type.ts'
 import { DrConst } from '@/packages/_constant/constant.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { Search } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
 const globalVariableVisible = ref(true)
 const globalVariableList = ref<GlobalVariable[]>([])
 const activeGlobalVariable = ref<GlobalVariable>()
-for (let i = 0; i < 40; i++) {
+for (let i = 0; i < 10; i++) {
   globalVariableList.value.push({
     id: uuidv4(),
     from: 'static',
@@ -44,6 +45,25 @@ const onAdd = () => {
   globalVariableList.value.push(inst)
   activeGlobalVariable.value = inst
 }
+
+const onDelete = (variable: GlobalVariable) => {
+  ElMessageBox.confirm(`确定删除${variable.name}变量吗?`, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    // 根据id判断用filter过滤
+    globalVariableList.value = globalVariableList.value.filter((item) => item.id !== variable.id)
+    if (globalVariableList.value.length == 0) {
+      activeGlobalVariable.value = undefined
+      return
+    }
+    if (activeGlobalVariable.value?.id === variable.id) {
+      // 获取第一个
+      activeGlobalVariable.value = globalVariableList.value[0]
+    }
+  })
+}
 </script>
 <template>
   <el-dialog v-model="globalVariableVisible" title="全局变量" width="80%">
@@ -57,6 +77,7 @@ const onAdd = () => {
           <div :class="{ variable: true, active: item.id === activeGlobalVariable?.id }" v-for="item in globalVariableList" :key="item.id" @click="activeGlobalVariable = item">
             <div class="name">{{ item.name }}</div>
             <div class="remark">{{ item.remark }}</div>
+            <span class="delete" @click.stop="onDelete(item)">删除</span>
           </div>
         </el-scrollbar>
       </div>
@@ -111,6 +132,7 @@ const onAdd = () => {
     & .variable {
       margin: 8px 0;
       padding: 8px;
+      position: relative;
 
       & .name {
         font-size: 14px;
@@ -122,6 +144,13 @@ const onAdd = () => {
         font-size: 14px;
         color: #999;
         margin-top: 8px;
+      }
+
+      & .delete {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        color: var(--el-color-danger);
       }
 
       &:hover {
