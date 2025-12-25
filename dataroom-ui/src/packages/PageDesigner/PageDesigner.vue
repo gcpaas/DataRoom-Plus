@@ -5,10 +5,10 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
-import type { CanvasInst, LeftToolBar } from '@/packages/_components/type.ts'
+import type { CanvasInst, LeftToolBar } from '@/packages/_type/type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { DrConst } from '@/packages/_components/constant.ts'
+import { DrConst } from '@/packages/_constant/constant.ts'
 
 const router = useRouter()
 const activeChart = ref<BasicConfig<unknown>>()
@@ -27,13 +27,7 @@ layout.forEach((item) => {
   inst.y = item.y
   inst.w = item.w
   inst.h = item.h
-  // 循环添加
-  for (let i = 0; i < 20; i++) {
-    const instCopy: BasicConfig<unknown> = JSON.parse(JSON.stringify(inst))
-    instCopy.id = (chartIndex.value++).toString()
-    instCopy.i = (chartIndex.value++).toString()
-    chartList.value.push(instCopy)
-  }
+  chartList.value.push(inst)
 })
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
@@ -45,22 +39,11 @@ const addChart = (type: string) => {
   chartInst.id = chartInst.i
   chartList.value.push(chartInst)
 }
-/**
- * 子组件注入使用
- */
-const canvasInst = reactive<CanvasInst>({
-  addChart: addChart,
-  chartList: chartList,
-  activeChartById: (id: string) => {
-    const chart: BasicConfig<unknown> = getChartById(id, chartList.value)
-    activeChart.value = chart
-  },
-})
-provide(DrConst.CANVAS_INST, canvasInst)
-
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
-const ControlPanel = defineAsyncComponent(() => import('@/packages/_components/ControlPanel.vue'))
+// 记录右侧控制面板是否为页面配置
+const rightControlPanelSetting = ref(true)
+const ControlPanel = defineAsyncComponent(() => import('@/packages/PageDesigner/ControlPanel.vue'))
 const ComponentLib = defineAsyncComponent(() => import('@/packages/_components/ComponentLib.vue'))
 const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components/ComponentLayer.vue'))
 const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
@@ -94,6 +77,24 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
 ])
 // @ts-expect-error ignore
 const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[1])
+/**
+ * 激活组件
+ * @param id
+ */
+const activeChartById = (id: string) => {
+  const chart: BasicConfig<unknown> = getChartById(id, chartList.value)
+  activeChart.value = chart
+  rightControlPanelSetting.value = false
+}
+/**
+ * 子组件注入使用
+ */
+const canvasInst = reactive<CanvasInst>({
+  addChart: addChart,
+  chartList: chartList,
+  activeChartById: activeChartById,
+})
+provide(DrConst.CANVAS_INST, canvasInst)
 
 // 核心：使用计算属性生成main区域的样式对象
 const mainStyle = computed(() => {
@@ -144,6 +145,11 @@ const rightControlPanelStyle = computed(() => {
 const switchRightControlPanel = (open: boolean = true) => {
   rightControlPanelShow.value = open
 }
+const switchPageControlPanel = () => {
+  switchRightControlPanel(true)
+  rightControlPanelSetting.value = true
+}
+
 /**
  * 左侧工具面板开关
  * @param open
@@ -210,7 +216,7 @@ const onMoved = (i: string, newX: number, newY: number) => {
  */
 const onChartClick = (chart: BasicConfig<unknown>) => {
   console.log('onChartClick', chart)
-  activeChart.value = chart
+  activeChartById(chart.id)
 }
 /**
  * 页面预览
@@ -242,7 +248,7 @@ const onSave = () => {
     <div class="header" ref="titleRef">
       <div class="title">标题</div>
       <div style="margin-right: 8px">
-        <el-button @click="switchRightControlPanel(!rightControlPanelShow)" size="small">设置</el-button>
+        <el-button @click="switchPageControlPanel" size="small">设置</el-button>
         <el-button @click="onPreview" size="small">预览</el-button>
         <el-button @click="onSave" size="small">保存</el-button>
       </div>
@@ -309,7 +315,10 @@ const onSave = () => {
         </div>
       </div>
       <div class="right-panel" :style="rightControlPanelStyle">
-        <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
+        <el-scrollbar>
+          <component :is="ControlPanel" v-if="rightControlPanelSetting"></component>
+          <component v-else :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
+        </el-scrollbar>
       </div>
       <el-icon class="right-panel-tool-anchor" @click="switchRightControlPanel(!rightControlPanelShow)" :style="computedToolAnchorStyle">
         <ArrowRight v-if="rightControlPanelShow" />
@@ -387,6 +396,7 @@ const onSave = () => {
       grid-template-rows: 40px auto;
       height: calc(100vh - var(--dr-designer-left-tool-panel-header-height));
       border-right: 1px solid var(--dr-border);
+
       & .panel-header {
         background-color: #fcfcfc;
         box-sizing: border-box;
@@ -439,6 +449,7 @@ const onSave = () => {
     & .right-panel {
       background-color: white;
       border-left: 1px solid var(--dr-border);
+      height: calc(100vh - var(--dr-designer-header-height));
     }
   }
 
