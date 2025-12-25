@@ -10,6 +10,7 @@ import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
 import type { LeftToolBar } from '@/packages/VisualScreenDesigner/type.ts'
+
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
 const layout = [
@@ -209,8 +210,12 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 <template>
   <div class="dr-page-designer">
     <div class="header" ref="titleRef">
-      标题
-      <el-button @click="switchRightControlPanel">配置</el-button>
+      <div class="title">标题</div>
+      <div style="margin-right: 8px">
+        <el-button @click="switchRightControlPanel(!rightControlPanelShow)" size="small">设置</el-button>
+        <el-button @click="switchRightControlPanel" size="small">预览</el-button>
+        <el-button @click="switchRightControlPanel" size="small">保存</el-button>
+      </div>
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
@@ -301,12 +306,21 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
   & .header {
     background-color: var(--dr-prmary);
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & .title {
+      margin-left: 8px;
+    }
   }
 
   & .main {
     background-color: aliceblue;
     display: grid;
-    grid-template-columns: var(--dr-designer-left-tool-bar-width)  var(--dr-designer-left-tool-panel-width) auto var(--dr-designer-right-panel-width);
+    grid-template-columns:
+      var(--dr-designer-left-tool-bar-width) var(--dr-designer-left-tool-panel-width)
+      auto var(--dr-designer-right-panel-width);
 
     & .left-tool-bar {
       background-color: #fcfcfc;
