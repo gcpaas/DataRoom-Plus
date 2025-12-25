@@ -28,7 +28,7 @@ import {
   provide,
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
-import { extractPositionFromTransform, getChartById } from '@/packages/bigScreen/utils.ts'
+import { extractPositionFromTransform, getChartById } from '@/packages/VisualScreenDesigner/utils.ts'
 import VanillaSelecto from 'selecto'
 
 const canvasContainer = document.getElementById('canvas-main')

@@ -4,18 +4,12 @@ import {
   getComponentInstance,
   getPanelComponent,
 } from '@DrPackage/components/install.ts'
-import { type CSSProperties } from 'vue'
-import {
-  type Component,
-  computed,
-  defineAsyncComponent,
-  ref,
-  shallowRef,
-  provide,
-} from 'vue'
+import { type CSSProperties, reactive } from 'vue'
+import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
+import type { LeftToolBar } from '@/packages/VisualScreenDesigner/type.ts'
 
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
@@ -41,7 +35,7 @@ const addChart = (type: string) => {
   chartInst.h = 3
   chartInst.x = 0
   chartInst.y = 0
-  chartInst.i = (chartIndex.value++)+''
+  chartInst.i = chartIndex.value++ + ''
   chartInst.id = chartInst.i
   console.log('新增组件', chartInst)
   chartList.value.push(chartInst)
@@ -64,11 +58,36 @@ const leftToolBarComponent: Record<string, unknown> = {
   GlobalVariable: GlobalVariable,
   ResourceLib: ResourceLib,
 }
+
+const leftToolBarList: Array<LeftToolBar> = reactive([
+  {
+    name: '图层',
+    component: ComponentLayer,
+    componentName: 'ComponentLayer',
+  },
+  {
+    name: '组件库',
+    component: ComponentLib,
+    componentName: 'ComponentLib',
+  },
+  {
+    name: '素材库',
+    component: ResourceLib,
+    componentName: 'ResourceLib',
+  },
+  {
+    name: '全局变量',
+    component: GlobalVariable,
+    componentName: 'GlobalVariable',
+  },
+])
+
 // 当前激活的左侧组件
 const activeLeftToolBarComponent = shallowRef<Component>(ComponentLib)
 const activeLeftToolBarComponentName = ref('ComponentLib')
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
+const activeLeftToolBar = ref<LeftToolBar>(null)
 
 // 核心：使用计算属性生成main区域的样式对象
 const mainStyle = computed(() => {
@@ -121,12 +140,8 @@ const rightControlPanelButton = () => {
   rightControlPanelShow.value = !rightControlPanelShow.value
 }
 
-const onActiveLeftToolBar = (name: string) => {
-  activeLeftToolBarComponentName.value = name
-  const component = leftToolBarComponent[name]
-  if (component) {
-    activeLeftToolBarComponent.value = component
-  }
+const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
+  activeLeftToolBar.value = leftToolBar
 }
 /**
  * 计算组件坐标样式
@@ -174,7 +189,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 </script>
 
 <template>
-  <div class="dr-bs-editor">
+  <div class="dr-page-designer">
     <div class="header" ref="titleRef">
       标题
       <el-button @click="rightControlPanelButton">配置</el-button>
@@ -183,28 +198,12 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
         <div
-          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLayer' }"
-          @click="onActiveLeftToolBar('ComponentLayer')"
+          v-for="item in leftToolBarList"
+          :key="item.name"
+          :class="{ bar: true, active: activeLeftToolBar?.name === item.componentName }"
+          @click="onActiveLeftToolBar(item)"
         >
-          图层
-        </div>
-        <div
-          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ComponentLib' }"
-          @click="onActiveLeftToolBar('ComponentLib')"
-        >
-          组件库
-        </div>
-        <div
-          :class="{ bar: true, active: activeLeftToolBarComponentName === 'ResourceLib' }"
-          @click="onActiveLeftToolBar('ResourceLib')"
-        >
-          素材库
-        </div>
-        <div
-          :class="{ bar: true, active: activeLeftToolBarComponentName === 'GlobalVariable' }"
-          @click="onActiveLeftToolBar('GlobalVariable')"
-        >
-          全局变量
+          {{ item.name }}
         </div>
       </div>
       <div class="left-tool-panel" :style="leftToolPanelStyle">
@@ -215,42 +214,44 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       </div>
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
-          <GridLayout
-            v-model:layout="chartList"
-            :col-num="12"
-            :row-height="30"
-            :is-draggable="true"
-            :is-resizable="true"
-            :vertical-compact="true"
-            :use-css-transforms="true"
-          >
-            <GridItem
-              v-for="(item, index) in chartList"
-              :key="index"
-              :static="false"
-              :x="item.x"
-              :y="item.y"
-              :w="item.w"
-              :h="item.h"
-              :i="item.id"
-              @resize="onResize"
-              @move="onMove"
-              @resized="onResized"
-              @container-resized="onContainerResized"
-              @moved="onMoved"
-              @click="onChartClick(item)"
+          <el-scrollbar>
+            <GridLayout
+              v-model:layout="chartList"
+              :col-num="12"
+              :row-height="30"
+              :is-draggable="true"
+              :is-resizable="true"
+              :vertical-compact="true"
+              :use-css-transforms="true"
             >
-              <div
-                class="chart-wrapper"
-                :key="item.id"
-                :id="item.id"
-                :data-dr-id="item.id"
-                :style="computedChartStyle(item)"
+              <GridItem
+                v-for="(item, index) in chartList"
+                :key="index"
+                :static="false"
+                :x="item.x"
+                :y="item.y"
+                :w="item.w"
+                :h="item.h"
+                :i="item.id"
+                @resize="onResize"
+                @move="onMove"
+                @resized="onResized"
+                @container-resized="onContainerResized"
+                @moved="onMoved"
+                @click="onChartClick(item)"
               >
-                <component :is="getComponent(item.type)" :chart="item"></component>
-              </div>
-            </GridItem>
-          </GridLayout>
+                <div
+                  class="chart-wrapper"
+                  :key="item.id"
+                  :id="item.id"
+                  :data-dr-id="item.id"
+                  :style="computedChartStyle(item)"
+                >
+                  <component :is="getComponent(item.type)" :chart="item"></component>
+                </div>
+              </GridItem>
+            </GridLayout>
+          </el-scrollbar>
         </div>
         <div class="footer">底部工具</div>
       </div>
@@ -262,7 +263,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 </template>
 
 <style scoped lang="scss">
-.dr-bs-editor {
+.dr-page-designer {
   display: grid;
   grid-template-rows: 60px auto;
   height: 100vh; // 设置容器高度为视口高度
@@ -293,8 +294,19 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       }
 
       & .active {
-        background-color: #3478f620;
+        background-color: var(--dr-prmary1);
         color: var(--dr-prmary);
+        position: relative;
+
+        &::before {
+          content: '';
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          position: absolute;
+          background-color: var(--dr-prmary);
+        }
       }
     }
 
@@ -305,11 +317,13 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 
       & .panel-header {
         background-color: #fcfcfc;
+        box-sizing: border-box;
         border-bottom: 1px solid #e8e8e8;
         font-size: 12px;
         line-height: 40px;
+        height: 40px;
         align-self: center;
-        padding-left: 16px;
+        padding-left: 8px;
       }
 
       & .panel-body {
@@ -324,6 +338,11 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       grid-template-rows: auto 40px;
 
       & .canvas-main {
+        // 减去header、footer 高度
+        height: calc(100vh - 40px - 60px);
+        // 使用了el-scroll
+        overflow: hidden;
+
         & .chart-wrapper {
           background-color: white;
           height: 100%;

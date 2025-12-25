@@ -9,9 +9,9 @@ const router = createRouter({
       redirect: '/pagePreviewer'
     },
     {
-      path: '/bigScreenEditor',
-      name: 'bigScreenEditor',
-      component: () => import('@/packages/bigScreen/PageEditor.vue'),
+      path: '/visualScreenDesigner',
+      name: 'visualScreenDesigner',
+      component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
     },
     {
       path: '/pageDesigner',
