@@ -1,4 +1,5 @@
 import DrTextPlugin from '@DrPackage/components/DrText/define.ts'
+import DrEchartsBarPlugin from '@DrPackage/components/DrEchartsBar/define.ts'
 import type { ComponentLibTagType } from '@/packages/_type/type.ts'
 
 enum TypeCode {
@@ -100,5 +101,8 @@ const componentLibTypeList: ComponentLibTagType[] = [
 /**
  * 组件列表
  */
-const componentLibList = [new DrTextPlugin([TypeCode.text]),new DrTextPlugin([TypeCode.text]),new DrTextPlugin([TypeCode.text])]
+const componentLibList = [
+  new DrTextPlugin([TypeCode.text]),
+  new DrEchartsBarPlugin([TypeCode.bar])
+]
 export { componentLibList, componentLibTypeList }
