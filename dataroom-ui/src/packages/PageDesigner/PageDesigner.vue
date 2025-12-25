@@ -37,7 +37,6 @@ const addChart = (type: string) => {
   chartInst.y = 0
   chartInst.i = chartIndex.value++ + ''
   chartInst.id = chartInst.i
-  console.log('新增组件', chartInst)
   chartList.value.push(chartInst)
 }
 /**
@@ -46,48 +45,42 @@ const addChart = (type: string) => {
 provide('canvasInst', {
   addChart: addChart,
 })
+const leftToolPanelShow = ref(true)
+const rightControlPanelShow = ref(true)
 
 const ComponentLib = defineAsyncComponent(() => import('./ComponentLib.vue'))
 const ComponentLayer = defineAsyncComponent(() => import('./ComponentLayer.vue'))
 const GlobalVariable = defineAsyncComponent(() => import('./GlobalVariable.vue'))
 const ResourceLib = defineAsyncComponent(() => import('./ResourceLib.vue'))
-// 映射左侧组件
-const leftToolBarComponent: Record<string, unknown> = {
-  ComponentLib: ComponentLib,
-  ComponentLayer: ComponentLayer,
-  GlobalVariable: GlobalVariable,
-  ResourceLib: ResourceLib,
-}
 
 const leftToolBarList: Array<LeftToolBar> = reactive([
   {
     name: '图层',
-    component: ComponentLayer,
+    desc: '图层',
+    component: shallowRef<Component>(ComponentLayer),
     componentName: 'ComponentLayer',
   },
   {
     name: '组件库',
-    component: ComponentLib,
+    desc: '组件库',
+    component: shallowRef<Component>(ComponentLib),
     componentName: 'ComponentLib',
   },
   {
     name: '素材库',
-    component: ResourceLib,
+    desc: '素材库',
+    component: shallowRef<Component>(ResourceLib),
     componentName: 'ResourceLib',
   },
   {
     name: '全局变量',
-    component: GlobalVariable,
+    desc: '全局变量',
+    component: shallowRef<Component>(GlobalVariable),
     componentName: 'GlobalVariable',
   },
 ])
-
-// 当前激活的左侧组件
-const activeLeftToolBarComponent = shallowRef<Component>(ComponentLib)
-const activeLeftToolBarComponentName = ref('ComponentLib')
-const leftToolPanelShow = ref(true)
-const rightControlPanelShow = ref(true)
-const activeLeftToolBar = ref<LeftToolBar>(null)
+// @ts-expect-error ignore
+const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[1])
 
 // 核心：使用计算属性生成main区域的样式对象
 const mainStyle = computed(() => {
@@ -148,6 +141,10 @@ const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
  * @param chart
  */
 const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
+  // 暂时无用
+  if (chart) {
+    return {}
+  }
   return {}
 }
 
@@ -200,16 +197,16 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
         <div
           v-for="item in leftToolBarList"
           :key="item.name"
-          :class="{ bar: true, active: activeLeftToolBar?.name === item.componentName }"
+          :class="{ bar: true, active: activeLeftToolBar.componentName === item.componentName }"
           @click="onActiveLeftToolBar(item)"
         >
           {{ item.name }}
         </div>
       </div>
       <div class="left-tool-panel" :style="leftToolPanelStyle">
-        <div class="panel-header">图册名称</div>
+        <div class="panel-header">{{ activeLeftToolBar.desc }}</div>
         <div class="panel-body">
-          <component :is="activeLeftToolBarComponent"></component>
+          <component :is="activeLeftToolBar.component"></component>
         </div>
       </div>
       <div class="canvas">
@@ -253,7 +250,6 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
             </GridLayout>
           </el-scrollbar>
         </div>
-        <div class="footer">底部工具</div>
       </div>
       <div class="right-panel" :style="rightControlPanelStyle">
         <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
@@ -335,11 +331,11 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
     & .canvas {
       display: grid;
       background-color: #f5f7fa;
-      grid-template-rows: auto 40px;
+      grid-template-rows: auto;
 
       & .canvas-main {
-        // 减去header、footer 高度
-        height: calc(100vh - 40px - 60px);
+        // 减去header 高度
+        height: calc(100vh - 60px);
         // 使用了el-scroll
         overflow: hidden;
 
@@ -348,10 +344,6 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
           height: 100%;
           width: 100%;
         }
-      }
-
-      & .footer {
-        background-color: #f5f5f5;
       }
     }
 

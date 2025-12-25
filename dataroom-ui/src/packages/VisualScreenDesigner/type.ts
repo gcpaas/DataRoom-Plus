@@ -6,8 +6,13 @@ interface CanvasInst {
 }
 
 interface LeftToolBar{
+  // tab显示名称
   name: string,
+  // 激活工具面板显示名称
+  desc: string,
+  // 激活时工具面板组件
   component: Component,
+  // 组件名
   componentName: string
 }
 

@@ -6,20 +6,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: '/pagePreviewer'
+      redirect: '/dataRoom/pageDesigner'
     },
     {
-      path: '/visualScreenDesigner',
+      path: '/dataRoom/visualScreenDesigner',
       name: 'visualScreenDesigner',
       component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
     },
     {
-      path: '/pageDesigner',
+      path: '/dataRoom/pageDesigner',
       name: 'pageDesigner',
       component: () => import('@/packages/PageDesigner/PageDesigner.vue'),
     },
     {
-      path: '/pagePreviewer',
+      path: '/dataRoom/pagePreviewer',
       name: 'pagePreviewer',
       component: () => import('@/packages/PageDesigner/preview/PagePreviewer.vue'),
     },
