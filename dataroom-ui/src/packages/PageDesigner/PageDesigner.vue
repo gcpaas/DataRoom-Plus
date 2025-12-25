@@ -5,7 +5,7 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
-import type { LeftToolBar } from '@/packages/VisualScreenDesigner/type.ts'
+import type { LeftToolBar } from '@/packages/CommonComponents/type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
@@ -47,10 +47,10 @@ provide('canvasInst', {
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
 
-const ComponentLib = defineAsyncComponent(() => import('./ComponentLib.vue'))
-const ComponentLayer = defineAsyncComponent(() => import('./ComponentLayer.vue'))
-const GlobalVariable = defineAsyncComponent(() => import('./GlobalVariable.vue'))
-const ResourceLib = defineAsyncComponent(() => import('./ResourceLib.vue'))
+const ComponentLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLib.vue'))
+const ComponentLayer = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLayer.vue'))
+const GlobalVariable = defineAsyncComponent(() => import('@/packages/CommonComponents/GlobalVariable.vue'))
+const ResourceLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ResourceLib.vue'))
 
 const leftToolBarList: Array<LeftToolBar> = reactive([
   {

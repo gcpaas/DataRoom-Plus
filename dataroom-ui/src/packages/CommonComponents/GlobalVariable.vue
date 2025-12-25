@@ -1,9 +1,10 @@
+<!-- 全局变量 -->
 <script setup lang="ts">
 
 </script>
 
 <template>
-  <div>图层</div>
+  <div>全局变量</div>
 </template>
 
 <style scoped>

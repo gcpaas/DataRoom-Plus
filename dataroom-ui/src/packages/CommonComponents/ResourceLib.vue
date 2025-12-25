@@ -1,9 +1,10 @@
+<!-- 素材库 -->
 <script setup lang="ts">
 
 </script>
 
 <template>
-  <div>图层</div>
+  <div>资源库</div>
 </template>
 
 <style scoped>

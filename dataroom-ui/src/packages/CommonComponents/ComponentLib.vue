@@ -1,7 +1,8 @@
+<!-- 组件库 -->
 <script setup lang="ts">
 import DrTextPlugin from '@DrPackage/components/DrText/define.ts'
 import { inject } from 'vue'
-import type { CanvasInst } from './type.ts'
+import type { CanvasInst } from '@/packages/CommonComponents/type.ts'
 
 const canvasInst = inject('canvasInst') as CanvasInst
 const plugin = new DrTextPlugin()
