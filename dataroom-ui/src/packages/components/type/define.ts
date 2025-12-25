@@ -8,11 +8,14 @@ export class ChartDefine {
   desc?: string
   // 组件缩略图
   thumbnail: string
+  // 所属标签、用于分类
+  tags: string[]
 
-  constructor(name: string, desc: string, thumbnail: string) {
+  constructor(name: string, desc: string, thumbnail: string, tags: string[]) {
     this.name = name
     this.desc = desc
     this.thumbnail = thumbnail
+    this.tags = tags
   }
 }
 

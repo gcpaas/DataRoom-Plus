@@ -1,7 +1,8 @@
 import { ChartDefine } from '@/packages/components/type/define.ts'
-import thumbnail from './images/text.png';
+import thumbnail from './images/text.png'
+
 export default class DrTextPlugin extends ChartDefine {
-  constructor() {
-    super('DrText', '文本', thumbnail)
+  constructor(tags: string[]) {
+    super('DrText', '文本', thumbnail, tags)
   }
 }

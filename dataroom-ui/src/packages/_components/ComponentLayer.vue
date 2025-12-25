@@ -7,7 +7,6 @@ import type { BasicConfig } from '@/packages/components/type/define.ts'
 import type { TreeInstance } from 'element-plus'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
-console.log('图层', canvasInst.chartList)
 const layerTreeProps = {
   label: 'title',
   children: 'children',
@@ -47,10 +46,14 @@ const onLayerClick = (data: BasicConfig<unknown>) => {
   <div>
     <el-input v-model="layerName" size="small" placeholder="请输入组件标题" />
     <el-tree
+      class="layerTree"
       ref="layerTreeRef"
       :data="chartList"
       :props="layerTreeProps"
+      empty-text="未找到组件"
       node-key="id"
+      :indent="12"
+      highlight-current
       default-expand-all
       :expand-on-click-node="true"
       :filter-node-method="filterLayer"
@@ -59,4 +62,8 @@ const onLayerClick = (data: BasicConfig<unknown>) => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.layerTree {
+  margin-top: 8px;
+}
+</style>

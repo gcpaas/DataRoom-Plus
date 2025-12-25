@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackage/components/install.ts'
-import { type CSSProperties, reactive } from 'vue'
+import { type CSSProperties, nextTick, reactive } from 'vue'
 import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
@@ -13,6 +13,7 @@ import { DrConst } from '@/packages/_constant/constant.ts'
 const router = useRouter()
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
+const componentLibRef = ref(null)
 const layout = [
   { x: 0, y: 0, w: 2, h: 2, i: '0' },
   { x: 2, y: 0, w: 2, h: 4, i: '1' },
@@ -76,7 +77,7 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[1])
+const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[0])
 /**
  * 激活组件
  * @param id
@@ -157,11 +158,28 @@ const switchPageControlPanel = () => {
 const switchLeftToolPanel = (open: boolean = true) => {
   leftToolPanelShow.value = open
 }
+
+const componentLibVisible = ref(false)
+const resourceLibVisible = ref(false)
 /**
  * 左侧工具面版激活
  * @param leftToolBar
  */
 const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
+  if (leftToolBar.componentName == 'ComponentLib') {
+    // 组件库弹框
+    componentLibVisible.value = false
+    nextTick(() => {
+      componentLibVisible.value = true
+    })
+    return
+  } else if (leftToolBar.componentName == 'ResourceLib') {
+    resourceLibVisible.value = false
+    nextTick(() => {
+      resourceLibVisible.value = true
+    })
+    return
+  }
   activeLeftToolBar.value = leftToolBar
   switchLeftToolPanel(true)
 }
@@ -282,15 +300,7 @@ const onSave = () => {
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
           <el-scrollbar>
-            <GridLayout
-              v-model:layout="chartList"
-              :col-num="12"
-              :row-height="30"
-              :is-draggable="true"
-              :is-resizable="true"
-              :vertical-compact="true"
-              :use-css-transforms="true"
-            >
+            <GridLayout v-model:layout="chartList" :col-num="12" :row-height="30" :is-draggable="true" :is-resizable="true" :vertical-compact="true" :use-css-transforms="true">
               <GridItem
                 v-for="(item, index) in chartList"
                 :key="index"
@@ -326,6 +336,8 @@ const onSave = () => {
       </el-icon>
     </div>
   </div>
+  <ComponentLib v-if="componentLibVisible" ref="componentLibRef"></ComponentLib>
+  <ResourceLib v-if="resourceLibVisible" ref="resourceLibRef"></ResourceLib>
 </template>
 
 <style scoped lang="scss">
@@ -422,8 +434,9 @@ const onSave = () => {
       }
 
       & .panel-body {
-        background-color: #f8f8f8;
-        overflow-y: auto;
+        background-color: white;
+        overflow-y: hidden;
+        padding: 8px 4px 16px 4px;
       }
     }
 
