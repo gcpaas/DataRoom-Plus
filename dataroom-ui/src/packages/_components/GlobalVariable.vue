@@ -1,12 +1,115 @@
 <!-- 全局变量 -->
 <script setup lang="ts">
+import { inject, ref } from 'vue'
+import type { CanvasInst, GlobalVariable } from '@/packages/_type/type.ts'
+import { DrConst } from '@/packages/_constant/constant.ts'
+import { v4 as uuidv4 } from 'uuid'
 
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
+
+const globalVariableVisible = ref(true)
+const globalVariableList = ref<GlobalVariable[]>([])
+const activeGlobalVariable = ref<GlobalVariable>()
+for (let i = 0; i < 40; i++) {
+  globalVariableList.value.push({
+    id: uuidv4(),
+    from: 'static',
+    name: 'name' + uuidv4(),
+    urlName: '',
+    remark: '变量备注描述' + uuidv4(),
+    defaultValue: '默认值',
+    script: '',
+  })
+}
+// 默认激活第一个
+if (globalVariableList.value.length > 0) {
+  activeGlobalVariable.value = globalVariableList.value[0]
+}
+const onClose = () => {
+  globalVariableVisible.value = false
+}
 </script>
-
 <template>
-  <div>全局变量</div>
+  <el-dialog v-model="globalVariableVisible" title="全局变量" width="80%">
+    <div class="global-variable-wrapper">
+      <div class="variable-wrapper">
+        <el-scrollbar>
+          <div :class="{ variable: true, active: item.id === activeGlobalVariable?.id }" v-for="item in globalVariableList" :key="item.id" @click="activeGlobalVariable = item">
+            <div class="name">{{ item.name }}</div>
+            <div class="remark">{{ item.remark }}</div>
+          </div>
+        </el-scrollbar>
+      </div>
+      <div class="variable-form-wrapper">
+        <el-form ref="form" :model="activeGlobalVariable" label-width="100px" v-if="activeGlobalVariable">
+          <el-form-item label="变量名称">
+            <el-input v-model="activeGlobalVariable.name"></el-input>
+          </el-form-item>
+          <el-form-item label="来源">
+            <el-select v-model="activeGlobalVariable.from" placeholder="请选择">
+              <el-option label="静态" value="static"></el-option>
+              <el-option label="URL" value="url"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="URL参数名称" v-if="activeGlobalVariable.from === 'url'">
+            <el-input v-model="activeGlobalVariable.urlName"></el-input>
+          </el-form-item>
+          <el-form-item label="默认值">
+            <el-input v-model="activeGlobalVariable.defaultValue"></el-input>
+          </el-form-item>
+          <el-form-item label="脚本">
+            <el-input v-model="activeGlobalVariable.script" type="textarea" :rows="6"></el-input>
+          </el-form-item>
+          <el-form-item label="变量描述">
+            <el-input v-model="activeGlobalVariable.remark" type="textarea"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+    <template #footer>
+      <el-button @click="onClose">取消</el-button>
+      <el-button type="primary" @click="onClose">确定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+.global-variable-wrapper {
+  display: grid;
+  grid-template-columns: 400px auto;
 
+  & .variable-wrapper {
+    height: calc(70vh - 120px);
+
+    & .variable {
+      margin: 8px 0;
+      padding: 8px;
+
+      & .name {
+        font-size: 14px;
+        color: var(--dr-text);
+        font-weight: bold;
+      }
+
+      & .remark {
+        font-size: 14px;
+        color: #999;
+        margin-top: 8px;
+      }
+
+      &:hover {
+        background: var(--dr-prmary1);
+        cursor: pointer;
+      }
+    }
+
+    & .active {
+      background: var(--dr-prmary1);
+    }
+  }
+
+  & .variable-form-wrapper {
+    width: 60%;
+  }
+}
 </style>

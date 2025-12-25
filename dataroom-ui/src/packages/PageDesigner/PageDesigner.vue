@@ -77,7 +77,7 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[0])
+const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[3])
 /**
  * 激活组件
  * @param id
@@ -161,6 +161,7 @@ const switchLeftToolPanel = (open: boolean = true) => {
 
 const componentLibVisible = ref(false)
 const resourceLibVisible = ref(false)
+const globalVariableVisible = ref(false)
 /**
  * 左侧工具面版激活
  * @param leftToolBar
@@ -177,6 +178,12 @@ const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
     resourceLibVisible.value = false
     nextTick(() => {
       resourceLibVisible.value = true
+    })
+    return
+  } else if (leftToolBar.componentName == 'GlobalVariable') {
+    globalVariableVisible.value = false
+    nextTick(() => {
+      globalVariableVisible.value = true
     })
     return
   }
@@ -338,6 +345,7 @@ const onSave = () => {
   </div>
   <ComponentLib v-if="componentLibVisible" ref="componentLibRef"></ComponentLib>
   <ResourceLib v-if="resourceLibVisible" ref="resourceLibRef"></ResourceLib>
+  <GlobalVariable v-if="globalVariableVisible" ref="globalVariableRef"></GlobalVariable>
 </template>
 
 <style scoped lang="scss">

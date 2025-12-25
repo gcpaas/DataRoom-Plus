@@ -61,7 +61,7 @@ interface PageEntity {
   // 基础配置
   pageConfig: PageConfig
   // 全局变量
-  globalVariable: GlobalVariable[]
+  globalVariableList: GlobalVariable[]
   // 图表组件配置
   chartList: Array<BasicConfig<unknown>>
 }
@@ -88,7 +88,7 @@ interface GlobalVariable {
   // 来源
   from: 'static' | 'url'
   // URL 参数名称
-  urlName: string
+  urlName?: string
   // 变量名称
   name: string
   // 描述
@@ -99,4 +99,4 @@ interface GlobalVariable {
   script: string
 }
 
-export type { CanvasInst, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType }
+export type { CanvasInst, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType,GlobalVariable }
