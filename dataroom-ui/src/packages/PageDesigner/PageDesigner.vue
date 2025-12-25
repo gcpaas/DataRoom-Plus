@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import {
-  getComponent,
-  getComponentInstance,
-  getPanelComponent,
-} from '@DrPackage/components/install.ts'
+import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackage/components/install.ts'
 import { type CSSProperties, reactive } from 'vue'
 import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
 import type { LeftToolBar } from '@/packages/VisualScreenDesigner/type.ts'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
+const router = useRouter()
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
 const layout = [
@@ -171,14 +170,10 @@ const computedToolAnchorStyle = computed(() => {
 })
 
 const onResize = (i: string, newH: string, newW: string, newHPx: string, newWPx: string) => {
-  console.log(
-    'onResize i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
-  )
+  console.log('onResize i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
 }
 const onResized = (i: string, newH: number, newW: number, newHPx: string, newWPx: string) => {
-  console.log(
-    'onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
-  )
+  console.log('onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
   const chart: BasicConfig<unknown> = getChartById(i, chartList.value)
   chart.w = newW
   chart.h = newH
@@ -196,14 +191,38 @@ const onMoved = (i: string, newX: number, newY: number) => {
 }
 
 const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: string) => {
-  console.log(
-    'onContainerResized H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx,
-  )
+  console.log('onContainerResized H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
 }
-
+/**
+ * 图表点击
+ * @param chart
+ */
 const onChartClick = (chart: BasicConfig<unknown>) => {
   console.log('onChartClick', chart)
   activeChart.value = chart
+}
+/**
+ * 页面预览
+ */
+const onPreview = () => {
+  console.log('onPreview')
+  localStorage.setItem('chartList', JSON.stringify(chartList.value))
+  // 跳转到 /dataRoom/pagePreviewer 路由
+  const routeData = router.resolve({
+    path: '/dataRoom/pagePreviewer',
+    query: { code: 'test' },
+  })
+  console.log('预览跳转', routeData.href)
+  window.open(routeData.href, '_blank')
+}
+
+const onSave = () => {
+  console.log('onSave')
+  localStorage.setItem('chartList', JSON.stringify(chartList.value))
+  ElMessage({
+    message: '已保存到缓存',
+    type: 'success',
+  })
 }
 </script>
 
@@ -213,18 +232,13 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       <div class="title">标题</div>
       <div style="margin-right: 8px">
         <el-button @click="switchRightControlPanel(!rightControlPanelShow)" size="small">设置</el-button>
-        <el-button @click="switchRightControlPanel" size="small">预览</el-button>
-        <el-button @click="switchRightControlPanel" size="small">保存</el-button>
+        <el-button @click="onPreview" size="small">预览</el-button>
+        <el-button @click="onSave" size="small">保存</el-button>
       </div>
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
-        <div
-          v-for="item in leftToolBarList"
-          :key="item.name"
-          :class="{ bar: true, active: activeLeftToolBar.componentName === item.componentName }"
-          @click="onActiveLeftToolBar(item)"
-        >
+        <div v-for="item in leftToolBarList" :key="item.name" :class="{ bar: true, active: activeLeftToolBar.componentName === item.componentName }" @click="onActiveLeftToolBar(item)">
           {{ item.name }}
         </div>
       </div>
@@ -244,15 +258,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
           <el-scrollbar>
-            <GridLayout
-              v-model:layout="chartList"
-              :col-num="12"
-              :row-height="30"
-              :is-draggable="true"
-              :is-resizable="true"
-              :vertical-compact="true"
-              :use-css-transforms="true"
-            >
+            <GridLayout v-model:layout="chartList" :col-num="12" :row-height="30" :is-draggable="true" :is-resizable="true" :vertical-compact="true" :use-css-transforms="true">
               <GridItem
                 v-for="(item, index) in chartList"
                 :key="index"
@@ -269,13 +275,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
                 @moved="onMoved"
                 @click="onChartClick(item)"
               >
-                <div
-                  class="chart-wrapper"
-                  :key="item.id"
-                  :id="item.id"
-                  :data-dr-id="item.id"
-                  :style="computedChartStyle(item)"
-                >
+                <div class="chart-wrapper" :key="item.id" :id="item.id" :data-dr-id="item.id" :style="computedChartStyle(item)">
                   <component :is="getComponent(item.type)" :chart="item"></component>
                 </div>
               </GridItem>
@@ -286,11 +286,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       <div class="right-panel" :style="rightControlPanelStyle">
         <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
       </div>
-      <el-icon
-        class="right-panel-tool-anchor"
-        @click="switchRightControlPanel(!rightControlPanelShow)"
-        :style="computedToolAnchorStyle"
-      >
+      <el-icon class="right-panel-tool-anchor" @click="switchRightControlPanel(!rightControlPanelShow)" :style="computedToolAnchorStyle">
         <ArrowRight v-if="rightControlPanelShow" />
         <ArrowLeft v-else />
       </el-icon>
@@ -299,6 +295,12 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 </template>
 
 <style scoped lang="scss">
+@use "./assets/index.scss";
+// 拖拽背景样式
+:deep(.vue-grid-item.vue-grid-placeholder) {
+  background: var(--dr-prmary);
+}
+
 .dr-page-designer {
   display: grid;
   grid-template-rows: var(--dr-designer-header-height) auto;
@@ -312,15 +314,14 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 
     & .title {
       margin-left: 8px;
+      font-size: 14px;
     }
   }
 
   & .main {
     background-color: aliceblue;
     display: grid;
-    grid-template-columns:
-      var(--dr-designer-left-tool-bar-width) var(--dr-designer-left-tool-panel-width)
-      auto var(--dr-designer-right-panel-width);
+    grid-template-columns: var(--dr-designer-left-tool-bar-width) var(--dr-designer-left-tool-panel-width) auto var(--dr-designer-right-panel-width);
 
     & .left-tool-bar {
       background-color: #fcfcfc;
@@ -359,7 +360,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       background-color: white;
       display: grid;
       grid-template-rows: 40px auto;
-
+      border-right: 1px solid var(--dr-border);
       & .panel-header {
         background-color: #fcfcfc;
         box-sizing: border-box;

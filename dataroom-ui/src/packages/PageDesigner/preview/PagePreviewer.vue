@@ -1,26 +1,38 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
-import { ref, provide } from 'vue'
+import { ref, provide, onMounted } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '@DrPackage/components/type/define.ts'
 
-const chartList = ref<BasicConfig<unknown>[]>([])
-const layout = [
-  { x: 0, y: 0, w: 2, h: 2, i: '0' },
-  { x: 2, y: 0, w: 2, h: 4, i: '1' },
-  { x: 4, y: 0, w: 2, h: 5, i: '2' },
-]
-const chartIndex = ref(3)
-layout.forEach((item) => {
-  const inst: BasicConfig<unknown> = getComponentInstance('DrText')
-  inst.id = item.i
-  inst.i = item.i
-  inst.x = item.x
-  inst.y = item.y
-  inst.w = item.w
-  inst.h = item.h
-  chartList.value.push(inst)
+let chartList = ref<BasicConfig<unknown>[]>([])
+
+const chartIndex = ref(100)
+
+// 模拟加载
+onMounted(() => {
+  const chartListStr = localStorage.getItem('chartList')
+  if (chartListStr) {
+    const _chartList = JSON.parse(chartListStr)
+    chartList = ref<BasicConfig<unknown>[]>(_chartList)
+  } else {
+    const layout = [
+      { x: 0, y: 0, w: 2, h: 2, i: '0' },
+      { x: 2, y: 0, w: 2, h: 4, i: '1' },
+      { x: 4, y: 0, w: 2, h: 5, i: '2' },
+    ]
+    layout.forEach((item) => {
+      const inst: BasicConfig<unknown> = getComponentInstance('DrText')
+      inst.id = item.i
+      inst.i = item.i
+      inst.x = item.x
+      inst.y = item.y
+      inst.w = item.w
+      inst.h = item.h
+      chartList.value.push(inst)
+    })
+  }
 })
+
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
   chartInst.w = 3
