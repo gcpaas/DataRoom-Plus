@@ -25,6 +25,8 @@ export interface BasicConfig<T> {
   i: string
   // 组件类型
   type: string
+  // 组件显示的名称
+  title: string
   // 宽度
   w: number
   // 高度

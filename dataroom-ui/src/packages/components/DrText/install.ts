@@ -26,6 +26,7 @@ const getInstance = (): DrTextConfig => {
     id: Math.random().toString(),
     i: Math.random().toString(),
     type: 'DrText',
+    title: '文本',
     w: 150,
     h: 100,
     x: Math.random() * 100 + 100,

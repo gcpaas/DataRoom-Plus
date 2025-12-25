@@ -56,10 +56,10 @@ provide('canvasInst', {
   addChart: addChart,
 })
 
-const ComponentLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLib.vue'))
-const ComponentLayer = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLayer.vue'))
-const GlobalVariable = defineAsyncComponent(() => import('@/packages/CommonComponents/GlobalVariable.vue'))
-const ResourceLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ResourceLib.vue'))
+const ComponentLib = defineAsyncComponent(() => import('@/packages/_components/ComponentLib.vue'))
+const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components/ComponentLayer.vue'))
+const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
+const ResourceLib = defineAsyncComponent(() => import('@/packages/_components/ResourceLib.vue'))
 // 映射左侧组件
 const leftToolBarComponent: Record<string, unknown> = {
   ComponentLib: ComponentLib,

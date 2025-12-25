@@ -18,6 +18,9 @@ const chartConfig = computed(() => chart)
   <div>
     {{ chart }}
     <el-form :model="chartConfig" label-width="auto">
+      <el-form-item label="图层名称">
+        <el-input v-model="chartConfig.title" />
+      </el-form-item>
       <el-form-item label="文本内容">
         <el-input v-model="chartConfig.props.text" />
       </el-form-item>

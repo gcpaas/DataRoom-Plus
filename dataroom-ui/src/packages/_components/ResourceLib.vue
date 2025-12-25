@@ -4,7 +4,9 @@
 </script>
 
 <template>
-  <div>资源库</div>
+  <div>
+    <div v-for="i in 100" :key="i">资源库{{i}}</div>
+  </div>
 </template>
 
 <style scoped>

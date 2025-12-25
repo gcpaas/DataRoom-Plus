@@ -5,9 +5,10 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
-import type { LeftToolBar } from '@/packages/CommonComponents/type.ts'
+import type { CanvasInst, LeftToolBar } from '@/packages/_components/type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { DrConst } from '@/packages/_components/constant.ts'
 
 const router = useRouter()
 const activeChart = ref<BasicConfig<unknown>>()
@@ -26,7 +27,13 @@ layout.forEach((item) => {
   inst.y = item.y
   inst.w = item.w
   inst.h = item.h
-  chartList.value.push(inst)
+  // 循环添加
+  for (let i = 0; i < 20; i++) {
+    const instCopy: BasicConfig<unknown> = JSON.parse(JSON.stringify(inst))
+    instCopy.id = (chartIndex.value++).toString()
+    instCopy.i = (chartIndex.value++).toString()
+    chartList.value.push(instCopy)
+  }
 })
 const addChart = (type: string) => {
   const chartInst: BasicConfig<unknown> = getComponentInstance(type)
@@ -41,16 +48,23 @@ const addChart = (type: string) => {
 /**
  * 子组件注入使用
  */
-provide('canvasInst', {
+const canvasInst = reactive<CanvasInst>({
   addChart: addChart,
+  chartList: chartList,
+  activeChartById: (id: string) => {
+    const chart: BasicConfig<unknown> = getChartById(id, chartList.value)
+    activeChart.value = chart
+  },
 })
+provide(DrConst.CANVAS_INST, canvasInst)
+
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
-
-const ComponentLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLib.vue'))
-const ComponentLayer = defineAsyncComponent(() => import('@/packages/CommonComponents/ComponentLayer.vue'))
-const GlobalVariable = defineAsyncComponent(() => import('@/packages/CommonComponents/GlobalVariable.vue'))
-const ResourceLib = defineAsyncComponent(() => import('@/packages/CommonComponents/ResourceLib.vue'))
+const ControlPanel = defineAsyncComponent(() => import('@/packages/_components/ControlPanel.vue'))
+const ComponentLib = defineAsyncComponent(() => import('@/packages/_components/ComponentLib.vue'))
+const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components/ComponentLayer.vue'))
+const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
+const ResourceLib = defineAsyncComponent(() => import('@/packages/_components/ResourceLib.vue'))
 
 const leftToolBarList: Array<LeftToolBar> = reactive([
   {
@@ -190,9 +204,6 @@ const onMoved = (i: string, newX: number, newY: number) => {
   chart.y = newY
 }
 
-const onContainerResized = (newH: string, newW: string, newHPx: string, newWPx: string) => {
-  console.log('onContainerResized H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
-}
 /**
  * 图表点击
  * @param chart
@@ -238,7 +249,12 @@ const onSave = () => {
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
-        <div v-for="item in leftToolBarList" :key="item.name" :class="{ bar: true, active: activeLeftToolBar.componentName === item.componentName }" @click="onActiveLeftToolBar(item)">
+        <div
+          v-for="item in leftToolBarList"
+          :key="item.name"
+          :class="{ bar: true, active: activeLeftToolBar.componentName === item.componentName }"
+          @click="onActiveLeftToolBar(item)"
+        >
           {{ item.name }}
         </div>
       </div>
@@ -252,13 +268,23 @@ const onSave = () => {
           </div>
         </div>
         <div class="panel-body">
-          <component :is="activeLeftToolBar.component"></component>
+          <el-scrollbar>
+            <component :is="activeLeftToolBar.component"></component>
+          </el-scrollbar>
         </div>
       </div>
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
           <el-scrollbar>
-            <GridLayout v-model:layout="chartList" :col-num="12" :row-height="30" :is-draggable="true" :is-resizable="true" :vertical-compact="true" :use-css-transforms="true">
+            <GridLayout
+              v-model:layout="chartList"
+              :col-num="12"
+              :row-height="30"
+              :is-draggable="true"
+              :is-resizable="true"
+              :vertical-compact="true"
+              :use-css-transforms="true"
+            >
               <GridItem
                 v-for="(item, index) in chartList"
                 :key="index"
@@ -271,7 +297,6 @@ const onSave = () => {
                 @resize="onResize"
                 @move="onMove"
                 @resized="onResized"
-                @container-resized="onContainerResized"
                 @moved="onMoved"
                 @click="onChartClick(item)"
               >
@@ -295,7 +320,7 @@ const onSave = () => {
 </template>
 
 <style scoped lang="scss">
-@use "./assets/index.scss";
+@use './assets/index.scss';
 // 拖拽背景样式
 :deep(.vue-grid-item.vue-grid-placeholder) {
   background: var(--dr-prmary);
@@ -360,6 +385,7 @@ const onSave = () => {
       background-color: white;
       display: grid;
       grid-template-rows: 40px auto;
+      height: calc(100vh - var(--dr-designer-left-tool-panel-header-height));
       border-right: 1px solid var(--dr-border);
       & .panel-header {
         background-color: #fcfcfc;

@@ -1,0 +1,62 @@
+<!-- 图层 -->
+<script setup lang="ts">
+import { computed, type ComputedRef, inject, type Ref, ref, watch } from 'vue'
+import type { CanvasInst } from '@/packages/_components/type.ts'
+import { DrConst } from '@/packages/_components/constant.ts'
+import type { BasicConfig } from '@/packages/components/type/define.ts'
+import type { TreeInstance } from 'element-plus'
+
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
+console.log('图层', canvasInst.chartList)
+const layerTreeProps = {
+  label: 'title',
+  children: 'children',
+}
+const chartList: ComputedRef<Ref<Array<BasicConfig<unknown>>>> = computed(() => {
+  return canvasInst.chartList
+})
+
+const layerTreeRef = ref<TreeInstance>()
+const layerName = ref('')
+
+interface Tree {
+  title: string
+}
+
+/**
+ * 根据标题过滤图层
+ * @param value
+ * @param data
+ */
+const filterLayer = (value: string, data: Tree) => {
+  if (!value) return true
+  return data.title.includes(value)
+}
+
+watch(layerName, (val) => {
+  layerTreeRef.value!.filter(val)
+})
+
+const onLayerClick = (data: BasicConfig<unknown>) => {
+  console.log('点击图层', data.id)
+  canvasInst.activeChartById(data.id)
+}
+</script>
+
+<template>
+  <div>
+    <el-input v-model="layerName" size="small" placeholder="请输入组件标题" />
+    <el-tree
+      ref="layerTreeRef"
+      :data="chartList"
+      :props="layerTreeProps"
+      node-key="id"
+      default-expand-all
+      :expand-on-click-node="true"
+      :filter-node-method="filterLayer"
+      @node-click="onLayerClick"
+    />
+  </div>
+</template>
+
+<style scoped></style>

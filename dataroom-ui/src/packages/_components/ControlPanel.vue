@@ -1,10 +1,10 @@
-<!-- 图层 -->
+<!-- 控制面板 -->
 <script setup lang="ts">
 
 </script>
 
 <template>
-  <div>图层</div>
+  <div>控制面板</div>
 </template>
 
 <style scoped>

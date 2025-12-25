@@ -26,6 +26,7 @@ const getInstance = (): RemoteComponentConfig => {
     id: Math.random().toString(),
     i: Math.random().toString(),
     type: 'RemoteComponent',
+    title: '远程组件',
     w: 100,
     h: 100,
     x: 100,
