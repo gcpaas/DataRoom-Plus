@@ -10,7 +10,6 @@ import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
 import type { LeftToolBar } from '@/packages/VisualScreenDesigner/type.ts'
-
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
 const layout = [
@@ -124,17 +123,27 @@ const rightControlPanelStyle = computed(() => {
   }
   return {}
 })
-
-const leftToolPanelButton = () => {
-  leftToolPanelShow.value = !leftToolPanelShow.value
+/**
+ * 右侧配置面板开关
+ * @param open
+ */
+const switchRightControlPanel = (open: boolean = true) => {
+  rightControlPanelShow.value = open
 }
-
-const rightControlPanelButton = () => {
-  rightControlPanelShow.value = !rightControlPanelShow.value
+/**
+ * 左侧工具面板开关
+ * @param open
+ */
+const switchLeftToolPanel = (open: boolean = true) => {
+  leftToolPanelShow.value = open
 }
-
+/**
+ * 左侧工具面版激活
+ * @param leftToolBar
+ */
 const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
   activeLeftToolBar.value = leftToolBar
+  switchLeftToolPanel(true)
 }
 /**
  * 计算组件坐标样式
@@ -147,6 +156,18 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
   }
   return {}
 }
+const computedToolAnchorStyle = computed(() => {
+  if (rightControlPanelShow.value) {
+    return {
+      position: 'fixed',
+      right: '330px',
+    }
+  }
+  return {
+    position: 'fixed',
+    right: 0,
+  }
+})
 
 const onResize = (i: string, newH: string, newW: string, newHPx: string, newWPx: string) => {
   console.log(
@@ -189,8 +210,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
   <div class="dr-page-designer">
     <div class="header" ref="titleRef">
       标题
-      <el-button @click="rightControlPanelButton">配置</el-button>
-      <el-button @click="leftToolPanelButton">左侧</el-button>
+      <el-button @click="switchRightControlPanel">配置</el-button>
     </div>
     <div class="main" :style="mainStyle">
       <div class="left-tool-bar">
@@ -204,7 +224,14 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
         </div>
       </div>
       <div class="left-tool-panel" :style="leftToolPanelStyle">
-        <div class="panel-header">{{ activeLeftToolBar.desc }}</div>
+        <div class="panel-header">
+          <div style="position: relative">
+            <span class="title">{{ activeLeftToolBar.desc }}</span>
+            <el-icon class="close" @click="switchLeftToolPanel(false)">
+              <Close />
+            </el-icon>
+          </div>
+        </div>
         <div class="panel-body">
           <component :is="activeLeftToolBar.component"></component>
         </div>
@@ -254,6 +281,14 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       <div class="right-panel" :style="rightControlPanelStyle">
         <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
       </div>
+      <el-icon
+        class="right-panel-tool-anchor"
+        @click="switchRightControlPanel(!rightControlPanelShow)"
+        :style="computedToolAnchorStyle"
+      >
+        <ArrowRight v-if="rightControlPanelShow" />
+        <ArrowLeft v-else />
+      </el-icon>
     </div>
   </div>
 </template>
@@ -261,7 +296,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 <style scoped lang="scss">
 .dr-page-designer {
   display: grid;
-  grid-template-rows: 60px auto;
+  grid-template-rows: var(--dr-designer-header-height) auto;
   height: 100vh; // 设置容器高度为视口高度
   & .header {
     background-color: var(--dr-prmary);
@@ -271,11 +306,11 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
   & .main {
     background-color: aliceblue;
     display: grid;
-    grid-template-columns: 60px 200px auto 200px;
+    grid-template-columns: var(--dr-designer-left-tool-bar-width)  var(--dr-designer-left-tool-panel-width) auto var(--dr-designer-right-panel-width);
 
     & .left-tool-bar {
       background-color: #fcfcfc;
-      border-right: 1px solid #e8e8e8;
+      border-right: 1px solid var(--dr-border);
 
       & .bar {
         font-size: 12px;
@@ -314,12 +349,25 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
       & .panel-header {
         background-color: #fcfcfc;
         box-sizing: border-box;
-        border-bottom: 1px solid #e8e8e8;
+        border-bottom: 1px solid var(--dr-border);
         font-size: 12px;
         line-height: 40px;
         height: 40px;
         align-self: center;
         padding-left: 8px;
+        // 关闭按钮
+        & .close {
+          position: absolute;
+          height: 40px;
+          line-height: 40px;
+          right: 16px;
+          top: 0px;
+
+          & :hover {
+            cursor: pointer;
+            color: var(--dr-prmary);
+          }
+        }
       }
 
       & .panel-body {
@@ -335,7 +383,7 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 
       & .canvas-main {
         // 减去header 高度
-        height: calc(100vh - 60px);
+        height: calc(100vh - var(--dr-designer-header-height));
         // 使用了el-scroll
         overflow: hidden;
 
@@ -349,6 +397,29 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
 
     & .right-panel {
       background-color: white;
+      border-left: 1px solid var(--dr-border);
+    }
+  }
+
+  .right-panel-tool-anchor {
+    position: fixed;
+    box-sizing: border-box;
+    right: 329px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 50px;
+    background-color: white;
+    color: var(--dr-text);
+    border-radius: 5px 0 0 5px;
+    border-top: 1px solid var(--dr-border);
+    border-left: 1px solid var(--dr-border);
+    border-bottom: 1px solid var(--dr-border);
+
+    &:hover {
+      cursor: pointer;
+      color: var(--dr-prmary);
+      background-color: var(--dr-prmary1);
     }
   }
 }
