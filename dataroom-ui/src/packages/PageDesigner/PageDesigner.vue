@@ -77,7 +77,7 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[3])
+const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[0])
 /**
  * 激活组件
  * @param id

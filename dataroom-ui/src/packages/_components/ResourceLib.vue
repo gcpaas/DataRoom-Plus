@@ -42,7 +42,7 @@ const onClose = () => {
   <el-dialog v-model="resourceLibVisible" title="素材库" width="80%">
     <div class="resource-lib-wrapper">
       <div class="search">
-        <el-input v-model="searchName" :suffix-icon="Search" size="large"></el-input>
+        <el-input v-model="searchName" :suffix-icon="Search" size="large" placeholder="搜索"></el-input>
       </div>
       <div class="tag-wrapper">
         <span :class="{ tag: true, active: selectedTag.includes(item.code) }" v-for="item in resourceLibTagList" :key="item.code" @click="onSelected(item)">{{ item.name }}</span>

@@ -56,7 +56,7 @@ const onClose = () => {
   <el-dialog v-model="componentLibVisible" title="组件库" width="60%">
     <div class="component-lib-wrapper">
       <div class="search">
-        <el-input v-model="searchName" :suffix-icon="Search" size="large"></el-input>
+        <el-input v-model="searchName" :suffix-icon="Search" size="large" placeholder="搜索"></el-input>
       </div>
       <div class="tag-wrapper">
         <span :class="{ tag: true, active: selectedTag.includes(item.code) }" v-for="item in componentLibTypeList" :key="item.code" @click="onSelected(item)">{{ item.name }}</span>

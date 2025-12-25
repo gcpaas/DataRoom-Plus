@@ -4,6 +4,7 @@ import { inject, ref } from 'vue'
 import type { CanvasInst, GlobalVariable } from '@/packages/_type/type.ts'
 import { DrConst } from '@/packages/_constant/constant.ts'
 import { v4 as uuidv4 } from 'uuid'
+import { Search } from '@element-plus/icons-vue'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
@@ -28,11 +29,30 @@ if (globalVariableList.value.length > 0) {
 const onClose = () => {
   globalVariableVisible.value = false
 }
+const searchName = ref('')
+
+const onAdd = () => {
+  const inst: GlobalVariable = {
+    id: uuidv4(),
+    from: 'static',
+    name: 'name' + uuidv4(),
+    urlName: '',
+    remark: '变量备注描述' + uuidv4(),
+    defaultValue: '默认值',
+    script: '',
+  }
+  globalVariableList.value.push(inst)
+  activeGlobalVariable.value = inst
+}
 </script>
 <template>
   <el-dialog v-model="globalVariableVisible" title="全局变量" width="80%">
     <div class="global-variable-wrapper">
       <div class="variable-wrapper">
+        <div class="search">
+          <el-input v-model="searchName" :suffix-icon="Search" placeholder="搜索"></el-input>
+          <el-button type="primary" @click="onAdd">新增</el-button>
+        </div>
         <el-scrollbar>
           <div :class="{ variable: true, active: item.id === activeGlobalVariable?.id }" v-for="item in globalVariableList" :key="item.id" @click="activeGlobalVariable = item">
             <div class="name">{{ item.name }}</div>
@@ -80,6 +100,13 @@ const onClose = () => {
 
   & .variable-wrapper {
     height: calc(70vh - 120px);
+
+    & .search {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
     & .variable {
       margin: 8px 0;
