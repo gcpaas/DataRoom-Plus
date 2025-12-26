@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackage/components/install.ts'
+import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackage/components/AutoInstall.ts'
 import { type CSSProperties, nextTick, reactive } from 'vue'
 import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
