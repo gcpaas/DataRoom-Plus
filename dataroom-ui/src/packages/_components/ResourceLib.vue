@@ -50,7 +50,9 @@ const onClose = () => {
       <el-scrollbar>
         <div class="resource-card">
           <div class="card" v-for="item in resourceLibList" :key="item.name" @click="addChart(item)">
-            <div class="image"><img :src="item.url" /></div>
+            <div class="image">
+              <el-image :src="item.url" lazy />
+            </div>
             <div class="desc">{{ item.name }}</div>
           </div>
         </div>
@@ -101,6 +103,7 @@ const onClose = () => {
     gap: 16px;
     margin: 16px 0;
     height: 500px;
+
     & .card {
       background-color: var(--dr-bg2);
       height: 200px;
@@ -117,13 +120,15 @@ const onClose = () => {
         height: 154px;
         margin: 0 auto;
         padding: 8px;
+
+        & .el-image {
+          width: 95%;
+          height: 95%;
+          object-fit: contain;
+        }
       }
 
-      & img {
-        width: 95%;
-        height: 95%;
-        object-fit: contain;
-      }
+
 
       & .desc {
         padding-left: 16px;

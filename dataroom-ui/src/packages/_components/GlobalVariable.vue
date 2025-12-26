@@ -123,6 +123,7 @@ const onDelete = (variable: GlobalVariableInterface) => {
 .global-variable-wrapper {
   display: grid;
   grid-template-columns: 400px auto;
+  gap: 16px;
 
   & .variable-wrapper {
     height: calc(70vh - 120px);
@@ -171,6 +172,7 @@ const onDelete = (variable: GlobalVariableInterface) => {
 
   & .variable-form-wrapper {
     width: 60%;
+    margin-top: var(--el-component-size);
   }
 }
 </style>

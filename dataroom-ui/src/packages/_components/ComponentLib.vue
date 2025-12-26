@@ -63,7 +63,9 @@ const onClose = () => {
       </div>
       <div class="component-card">
         <div class="card" v-for="plugin in filterComponentLibList" :key="plugin.name" @click="addChart(plugin.name)">
-          <div class="image"><img :src="plugin.thumbnail" /></div>
+          <div class="image">
+            <el-image :src="plugin.thumbnail" lazy />
+          </div>
           <div class="desc">{{ plugin.desc }}</div>
         </div>
       </div>
@@ -129,12 +131,12 @@ const onClose = () => {
         height: 154px;
         margin: 0 auto;
         padding: 8px;
-      }
 
-      & img {
-        width: 95%;
-        height: 95%;
-        object-fit: contain;
+        & .el-image {
+          width: 95%;
+          height: 95%;
+          object-fit: contain;
+        }
       }
 
       & .desc {
