@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>dataroom-core</module>
+        <module>dataroom-server</module>
     </modules>
 
     <properties>
