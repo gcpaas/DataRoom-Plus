@@ -16,6 +16,7 @@ const selectedTag = ref<string[]>([])
  * @param type
  */
 const addChart = (type: string) => {
+  console.log(type)
   canvasInst.addChart(type)
 }
 /**
@@ -62,7 +63,7 @@ const onClose = () => {
         <span :class="{ tag: true, active: selectedTag.includes(item.tag) }" v-for="item in componentLibTagList" :key="item.tag" @click="onSelected(item)">{{ item.name }}</span>
       </div>
       <div class="component-card">
-        <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.name)">
+        <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.type)">
           <div class="image">
             <el-image :src="plugin.thumbnail" lazy />
           </div>

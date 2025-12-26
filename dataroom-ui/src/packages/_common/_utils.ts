@@ -83,3 +83,15 @@ export const extractPositionFromTransform = (
   }
   return result
 }
+
+/**
+ * 根据文件夹路径获取父文件夹名称
+ * @param filePath
+ */
+export const getParentFolderName = (filePath: string): string => {
+  console.log(filePath)
+  const pathParts = new URL(filePath).pathname.split('/')
+  console.log(pathParts)
+  // @ts-expect-error ignore
+  return pathParts[pathParts.length - 2]
+}

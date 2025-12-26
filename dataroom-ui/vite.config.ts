@@ -6,10 +6,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { ReplaceThisPluginType } from './ReplaceThisPluginType'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: './',
+  define: {
+    __THIS_PLUGIN_TYPE__: JSON.stringify(process.env.THIS_PLUGIN_TYPE || ''),
+  },
   plugins: [
     vue(),
     vueDevTools(),
@@ -19,6 +23,7 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver()],
     }),
+    ReplaceThisPluginType(),
   ],
   resolve: {
     alias: {

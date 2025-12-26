@@ -1,8 +1,9 @@
 <script lang="ts">
+import { DrConst } from '@/packages/_common/_constant.ts'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'DrTextControlPanel',
+  name: DrConst.THIS_PLUGIN_TYPE + 'ControlPanel',
 })
 </script>
 <script setup lang="ts">

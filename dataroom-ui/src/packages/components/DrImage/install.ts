@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue'
 import type { ChartConfigInterface, BehaviorInterface } from '../type/define'
+import { DrConst } from '@/packages/_common/_constant.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -25,7 +26,7 @@ const getInstance = (): DrImageConfig => {
   const config: DrImageConfig = {
     id: Math.random().toString(),
     i: Math.random().toString(),
-    type: 'DrImage',
+    type: DrConst.THIS_PLUGIN_TYPE,
     title: '文本',
     w: 150,
     h: 100,

@@ -1,8 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { DrConst } from '@/packages/_common/_constant.ts'
 
 export default defineComponent({
-  name: 'DrImage',
+  name: DrConst.THIS_PLUGIN_TYPE,
 })
 </script>
 <script setup lang="ts">

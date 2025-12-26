@@ -2,8 +2,8 @@ import type { ComponentLibTagInterface } from '@/packages/_common/_type.ts'
 /**
  * 组件插件列表、需要手动导入、否则无法在组件库中显示
  */
-import DrTextPlugin from '@DrPackage/components/DrText/plugin.ts'
-import DrImagePlugin from '@DrPackage/components/DrImage/plugin.ts'
+import {DrTextPlugin} from '@DrPackage/components/DrText/plugin.ts'
+import {DrImagePlugin} from '@DrPackage/components/DrImage/plugin.ts'
 import { ComponentLibTagTypeConst } from '@/packages/_common/_constant.ts'
 
 const componentLibTagList: ComponentLibTagInterface[] = [
