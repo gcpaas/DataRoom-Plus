@@ -4,8 +4,8 @@ import type { ChartConfigInterface } from '@DrPackage/components/type/define.ts'
 interface ComponentLibTagInterface {
   // 类型名称
   name: string
-  // 类型编码
-  code: string
+  // 标签名称
+  tag: string
 }
 
 /**

@@ -1,2 +1,2 @@
 # 忽略格式化
-src/packages/_components/componentLibInstall.ts
+src/packages/_components/PluginRegister.ts

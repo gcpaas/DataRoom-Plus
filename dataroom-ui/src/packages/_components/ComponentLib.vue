@@ -5,7 +5,7 @@ import type { CanvasInstInterface, ComponentLibTagInterface } from '@/packages/_
 import { DrConst } from '@/packages/_common/_constant.ts'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
-import { componentLibList, componentLibTypeList } from './componentLibInstall.ts'
+import { pluginList, componentLibTagList } from './PluginRegister.ts'
 import { Search } from '@element-plus/icons-vue'
 
 const componentLibVisible = ref(true)
@@ -23,21 +23,21 @@ const addChart = (type: string) => {
  * @param item
  */
 const onSelected = (item: ComponentLibTagInterface) => {
-  if (selectedTag.value.includes(item.code)) {
+  if (selectedTag.value.includes(item.tag)) {
     // 从数组中删除
-    selectedTag.value = selectedTag.value.filter((code) => code !== item.code)
+    selectedTag.value = selectedTag.value.filter((code) => code !== item.tag)
     return
   }
-  selectedTag.value.push(item.code)
+  selectedTag.value.push(item.tag)
 }
 /**
  * 动态筛选
  */
-const filterComponentLibList = computed(() => {
+const filterPluginList = computed(() => {
   if (selectedTag.value.length == 0) {
-    return componentLibList
+    return pluginList
   }
-  return componentLibList.filter((item) => {
+  return pluginList.filter((item) => {
     for (let i = 0; i < item.tags.length; i++) {
       const tag = item.tags[i] as string
       if (selectedTag.value.includes(tag)) {
@@ -59,10 +59,10 @@ const onClose = () => {
         <el-input v-model="searchName" :suffix-icon="Search" size="large" placeholder="搜索"></el-input>
       </div>
       <div class="tag-wrapper">
-        <span :class="{ tag: true, active: selectedTag.includes(item.code) }" v-for="item in componentLibTypeList" :key="item.code" @click="onSelected(item)">{{ item.name }}</span>
+        <span :class="{ tag: true, active: selectedTag.includes(item.tag) }" v-for="item in componentLibTagList" :key="item.tag" @click="onSelected(item)">{{ item.name }}</span>
       </div>
       <div class="component-card">
-        <div class="card" v-for="plugin in filterComponentLibList" :key="plugin.name" @click="addChart(plugin.name)">
+        <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.name)">
           <div class="image">
             <el-image :src="plugin.thumbnail" lazy />
           </div>
