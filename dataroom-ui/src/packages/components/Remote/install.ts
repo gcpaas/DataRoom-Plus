@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from 'vue'
-import type { ChartConfigInterface, Behavior } from '../type/define'
+import type { ChartConfigInterface, BehaviorInterface } from '../type/define'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -45,7 +45,7 @@ const getInstance = (): RemoteComponentConfig => {
 /**
  * 定义组件交互定义
  */
-const behaviors: Array<Behavior> = [
+const behaviors: BehaviorInterface[] = [
   {
     name: '点击',
     desc: '鼠标点击文本时触发',

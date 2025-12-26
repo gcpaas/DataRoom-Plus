@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type { ChartConfigInterface, Behavior } from '@DrPackage/components/type/define.ts'
+import type { ChartConfigInterface, BehaviorInterface } from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -14,7 +14,7 @@ type ComponentInstanceMap = {
 }
 
 type BehaviorMap = {
-  [key: string]: Behavior
+  [key: string]: BehaviorInterface
 }
 
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
@@ -55,7 +55,7 @@ Object.entries(installModules).forEach(([path, module]) => {
   // 注册交互定义
   const behaviorDefineName = `behaviors`
   if (module[behaviorDefineName]) {
-    behaviors[componentName] = module[behaviorDefineName] as Behavior
+    behaviors[componentName] = module[behaviorDefineName] as BehaviorInterface
   }
 })
 

@@ -1,5 +1,4 @@
 import DrTextPlugin from '@DrPackage/components/DrText/define.ts'
-import DrEchartsBarPlugin from '@DrPackage/components/DrEchartsBar/define.ts'
 import DrImagePlugin from '@DrPackage/components/DrImage/define.ts'
 import type { ComponentLibTagInterface } from '@/packages/_common/_type.ts'
 
@@ -105,7 +104,6 @@ const componentLibTypeList: ComponentLibTagInterface[] = [
  */
 const componentLibList = [
   new DrTextPlugin([TypeCode.text]),
-  new DrEchartsBarPlugin([TypeCode.bar]),
   new DrImagePlugin([TypeCode.media])
 ]
 
