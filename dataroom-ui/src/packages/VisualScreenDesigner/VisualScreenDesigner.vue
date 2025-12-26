@@ -28,7 +28,7 @@ import {
   provide,
 } from 'vue'
 import type { BasicConfig } from '../components/type/define.ts'
-import { extractPositionFromTransform, getChartById } from '@/packages/VisualScreenDesigner/utils.ts'
+import { extractPositionFromTransform, getChartByElement } from '@/packages/_common/_utils.ts'
 import VanillaSelecto from 'selecto'
 
 const canvasContainer = document.getElementById('canvas-main')
@@ -165,7 +165,7 @@ const onDragEnd = (e: OnDragEnd) => {
 
 const _updateTransform = (e: OnEvent, transform: string, width: number, height: number) => {
   console.log('updateTransform', width)
-  const chart: BasicConfig<unknown> = getChartById(e.target, chartList)
+  const chart: BasicConfig<unknown> = getChartByElement(e.target, chartList)
   const { x, y, rotateX, rotateY, rotateZ } = extractPositionFromTransform(transform)
   chart.x = x
   chart.y = y
@@ -234,7 +234,7 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
   }
   const target = e.selected[0]
   if (target) {
-    const active = getChartById(target, chartList)
+    const active = getChartByElement(target, chartList)
     activeChart.value = active
   }
 }

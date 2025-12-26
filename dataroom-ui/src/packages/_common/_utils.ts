@@ -5,10 +5,7 @@ import type { BasicConfig } from '@/packages/components/type/define.ts'
  * @param e
  * @param chartList
  */
-export const getChartById = (
-  e: HTMLElement | SVGElement,
-  chartList: BasicConfig<unknown>[],
-): BasicConfig<unknown> => {
+export const getChartByElement = (e: HTMLElement | SVGElement, chartList: BasicConfig<unknown>[]): BasicConfig<unknown> => {
   const dataDrId: string | null = e.getAttribute('data-dr-id')
   const chart = chartList.find((item) => item.id === dataDrId)
   if (!chart) {
@@ -17,6 +14,20 @@ export const getChartById = (
   }
   return chart
 }
+/**
+ * 根据id获取对应的图表配置
+ * @param id
+ * @param chartList
+ */
+export const getChartById = (id: string, chartList: BasicConfig<unknown>[]): BasicConfig<unknown> => {
+  const chart = chartList.find((item) => item.id === id)
+  if (!chart) {
+    console.error(`未找到id = ${id} 组件`)
+    throw new Error(`未找到id = ${id} 组件`)
+  }
+  return chart
+}
+
 /**
  * 从transform中提取坐标、旋转信息
  * @param transform 格式：translate(60px, 60px) rotateZ(60deg) rotateX(60deg) rotateY(60deg)
@@ -37,8 +48,7 @@ export const extractPositionFromTransform = (
     rotateY: 0,
     rotateZ: 0,
   }
-  const translateReg =
-    /translate\s*\(\s*([-+]?\d+(\.\d+)?)(?:px)?\s*,\s*([-+]?\d+(\.\d+)?)(?:px)?\s*\)/i
+  const translateReg = /translate\s*\(\s*([-+]?\d+(\.\d+)?)(?:px)?\s*,\s*([-+]?\d+(\.\d+)?)(?:px)?\s*\)/i
   const translateMatch = transformStr.match(translateReg)
   if (translateMatch) {
     // @ts-expect-error ignore

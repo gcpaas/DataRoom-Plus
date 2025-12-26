@@ -8,9 +8,11 @@ const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 import type { BasicConfig } from '@/packages/components/type/define.ts'
 import { ElMessage } from 'element-plus'
 
-const { chart } = defineProps<{
-  chart: BasicConfig<unknown>
+const props = defineProps<{
+  chart?: BasicConfig<unknown>
 }>()
+// 确保拿到的chart非空
+const chart = props.chart!
 
 onMounted(() => {
   document.addEventListener('click', onOutsideClick)
@@ -60,8 +62,6 @@ const onChartHideClick = () => {
   ElMessage.warning('功能开发中...')
   contextMenuVisible.value = false
 }
-
-
 </script>
 
 <template>
