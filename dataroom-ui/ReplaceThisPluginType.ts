@@ -25,7 +25,7 @@ export const ReplaceThisPluginType = (): Plugin => {
         pluginType = pathNames[pathNames.length - 2]
       }
       process.env.THIS_PLUGIN_TYPE = pluginType
-      console.log('pluginType = ' + pluginType)
+      // 替换占位符 DrConst.THIS_PLUGIN_TYPE
       return code.replace(/DrConst.THIS_PLUGIN_TYPE/g, "'" + pluginType + "'")
     },
   }
