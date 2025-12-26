@@ -1,3 +1,5 @@
+application-dev.yml
+spy.log
 .idea
 target/
 !.mvn/wrapper/maven-wrapper.jar
