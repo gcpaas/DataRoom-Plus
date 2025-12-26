@@ -31,7 +31,9 @@ const onClose = () => {
   globalVariableVisible.value = false
 }
 const searchName = ref('')
-
+/**
+ * 新增变量
+ */
 const onAdd = () => {
   const inst: GlobalVariable = {
     id: uuidv4(),
@@ -45,7 +47,10 @@ const onAdd = () => {
   globalVariableList.value.push(inst)
   activeGlobalVariable.value = inst
 }
-
+/**
+ * 删除变量
+ * @param variable
+ */
 const onDelete = (variable: GlobalVariable) => {
   ElMessageBox.confirm(`确定删除${variable.name}变量吗?`, '警告', {
     confirmButtonText: '确定',
