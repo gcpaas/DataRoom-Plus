@@ -377,7 +377,7 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
   grid-template-rows: 60px auto;
   height: 100vh; // 设置容器高度为视口高度
   & .header {
-    background-color: var(--dr-prmary);
+    background-color: var(--dr-primary);
     color: white;
   }
 
@@ -404,7 +404,7 @@ const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
 
       & .active {
         background-color: #3478f620;
-        color: var(--dr-prmary);
+        color: var(--dr-primary);
       }
     }
 

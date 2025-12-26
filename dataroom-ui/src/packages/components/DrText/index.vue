@@ -20,7 +20,7 @@ const { chart } = defineProps<{
 
 <style scoped>
 .dr-text {
-  color: var(--dr-prmary);
+  color: var(--dr-primary);
   width: 100%;
   height: 100%;
 }

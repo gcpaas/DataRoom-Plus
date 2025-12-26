@@ -56,7 +56,7 @@ onMounted(() => {
 
 <style scoped>
 .dr-echarts-bar {
-  color: var(--dr-prmary);
+  color: var(--dr-primary);
   width: 100%;
   height: 100%;
 }

@@ -88,8 +88,8 @@ const onChartHideClick = () => {
     padding: 8px;
 
     &:hover {
-      color: var(--dr-prmary);
-      background-color: var(--dr-prmary1);
+      color: var(--dr-primary);
+      background-color: var(--dr-primary1);
       cursor: pointer;
     }
   }

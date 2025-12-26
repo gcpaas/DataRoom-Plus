@@ -159,13 +159,13 @@ const onDelete = (variable: GlobalVariableInterface) => {
       }
 
       &:hover {
-        background: var(--dr-prmary1);
+        background: var(--dr-primary1);
         cursor: pointer;
       }
     }
 
     & .active {
-      background: var(--dr-prmary1);
+      background: var(--dr-primary1);
     }
   }
 

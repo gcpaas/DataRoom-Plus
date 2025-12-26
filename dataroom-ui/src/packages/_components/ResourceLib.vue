@@ -83,14 +83,14 @@ const onClose = () => {
       display: inline-block;
 
       &:hover {
-        color: var(--dr-prmary);
-        background-color: var(--dr-prmary1);
+        color: var(--dr-primary);
+        background-color: var(--dr-primary1);
       }
     }
 
     & .active {
-      color: var(--dr-prmary);
-      background-color: var(--dr-prmary1);
+      color: var(--dr-primary);
+      background-color: var(--dr-primary1);
     }
   }
 
@@ -109,7 +109,7 @@ const onClose = () => {
       &:hover {
         box-shadow: 0 0 8px var(--dr-border);
         cursor: pointer;
-        color: var(--dr-prmary);
+        color: var(--dr-primary);
       }
 
       & .image {

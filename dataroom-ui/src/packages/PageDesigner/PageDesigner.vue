@@ -384,7 +384,7 @@ const onSave = () => {
 @use './assets/index.scss';
 // 拖拽背景样式
 :deep(.vue-grid-item.vue-grid-placeholder) {
-  background: var(--dr-prmary);
+  background: var(--dr-primary);
 }
 
 .dr-page-designer {
@@ -392,7 +392,7 @@ const onSave = () => {
   grid-template-rows: var(--dr-designer-header-height) auto;
   height: 100vh; // 设置容器高度为视口高度
   & .header {
-    background-color: var(--dr-prmary);
+    background-color: var(--dr-primary);
     color: white;
     display: flex;
     align-items: center;
@@ -426,8 +426,8 @@ const onSave = () => {
       }
 
       & .active {
-        background-color: var(--dr-prmary1);
-        color: var(--dr-prmary);
+        background-color: var(--dr-primary1);
+        color: var(--dr-primary);
         position: relative;
 
         &::before {
@@ -437,7 +437,7 @@ const onSave = () => {
           bottom: 0;
           width: 3px;
           position: absolute;
-          background-color: var(--dr-prmary);
+          background-color: var(--dr-primary);
         }
       }
     }
@@ -468,7 +468,7 @@ const onSave = () => {
 
           & :hover {
             cursor: pointer;
-            color: var(--dr-prmary);
+            color: var(--dr-primary);
           }
         }
       }
@@ -523,8 +523,8 @@ const onSave = () => {
 
     &:hover {
       cursor: pointer;
-      color: var(--dr-prmary);
-      background-color: var(--dr-prmary1);
+      color: var(--dr-primary);
+      background-color: var(--dr-primary1);
     }
   }
 }

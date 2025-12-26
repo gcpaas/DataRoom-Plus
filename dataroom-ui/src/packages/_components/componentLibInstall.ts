@@ -22,7 +22,8 @@ enum TypeCode {
   scatter = 'scatter',
   /**
    * 雷达图
-   */ radar = 'radar',
+   */
+  radar = 'radar',
   /**
    * 漏斗图
    */
@@ -52,52 +53,52 @@ enum TypeCode {
 const componentLibTypeList: ComponentLibTagInterface[] = [
   {
     name: '折线图',
-    code: TypeCode.line,
+    code: TypeCode.line
   },
   {
     name: '柱状图',
-    code: TypeCode.bar,
+    code: TypeCode.bar
   },
   {
     name: '饼图',
-    code: TypeCode.pie,
+    code: TypeCode.pie
   },
   {
     name: '散点图',
-    code: TypeCode.scatter,
+    code: TypeCode.scatter
   },
   {
     name: '雷达图',
-    code: TypeCode.radar,
+    code: TypeCode.radar
   },
   {
     name: '漏斗图',
-    code: TypeCode.funnel,
+    code: TypeCode.funnel
   },
   {
     name: '仪表盘',
-    code: TypeCode.gauge,
+    code: TypeCode.gauge
   },
   {
     name: '柱状图',
-    code: TypeCode.bar,
+    code: TypeCode.bar
   },
   {
     name: '文本',
-    code: TypeCode.text,
+    code: TypeCode.text
   },
   {
     name: '地图',
-    code: TypeCode.map,
+    code: TypeCode.map
   },
   {
     name: '音视频',
-    code: TypeCode.media,
+    code: TypeCode.media
   },
   {
     name: '表单',
-    code: TypeCode.form,
-  },
+    code: TypeCode.form
+  }
 ]
 /**
  * 组件列表
@@ -107,4 +108,5 @@ const componentLibList = [
   new DrEchartsBarPlugin([TypeCode.bar]),
   new DrImagePlugin([TypeCode.media])
 ]
+
 export { componentLibList, componentLibTypeList }
