@@ -1,7 +1,7 @@
 import DrTextPlugin from '@DrPackage/components/DrText/define.ts'
 import DrEchartsBarPlugin from '@DrPackage/components/DrEchartsBar/define.ts'
 import DrImagePlugin from '@DrPackage/components/DrImage/define.ts'
-import type { ComponentLibTagType } from '@/packages/_common/_type.ts'
+import type { ComponentLibTagInterface } from '@/packages/_common/_type.ts'
 
 enum TypeCode {
   /**
@@ -49,7 +49,7 @@ enum TypeCode {
   form = 'form',
 }
 
-const componentLibTypeList: ComponentLibTagType[] = [
+const componentLibTypeList: ComponentLibTagInterface[] = [
   {
     name: '折线图',
     code: TypeCode.line,

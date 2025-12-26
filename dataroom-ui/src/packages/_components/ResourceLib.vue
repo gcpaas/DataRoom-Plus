@@ -1,7 +1,7 @@
 <!-- 素材库 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInstInterface, ResourceLibType, ResourceLibTagType } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface, ResourceLibInterface, ResourceLibTagInterface } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
@@ -10,8 +10,8 @@ import { Search } from '@element-plus/icons-vue'
 const resourceLibVisible = ref(true)
 const searchName = ref('')
 const selectedTag = ref<string[]>([])
-const resourceLibList = ref<ResourceLibType[]>([])
-const resourceLibTagList = ref<ResourceLibTagType[]>([])
+const resourceLibList = ref<ResourceLibInterface[]>([])
+const resourceLibTagList = ref<ResourceLibTagInterface[]>([])
 
 for (let i = 0; i < 40; i++) {
   resourceLibList.value.push({
@@ -25,12 +25,12 @@ for (let i = 0; i < 40; i++) {
  * 添加组件到画布
  * @param type
  */
-const addChart = (item: ResourceLibType) => {
+const addChart = (item: ResourceLibInterface) => {
   console.log(item)
   canvasInst.addChart('DrImage')
 }
 
-const onSelected = (item: ResourceLibTagType) => {
+const onSelected = (item: ResourceLibTagInterface) => {
   console.log(item)
 }
 

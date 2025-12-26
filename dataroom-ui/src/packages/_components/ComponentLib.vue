@@ -1,7 +1,7 @@
 <!-- 组件库 -->
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import type { CanvasInstInterface, ComponentLibTagType } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface, ComponentLibTagInterface } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
@@ -22,7 +22,7 @@ const addChart = (type: string) => {
  * 选中标签
  * @param item
  */
-const onSelected = (item: ComponentLibTagType) => {
+const onSelected = (item: ComponentLibTagInterface) => {
   if (selectedTag.value.includes(item.code)) {
     // 从数组中删除
     selectedTag.value = selectedTag.value.filter((code) => code !== item.code)

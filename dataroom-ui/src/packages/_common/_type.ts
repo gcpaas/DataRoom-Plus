@@ -1,7 +1,7 @@
 import { type Component, type Ref } from 'vue'
 import type { BasicConfig } from '@DrPackage/components/type/define.ts'
 
-interface ComponentLibTagType {
+interface ComponentLibTagInterface {
   // 类型名称
   name: string
   // 类型编码
@@ -22,7 +22,7 @@ interface CanvasInstInterface {
 /**
  * 左侧工具bar定义
  */
-interface LeftToolBar {
+interface LeftToolBarInterface {
   // tab显示名称
   name: string
   // 激活工具面板显示名称
@@ -33,13 +33,13 @@ interface LeftToolBar {
   componentName: string
 }
 
-interface ResourceLibType {
+interface ResourceLibInterface {
   name: string
   type: string
   url: string
 }
 
-interface ResourceLibTagType {
+interface ResourceLibTagInterface {
   // 类型名称
   name: string
   // 类型编码
@@ -49,7 +49,7 @@ interface ResourceLibTagType {
 /**
  * 页面实体定义
  */
-interface PageEntity {
+interface PageEntityInterface {
   id: string
   // 页面名称
   name: string
@@ -61,9 +61,9 @@ interface PageEntity {
   // 备注描述
   remark: string
   // 基础配置
-  pageConfig: PageConfig
+  pageConfig: PageConfigInterface
   // 全局变量
-  globalVariableList: GlobalVariable[]
+  globalVariableList: GlobalVariableInterface[]
   // 图表组件配置
   chartList: Array<BasicConfig<unknown>>
 }
@@ -71,7 +71,7 @@ interface PageEntity {
 /**
  * 页面基础配置
  */
-interface PageConfig {
+interface PageConfigInterface {
   // 背景填充方式、可选值 image、color
   bgFill: 'image' | 'color'
   // 背景色
@@ -85,7 +85,7 @@ interface PageConfig {
 /**
  * 全局变量
  */
-interface GlobalVariable {
+interface GlobalVariableInterface {
   id: string
   // 来源
   from: 'static' | 'url'
@@ -101,4 +101,4 @@ interface GlobalVariable {
   script: string
 }
 
-export type { CanvasInstInterface, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType, GlobalVariable }
+export type { CanvasInstInterface, LeftToolBarInterface, ComponentLibTagInterface, ResourceLibInterface, ResourceLibTagInterface, GlobalVariableInterface }

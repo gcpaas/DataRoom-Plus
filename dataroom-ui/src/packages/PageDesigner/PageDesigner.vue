@@ -5,7 +5,7 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/_common/_utils.ts'
-import type { CanvasInstInterface, LeftToolBar } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface, LeftToolBarInterface } from '@/packages/_common/_type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { DrConst } from '@/packages/_common/_constant.ts'
@@ -51,7 +51,7 @@ const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components
 const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
 const ResourceLib = defineAsyncComponent(() => import('@/packages/_components/ResourceLib.vue'))
 
-const leftToolBarList: Array<LeftToolBar> = reactive([
+const leftToolBarList: Array<LeftToolBarInterface> = reactive([
   {
     name: '图层',
     desc: '图层',
@@ -78,7 +78,7 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[0])
+const activeLeftToolBar = ref<LeftToolBarInterface>(leftToolBarList[0])
 /**
  * 激活组件
  * @param id
@@ -174,7 +174,7 @@ const contextMenuVisible = ref(false)
  * 左侧工具面版激活
  * @param leftToolBar
  */
-const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
+const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
   if (leftToolBar.componentName == 'ComponentLib') {
     // 组件库弹框
     componentLibVisible.value = false
