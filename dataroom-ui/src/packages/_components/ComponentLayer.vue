@@ -1,8 +1,8 @@
 <!-- 图层 -->
 <script setup lang="ts">
 import { computed, type ComputedRef, inject, type Ref, ref, watch } from 'vue'
-import type { CanvasInst } from '@/packages/_type/type.ts'
-import { DrConst } from '@/packages/_constant/constant.ts'
+import type { CanvasInst } from '@/packages/_common/_type.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
 import type { BasicConfig } from '@/packages/components/type/define.ts'
 import type { TreeInstance } from 'element-plus'
 

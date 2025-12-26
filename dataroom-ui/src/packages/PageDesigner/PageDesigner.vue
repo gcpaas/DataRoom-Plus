@@ -5,11 +5,12 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/PageDesigner/utils.ts'
-import type { CanvasInst, LeftToolBar } from '@/packages/_type/type.ts'
+import type { CanvasInst, LeftToolBar } from '@/packages/_common/_type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { DrConst } from '@/packages/_constant/constant.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
 
+const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
 const activeChart = ref<BasicConfig<unknown>>()
 const chartList = ref<BasicConfig<unknown>[]>([])
@@ -87,6 +88,19 @@ const activeChartById = (id: string) => {
   activeChart.value = chart
   rightControlPanelSetting.value = false
 }
+
+/**
+ * 右侧配置面板开关
+ * @param open
+ */
+const switchRightControlPanel = (open: boolean = true) => {
+  rightControlPanelShow.value = open
+}
+const switchPageControlPanel = () => {
+  switchRightControlPanel(true)
+  rightControlPanelSetting.value = true
+}
+
 /**
  * 子组件注入使用
  */
@@ -94,6 +108,10 @@ const canvasInst = reactive<CanvasInst>({
   addChart: addChart,
   chartList: chartList,
   activeChartById: activeChartById,
+  switchRightControlPanel: switchRightControlPanel,
+  onChartDeleteClick: (chartId: string) => {
+    chartList.value = chartList.value.filter((item) => item.id != chartId)
+  },
 })
 provide(DrConst.CANVAS_INST, canvasInst)
 
@@ -139,17 +157,6 @@ const rightControlPanelStyle = computed(() => {
   }
   return {}
 })
-/**
- * 右侧配置面板开关
- * @param open
- */
-const switchRightControlPanel = (open: boolean = true) => {
-  rightControlPanelShow.value = open
-}
-const switchPageControlPanel = () => {
-  switchRightControlPanel(true)
-  rightControlPanelSetting.value = true
-}
 
 /**
  * 左侧工具面板开关
@@ -162,6 +169,7 @@ const switchLeftToolPanel = (open: boolean = true) => {
 const componentLibVisible = ref(false)
 const resourceLibVisible = ref(false)
 const globalVariableVisible = ref(false)
+const contextMenuVisible = ref(false)
 /**
  * 左侧工具面版激活
  * @param leftToolBar
@@ -243,6 +251,28 @@ const onChartClick = (chart: BasicConfig<unknown>) => {
   console.log('onChartClick', chart)
   activeChartById(chart.id)
 }
+
+const contextMenuEvent = ref<MouseEvent>()
+const onRightClick = (e: MouseEvent, chart: BasicConfig<unknown>) => {
+  e.preventDefault()
+  contextMenuVisible.value = false
+  contextMenuEvent.value = e
+  activeChartById(chart.id)
+  nextTick(() => {
+    contextMenuVisible.value = true
+  })
+}
+/**
+ * 右击菜单样式
+ */
+const computedContextMenuStyle = computed(() => {
+  return {
+    position: 'absolute',
+    left: contextMenuEvent.value?.clientX + 'px',
+    top: contextMenuEvent.value?.clientY + 'px',
+  }
+})
+
 /**
  * 页面预览
  */
@@ -309,8 +339,8 @@ const onSave = () => {
           <el-scrollbar>
             <GridLayout v-model:layout="chartList" :col-num="12" :row-height="30" :is-draggable="true" :is-resizable="true" :vertical-compact="true" :use-css-transforms="true">
               <GridItem
-                v-for="(item, index) in chartList"
-                :key="index"
+                v-for="item in chartList"
+                :key="item.id"
                 :static="false"
                 :x="item.x"
                 :y="item.y"
@@ -322,6 +352,7 @@ const onSave = () => {
                 @resized="onResized"
                 @moved="onMoved"
                 @click="onChartClick(item)"
+                @contextmenu="(e: MouseEvent) => onRightClick(e, item)"
               >
                 <div class="chart-wrapper" :key="item.id" :id="item.id" :data-dr-id="item.id" :style="computedChartStyle(item)">
                   <component :is="getComponent(item.type)" :chart="item"></component>
@@ -346,6 +377,7 @@ const onSave = () => {
   <ComponentLib v-if="componentLibVisible" ref="componentLibRef"></ComponentLib>
   <ResourceLib v-if="resourceLibVisible" ref="resourceLibRef"></ResourceLib>
   <GlobalVariable v-if="globalVariableVisible" ref="globalVariableRef"></GlobalVariable>
+  <ContextMenu v-if="contextMenuVisible" ref="contextMenuRef" :style="computedContextMenuStyle" :chart="activeChart"></ContextMenu>
 </template>
 
 <style scoped lang="scss">

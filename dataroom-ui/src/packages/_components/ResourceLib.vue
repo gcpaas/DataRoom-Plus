@@ -1,8 +1,8 @@
 <!-- 素材库 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInst, ResourceLibType, ResourceLibTagType } from '@/packages/_type/type.ts'
-import { DrConst } from '@/packages/_constant/constant.ts'
+import type { CanvasInst, ResourceLibType, ResourceLibTagType } from '@/packages/_common/_type.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 import { Search } from '@element-plus/icons-vue'

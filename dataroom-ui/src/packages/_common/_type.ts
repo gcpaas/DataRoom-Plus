@@ -15,6 +15,8 @@ interface CanvasInst {
   addChart: (type: string) => void
   chartList: Ref<Array<BasicConfig<unknown>>>
   activeChartById: (id: string) => void
+  switchRightControlPanel: (open: boolean) => void
+  onChartDeleteClick: (chartId: string) => void
 }
 
 /**
@@ -99,4 +101,4 @@ interface GlobalVariable {
   script: string
 }
 
-export type { CanvasInst, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType,GlobalVariable }
+export type { CanvasInst, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType, GlobalVariable }

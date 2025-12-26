@@ -1,8 +1,8 @@
 <!-- 组件库 -->
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import type { CanvasInst, ComponentLibTagType } from '@/packages/_type/type.ts'
-import { DrConst } from '@/packages/_constant/constant.ts'
+import type { CanvasInst, ComponentLibTagType } from '@/packages/_common/_type.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 import { componentLibList, componentLibTypeList } from './componentLibInstall.ts'

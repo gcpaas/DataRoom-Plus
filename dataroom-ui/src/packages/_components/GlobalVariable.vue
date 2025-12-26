@@ -1,8 +1,8 @@
 <!-- 全局变量 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInst, GlobalVariable } from '@/packages/_type/type.ts'
-import { DrConst } from '@/packages/_constant/constant.ts'
+import type { CanvasInst, GlobalVariable } from '@/packages/_common/_type.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'

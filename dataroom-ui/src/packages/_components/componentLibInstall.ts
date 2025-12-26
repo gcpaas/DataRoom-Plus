@@ -1,7 +1,7 @@
 import DrTextPlugin from '@DrPackage/components/DrText/define.ts'
 import DrEchartsBarPlugin from '@DrPackage/components/DrEchartsBar/define.ts'
 import DrImagePlugin from '@DrPackage/components/DrImage/define.ts'
-import type { ComponentLibTagType } from '@/packages/_type/type.ts'
+import type { ComponentLibTagType } from '@/packages/_common/_type.ts'
 
 enum TypeCode {
   /**
