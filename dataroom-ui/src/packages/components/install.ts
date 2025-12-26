@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type { BasicConfig, Behavior } from '@DrPackage/components/type/define.ts'
+import type { ChartConfigInterface, Behavior } from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -10,7 +10,7 @@ type PanelComponentMap = {
 }
 
 type ComponentInstanceMap = {
-  [key: string]: () => BasicConfig<unknown>
+  [key: string]: () => ChartConfigInterface<unknown>
 }
 
 type BehaviorMap = {
@@ -19,7 +19,7 @@ type BehaviorMap = {
 
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
 const installModules = import.meta.glob<{
-  [key: string]: Component | (() => BasicConfig<unknown>)
+  [key: string]: Component | (() => ChartConfigInterface<unknown>)
 }>('./**/install.ts', { eager: true })
 
 // 存储组件、控制面板组件、实例方法和交互定义
@@ -49,7 +49,7 @@ Object.entries(installModules).forEach(([path, module]) => {
   // 注册实例方法
   const instanceMethodName = `getInstance`
   if (module[instanceMethodName]) {
-    componentInstances[componentName] = module[instanceMethodName] as () => BasicConfig<unknown>
+    componentInstances[componentName] = module[instanceMethodName] as () => ChartConfigInterface<unknown>
   }
 
   // 注册交互定义
@@ -71,13 +71,13 @@ const getComponent = (name: string) => {
   return components[name]
 }
 
-const getComponentInstance = (name: string): BasicConfig<unknown> => {
+const getComponentInstance = (name: string): ChartConfigInterface<unknown> => {
   const instanceFn = componentInstances[name]
   if (instanceFn) {
     return instanceFn()
   }
   console.error(`未找到组件 ${name} 对应的实例化方法`)
-  return {} as BasicConfig<unknown>
+  return {} as ChartConfigInterface<unknown>
 }
 
 export {

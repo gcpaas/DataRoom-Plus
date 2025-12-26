@@ -2,9 +2,9 @@
 import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
 import { ref, provide, onMounted } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
-import type { BasicConfig } from '@DrPackage/components/type/define.ts'
+import type { ChartConfigInterface } from '@DrPackage/components/type/define.ts'
 
-let chartList = ref<BasicConfig<unknown>[]>([])
+let chartList = ref<ChartConfigInterface<unknown>[]>([])
 
 const chartIndex = ref(100)
 
@@ -13,7 +13,7 @@ onMounted(() => {
   const chartListStr = localStorage.getItem('chartList')
   if (chartListStr) {
     const _chartList = JSON.parse(chartListStr)
-    chartList = ref<BasicConfig<unknown>[]>(_chartList)
+    chartList = ref<ChartConfigInterface<unknown>[]>(_chartList)
   } else {
     const layout = [
       { x: 0, y: 0, w: 2, h: 2, i: '0' },
@@ -21,7 +21,7 @@ onMounted(() => {
       { x: 4, y: 0, w: 2, h: 5, i: '2' },
     ]
     layout.forEach((item) => {
-      const inst: BasicConfig<unknown> = getComponentInstance('DrText')
+      const inst: ChartConfigInterface<unknown> = getComponentInstance('DrText')
       inst.id = item.i
       inst.i = item.i
       inst.x = item.x
@@ -34,7 +34,7 @@ onMounted(() => {
 })
 
 const addChart = (type: string) => {
-  const chartInst: BasicConfig<unknown> = getComponentInstance(type)
+  const chartInst: ChartConfigInterface<unknown> = getComponentInstance(type)
   chartInst.w = 3
   chartInst.h = 3
   chartInst.x = 0

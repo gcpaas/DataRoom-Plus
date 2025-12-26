@@ -3,7 +3,7 @@
 import { computed, type ComputedRef, inject, type Ref, ref, watch } from 'vue'
 import type { CanvasInstInterface } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
-import type { BasicConfig } from '@/packages/components/type/define.ts'
+import type { ChartConfigInterface } from '@/packages/components/type/define.ts'
 import type { TreeInstance } from 'element-plus'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
@@ -11,7 +11,7 @@ const layerTreeProps = {
   label: 'title',
   children: 'children',
 }
-const chartList: ComputedRef<Ref<Array<BasicConfig<unknown>>>> = computed(() => {
+const chartList: ComputedRef<Ref<Array<ChartConfigInterface<unknown>>>> = computed(() => {
   return canvasInst.chartList
 })
 
@@ -36,7 +36,7 @@ watch(layerName, (val) => {
   layerTreeRef.value!.filter(val)
 })
 
-const onLayerClick = (data: BasicConfig<unknown>) => {
+const onLayerClick = (data: ChartConfigInterface<unknown>) => {
   console.log('点击图层', data.id)
   canvasInst.activeChartById(data.id)
 }

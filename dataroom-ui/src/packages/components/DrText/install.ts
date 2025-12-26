@@ -1,21 +1,25 @@
 import { defineAsyncComponent } from 'vue'
-import type { BasicConfig, Behavior } from '../type/define'
+import type { ChartConfigInterface, BehaviorInterface } from '../type/define'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
 const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
-interface DrTextProps {
-  // 文本
+interface DrTextPropsInterface {
+  /**
+   * 文本
+   */
   text: string
-  // 字体大小
+  /**
+   * 字体大小
+   */
   fontSize: number
 }
 
 /**
  * 定义组件配置类型
  */
-export type DrTextConfig = BasicConfig<DrTextProps>
+export type DrTextConfig = ChartConfigInterface<DrTextPropsInterface>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象
@@ -45,7 +49,7 @@ const getInstance = (): DrTextConfig => {
 /**
  * 定义组件交互定义
  */
-const behaviors: Array<Behavior> = [
+const behaviors: BehaviorInterface[] = [
   {
     name: '点击',
     desc: '鼠标点击文本时触发',

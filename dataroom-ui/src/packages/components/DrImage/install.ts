@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from 'vue'
-import type { BasicConfig, Behavior } from '../type/define'
+import type { ChartConfigInterface, Behavior } from '../type/define'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -15,7 +15,7 @@ interface DrImageProps {
 /**
  * 定义组件配置类型
  */
-export type DrImageConfig = BasicConfig<DrImageProps>
+export type DrImageConfig = ChartConfigInterface<DrImageProps>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象

@@ -1,14 +1,22 @@
 /**
- * 交互定义
+ * 图表插件
  */
-export class ChartDefine {
-  // 组件显示名称
+export class ChartPlugin {
+  /**
+   * 组件显示名称
+   */
   name: string
-  // 组件信息描述
-  desc?: string
-  // 组件缩略图
+  /**
+   * 组件信息描述
+   */
+  desc: string
+  /**
+   * 组件缩略图
+   */
   thumbnail: string
-  // 所属标签、用于分类
+  /**
+   * 所属标签、用于分类
+   */
   tags: string[]
 
   constructor(name: string, desc: string, thumbnail: string, tags: string[]) {
@@ -20,61 +28,107 @@ export class ChartDefine {
 }
 
 /**
- * 组件配置基础类型定义
+ * 组件配置基础信息
  */
-export interface BasicConfig<T> {
-  // 唯一表示
+export interface ChartConfigInterface<T> {
+  /**
+   * 唯一标识
+   */
   id: string
+  /**
+   * 唯一标识，仅仪表盘类型使用
+   */
   i: string
-  // 组件类型
+  /**
+   * 组件类型
+   */
   type: string
-  // 组件显示的名称
+  /**
+   * 组件显示的图层名称
+   */
   title: string
-  // 宽度
+  /**
+   * 宽度或占用的份数
+   */
   w: number
-  // 高度
+  /**
+   * 高度或占用的份数
+   */
   h: number
-  // x坐标
+  /**
+   * x坐标或x轴份数
+   */
   x: number
-  // y坐标
+  /**
+   * y坐标或y轴份数
+   */
   y: number
-  // 组件层级、层级越大、越靠前显示
+  /**
+   * 组件层级、层级越大、越靠前显示
+   */
   z: number
-  // X轴旋转角度
+  /**
+   * X轴旋转角度
+   */
   rotateX: number
-  // Y轴旋转角度
+  /**
+   * Y轴旋转角度
+   */
   rotateY: number
-  // Z轴旋转角度
+  /**
+   * Z轴旋转角度
+   */
   rotateZ: number
-  // 自定义配置
+  /**
+   * 自定义配置
+   */
   props: T
 }
 
 /**
- * 交互参数定义
+ * 图表行为交互参数定义
  */
-export interface BehaviorParam {
-  // 参数名称
+export interface BehaviorParamInterface {
+  /**
+   * 参数名称
+   */
   name: string
-  // 参数描述
+  /**
+   * 参数描述
+   */
   desc: string
-  // 参数类型
+  /**
+   * 参数类型
+   */
   type: string
-  // 是否必填
+  /**
+   * 是否必填
+   */
   required: boolean
-  // 默认值
+  /**
+   * 默认值
+   */
   defaultValue: string
 }
 
 /**
- * 交互定义
+ * 行为交互定义
  */
-export interface Behavior {
-  // 事件名称
+export interface BehaviorInterface {
+  /**
+   * 事件名称、用于显示
+   */
   name: string
-  // 事件描述
+  /**
+   * 事件描述、用于说明
+   */
   desc: string
-  // 事件触发时指定的方法名称
+  /**
+   * 事件触发时指定的方法名称、用于调用
+   */
   method: string
-  paramsList: Array<BehaviorParam>
+  /**
+   * 参数列表
+   */
+  paramsList: Array<BehaviorParamInterface>
 }

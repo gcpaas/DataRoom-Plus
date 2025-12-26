@@ -1,5 +1,5 @@
 import { type Component, type Ref } from 'vue'
-import type { BasicConfig } from '@DrPackage/components/type/define.ts'
+import type { ChartConfigInterface } from '@DrPackage/components/type/define.ts'
 
 interface ComponentLibTagInterface {
   // 类型名称
@@ -13,7 +13,7 @@ interface ComponentLibTagInterface {
  */
 interface CanvasInstInterface {
   addChart: (type: string) => void
-  chartList: Ref<Array<BasicConfig<unknown>>>
+  chartList: Ref<Array<ChartConfigInterface<unknown>>>
   activeChartById: (id: string) => void
   switchRightControlPanel: (open: boolean) => void
   onChartDeleteClick: (chartId: string) => void
@@ -65,7 +65,7 @@ interface PageEntityInterface {
   // 全局变量
   globalVariableList: GlobalVariableInterface[]
   // 图表组件配置
-  chartList: Array<BasicConfig<unknown>>
+  chartList: Array<ChartConfigInterface<unknown>>
 }
 
 /**

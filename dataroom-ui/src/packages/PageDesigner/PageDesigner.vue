@@ -3,7 +3,7 @@ import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackag
 import { type CSSProperties, nextTick, reactive } from 'vue'
 import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
-import type { BasicConfig } from '../components/type/define.ts'
+import type { ChartConfigInterface } from '../components/type/define.ts'
 import { getChartById } from '@/packages/_common/_utils.ts'
 import type { CanvasInstInterface, LeftToolBarInterface } from '@/packages/_common/_type.ts'
 import { useRouter } from 'vue-router'
@@ -12,8 +12,8 @@ import { DrConst } from '@/packages/_common/_constant.ts'
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
-const activeChart = ref<BasicConfig<unknown>>()
-const chartList = ref<BasicConfig<unknown>[]>([])
+const activeChart = ref<ChartConfigInterface<unknown>>()
+const chartList = ref<ChartConfigInterface<unknown>[]>([])
 const componentLibRef = ref(null)
 const layout = [
   { x: 0, y: 0, w: 2, h: 2, i: '0' },
@@ -22,7 +22,7 @@ const layout = [
 ]
 const chartIndex = ref(3)
 layout.forEach((item) => {
-  const inst: BasicConfig<unknown> = getComponentInstance('DrText')
+  const inst: ChartConfigInterface<unknown> = getComponentInstance('DrText')
   inst.id = item.i
   inst.i = item.i
   inst.x = item.x
@@ -32,7 +32,7 @@ layout.forEach((item) => {
   chartList.value.push(inst)
 })
 const addChart = (type: string) => {
-  const chartInst: BasicConfig<unknown> = getComponentInstance(type)
+  const chartInst: ChartConfigInterface<unknown> = getComponentInstance(type)
   chartInst.w = 3
   chartInst.h = 3
   chartInst.x = 0
@@ -84,7 +84,7 @@ const activeLeftToolBar = ref<LeftToolBarInterface>(leftToolBarList[0])
  * @param id
  */
 const activeChartById = (id: string) => {
-  const chart: BasicConfig<unknown> = getChartById(id, chartList.value)
+  const chart: ChartConfigInterface<unknown> = getChartById(id, chartList.value)
   activeChart.value = chart
   rightControlPanelSetting.value = false
 }
@@ -202,7 +202,7 @@ const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
  * 计算组件坐标样式
  * @param chart
  */
-const computedChartStyle = (chart: BasicConfig<unknown>): CSSProperties => {
+const computedChartStyle = (chart: ChartConfigInterface<unknown>): CSSProperties => {
   // 暂时无用
   if (chart) {
     return {}
@@ -227,7 +227,7 @@ const onResize = (i: string, newH: string, newW: string, newHPx: string, newWPx:
 }
 const onResized = (i: string, newH: number, newW: number, newHPx: string, newWPx: string) => {
   console.log('onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
-  const chart: BasicConfig<unknown> = getChartById(i, chartList.value)
+  const chart: ChartConfigInterface<unknown> = getChartById(i, chartList.value)
   chart.w = newW
   chart.h = newH
 }
@@ -238,7 +238,7 @@ const onMove = (i: string, newX: number, newY: number) => {
 
 const onMoved = (i: string, newX: number, newY: number) => {
   console.log('onMoved i=' + i + ', X=' + newX + ', Y=' + newY)
-  const chart: BasicConfig<unknown> = getChartById(i, chartList.value)
+  const chart: ChartConfigInterface<unknown> = getChartById(i, chartList.value)
   chart.x = newX
   chart.y = newY
 }
@@ -247,13 +247,13 @@ const onMoved = (i: string, newX: number, newY: number) => {
  * 图表点击
  * @param chart
  */
-const onChartClick = (chart: BasicConfig<unknown>) => {
+const onChartClick = (chart: ChartConfigInterface<unknown>) => {
   console.log('onChartClick', chart)
   activeChartById(chart.id)
 }
 
 const contextMenuEvent = ref<MouseEvent>()
-const onRightClick = (e: MouseEvent, chart: BasicConfig<unknown>) => {
+const onRightClick = (e: MouseEvent, chart: ChartConfigInterface<unknown>) => {
   e.preventDefault()
   contextMenuVisible.value = false
   contextMenuEvent.value = e

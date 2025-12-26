@@ -1,5 +1,5 @@
 import { defineAsyncComponent } from 'vue'
-import type { BasicConfig, Behavior } from '../type/define'
+import type { ChartConfigInterface, Behavior } from '../type/define'
 import DrEchartsBarPlugin from '@/packages/components/DrEchartsBar/define.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
@@ -16,7 +16,7 @@ interface DrEchartsBarProps {
 /**
  * 定义组件配置类型
  */
-export type DrEchartsBarConfig = BasicConfig<DrEchartsBarProps>
+export type DrEchartsBarConfig = ChartConfigInterface<DrEchartsBarProps>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象
