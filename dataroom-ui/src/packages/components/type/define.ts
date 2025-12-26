@@ -1,13 +1,17 @@
 /**
- * 图表插件
+ * 图表插件、所有图表都需要继承该类并手动注册
  */
 export class ChartPlugin {
   /**
-   * 组件显示名称
+   * 组件类型
+   */
+  type: string
+  /**
+   * 组件名称、用于显示
    */
   name: string
   /**
-   * 组件信息描述
+   * 组件信息描述、多个之间使用逗号隔开，可用于检索
    */
   desc: string
   /**
@@ -19,7 +23,8 @@ export class ChartPlugin {
    */
   tags: string[]
 
-  constructor(name: string, desc: string, thumbnail: string, tags: string[]) {
+  constructor(type: string, name: string, desc: string, thumbnail: string, tags: string[]) {
+    this.type = type
     this.name = name
     this.desc = desc
     this.thumbnail = thumbnail

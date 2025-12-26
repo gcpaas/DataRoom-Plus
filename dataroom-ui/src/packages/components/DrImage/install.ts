@@ -5,7 +5,7 @@ const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
 const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
-interface DrImageProps {
+interface DrImagePropsInterface {
   // 文本
   text: string
   // 字体大小
@@ -15,7 +15,7 @@ interface DrImageProps {
 /**
  * 定义组件配置类型
  */
-export type DrImageConfig = ChartConfigInterface<DrImageProps>
+export type DrImageConfig = ChartConfigInterface<DrImagePropsInterface>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象
