@@ -5,7 +5,7 @@ import { type Component, computed, defineAsyncComponent, ref, shallowRef, provid
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { BasicConfig } from '../components/type/define.ts'
 import { getChartById } from '@/packages/_common/_utils.ts'
-import type { CanvasInst, LeftToolBar } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface, LeftToolBar } from '@/packages/_common/_type.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { DrConst } from '@/packages/_common/_constant.ts'
@@ -104,7 +104,7 @@ const switchPageControlPanel = () => {
 /**
  * 子组件注入使用
  */
-const canvasInst = reactive<CanvasInst>({
+const canvasInst = reactive<CanvasInstInterface>({
   addChart: addChart,
   chartList: chartList,
   activeChartById: activeChartById,

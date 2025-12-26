@@ -11,7 +11,7 @@ interface ComponentLibTagType {
 /**
  * 画布实例
  */
-interface CanvasInst {
+interface CanvasInstInterface {
   addChart: (type: string) => void
   chartList: Ref<Array<BasicConfig<unknown>>>
   activeChartById: (id: string) => void
@@ -101,4 +101,4 @@ interface GlobalVariable {
   script: string
 }
 
-export type { CanvasInst, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType, GlobalVariable }
+export type { CanvasInstInterface, LeftToolBar, ComponentLibTagType, ResourceLibType, ResourceLibTagType, GlobalVariable }

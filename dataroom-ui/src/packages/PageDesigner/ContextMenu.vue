@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, ref } from 'vue'
 import { DrConst } from '@/packages/_common/_constant.ts'
-import type { CanvasInst } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface } from '@/packages/_common/_type.ts'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
 
 import type { BasicConfig } from '@/packages/components/type/define.ts'
 import { ElMessage } from 'element-plus'
