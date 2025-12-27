@@ -1,0 +1,52 @@
+package com.gccloud.gapaas.core.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+/**
+ * 资源、素材、目录
+ */
+@Data
+@TableName("dr_resource")
+public class ResourceEntity extends BaseEntity {
+    /**
+     * 显示的名称
+     */
+    private String name;
+    /**
+     * 原始文件名称
+     */
+    private String originalName;
+    /**
+     * 编码
+     */
+    private String code;
+    /**
+     * 资源类型
+     */
+    private String resourceType;
+    /**
+     * 上级目录
+     */
+    private String parentCode;
+    /**
+     * 存储的路径
+     */
+    private String path;
+    /**
+     * 访问地址
+     */
+    private String url;
+    /**
+     * 缩略图、封面
+     */
+    private String thumbnail;
+    /**
+     * 文件大小（单位：KB）
+     */
+    private Integer size;
+    /**
+     * 描述
+     */
+    private String remark;
+}

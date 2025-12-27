@@ -10,3 +10,6 @@ spring:
     url: ${DATA_ROOM_DB_URL:jdbc:p6spy:mysql://127.0.0.1:3306/dataroom?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai}
     username: ${DATA_ROOM_DB_USER:root'}
     password: ${DATA_ROOM_DB_PWD:123456}
+
+data-room:
+  resourcePath: ${DATA_ROOM_RESOURCE_PATH:D:/dataRoom}
