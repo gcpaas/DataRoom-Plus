@@ -1,6 +1,8 @@
 package com.gccloud.gcpaas.core.shiro;
 
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.util.TokenUtils;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,13 +25,11 @@ import java.io.IOException;
 @Slf4j
 public class ShiroAuthFilter extends AuthenticatingFilter {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
-        /**
-         * 检查是否是数字签名
-         */
-        HttpServletRequest req = (HttpServletRequest) request;
-        String token = TokenUtils.getToken((HttpServletRequest) request, globalConfig.getJwt());
+        String token = TokenUtils.getToken((HttpServletRequest) request);
         if (StringUtils.isBlank(token)) {
             return new ShiroAuthToken("");
         }
@@ -47,20 +47,15 @@ public class ShiroAuthFilter extends AuthenticatingFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest req = (HttpServletRequest) request;
-        String sign = req.getHeader(SignUtils.U_SIGN);
-        if (StringUtils.equals(SignUtils.DEFAULT_SIGN, sign)) {
-            return executeLogin(request, response);
-        }
         // 获取请求token，如果token不存在，直接返回401
-        GlobalConfig globalConfig = SpringContextUtils.getBean(GlobalConfig.class);
-        String token = TokenUtils.getToken((HttpServletRequest) request, globalConfig.getJwt());
+        String token = TokenUtils.getToken((HttpServletRequest) request);
         if (StringUtils.isBlank(token)) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
             httpResponse.setHeader("Access-Control-Allow-Origin", getOrigin());
             httpResponse.setContentType("application/json;charset=utf-8");
-            String json = new Gson().toJson(R.error(GlobalConst.Response.Code.SERVER_ERROR, GlobalConst.Response.Msg.NO_TOKEN));
-            httpResponse.getWriter().print(json);
+            String body = OBJECT_MAPPER.writeValueAsString(Resp.authError());
+            httpResponse.getWriter().print(body);
             return false;
         }
         return executeLogin(request, response);
@@ -74,10 +69,9 @@ public class ShiroAuthFilter extends AuthenticatingFilter {
         httpResponse.setHeader("Access-Control-Allow-Origin", getOrigin());
         try {
             // 处理登录失败的异常
-            Throwable throwable = e.getCause() == null ? e : e.getCause();
-            R r = R.error(GlobalConst.Response.Code.NO_LOGIN, throwable.getMessage());
-            String json = new Gson().toJson(r);
-            httpResponse.getWriter().print(json);
+            log.error(ExceptionUtils.getStackTrace(e));
+            String body = OBJECT_MAPPER.writeValueAsString(Resp.authError());
+            httpResponse.getWriter().print(body);
         } catch (IOException e1) {
             log.error(ExceptionUtils.getStackTrace(e1));
         }

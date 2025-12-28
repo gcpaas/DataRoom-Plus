@@ -16,7 +16,7 @@ public class DataRoomShiroFilterFactoryBean extends ShiroFilterFactoryBean {
         Map<String, Filter> filterMap = manager.getFilters();
         Filter invalidRequestFilter = filterMap.get(DefaultFilter.invalidRequest.name());
         if (invalidRequestFilter instanceof InvalidRequestFilter) {
-            //此处是关键，设置false跳过URL携带中文400，servletPath中文校验
+            // 设置false跳过URL携带中文400，servletPath中文校验
             ((InvalidRequestFilter) invalidRequestFilter).setBlockNonAscii(false);
         }
         return manager;

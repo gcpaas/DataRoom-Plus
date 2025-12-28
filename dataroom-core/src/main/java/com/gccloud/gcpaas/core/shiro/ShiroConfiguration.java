@@ -1,6 +1,5 @@
 package com.gccloud.gcpaas.core.shiro;
 
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.mgt.SecurityManager;
@@ -60,63 +59,22 @@ public class ShiroConfiguration {
     }
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager, SessionManager sessionManager, GlobalConfig globalConfig) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         DataRoomShiroFilterFactoryBean shiroFilter = new DataRoomShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
         Map<String, Filter> filters = new HashMap<>(16);
         shiroFilter.setFilters(filters);
         filters.put(OAUTH, new ShiroAuthFilter());
         Map<String, String> filterMap = new LinkedHashMap<>();
-        // 积木报表静态资源过滤
-        filterMap.put("/jmreport/desreport_/**", ANON);
-        // 获取验证码
-        filterMap.put("/sys/captcha/**", ANON);
-        // 找回密码
-        filterMap.put("/sys/forgotPwd/**", ANON);
-        // 用户登录
-        filterMap.put("/sys/login/**", ANON);
-        // 注册用户
-        filterMap.put("/sys/register/**", ANON);
-        filterMap.put("/sys/regist", ANON);
-        // 去重
-        filterMap.put("/sys/user/repeatResgit", ANON);
-        filterMap.put("/sys/tenant/all", ANON);
-        filterMap.put("/sys/tenant/getAll", ANON);
-        filterMap.put("/sys/console/**", ANON);
-        // 为了解决分布式session问题，用户名、密码设置为空，通过程序进行鉴权
-        filterMap.put("/druid/**", ANON);
-        // websocket 放权
-        filterMap.put("/ws/**", ANON);
-        // swagger
-        filterMap.put("/swagger-resources/**", ANON);
-        filterMap.put("/swagger/**", ANON);
-        filterMap.put("/v2/api-docs", ANON);
-        filterMap.put("/v2/api-docs-ext", ANON);
-        filterMap.put("/swagger-ui.html", ANON);
-        filterMap.put("/webjars/**", ANON);
+        filterMap.put("/dataRoom/captcha/**", ANON);
+        filterMap.put("/dataRoom/login/**", ANON);
+        filterMap.put("/dataRoom/user/current", ANON);
         // Knife4j doc.html 需要
+        filterMap.put("/webjars/**", ANON);
         filterMap.put("/v3/api-docs/**", ANON);
         filterMap.put("/doc.html", ANON);
         // 静态资源
         filterMap.put("/static/**", ANON);
-        // cas单点登录
-        filterMap.put("/cas/**", ANON);
-        // xxl-job
-        filterMap.put("/api/callback", ANON);
-        filterMap.put("/api/registry", ANON);
-        filterMap.put("/api/registryRemove", ANON);
-        filterMap.put("/beat", ANON);
-        filterMap.put("/idleBeat", ANON);
-        filterMap.put("/run", ANON);
-        filterMap.put("/kill", ANON);
-        filterMap.put("/log", ANON);
-        /**
-         *  扩展shiro权限
-         */
-        Map<String, String> filterChainDefinitionMap = globalConfig.getShiro().getFilterChainDefinitionMap();
-        if (filterChainDefinitionMap != null) {
-            filterMap.putAll(filterChainDefinitionMap);
-        }
         filterMap.put("/**", OAUTH);
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;

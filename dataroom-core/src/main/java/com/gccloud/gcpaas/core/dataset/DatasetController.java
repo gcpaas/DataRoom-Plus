@@ -3,14 +3,11 @@ package com.gccloud.gcpaas.core.dataset;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
-import com.gccloud.gcpaas.core.bizComponent.ComponentDefinition;
-import com.gccloud.gcpaas.core.bizComponent.SysComponentService;
 import com.gccloud.gcpaas.core.dataset.service.AbstractDatasetService;
 import com.gccloud.gcpaas.core.dataset.service.DatasetServiceFactory;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
 import com.gccloud.gcpaas.core.mapper.DatasetMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
-import com.gccloud.gcpaas.core.util.JsonUtils;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,14 +17,11 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -44,8 +38,6 @@ public class DatasetController {
 
     @Resource
     private DatasetMapper datasetMapper;
-    @Resource
-    private SysComponentService componentCacheService;
     @Resource
     private DatasetServiceFactory datasetServiceFactory;
 
@@ -106,20 +98,6 @@ public class DatasetController {
     @PostMapping("/run")
     @Operation(summary = "执行", description = "执行数据集")
     public Resp<DatasetRunResponse> run(@RequestBody DatasetRunRequest datasetRunRequest) {
-        if (StringUtils.isBlank(datasetRunRequest.getDatasetCode())) {
-            // 直接获取图表默认数据
-            ComponentDefinition compDef = componentCacheService.getComponentDefinitionByName(datasetRunRequest.getChartName());
-            String path = compDef.getPath().substring(1);
-            try (InputStream is = DatasetController.class.getClassLoader().getResourceAsStream(path + "/data.json")) {
-                String dataStr = IOUtils.toString(is);
-                Object data = JsonUtils.getInstance().readValue(dataStr, Object.class);
-                DatasetRunResponse datasetRunResponse = new DatasetRunResponse();
-                datasetRunResponse.setData(data);
-                return Resp.success(datasetRunResponse);
-            } catch (Exception e) {
-                log.error(ExceptionUtils.getStackTrace(e));
-            }
-        }
         DatasetEntity datasetEntity = datasetMapper.getByCode(datasetRunRequest.getDatasetCode());
         Assert.isTrue(datasetEntity != null, "数据集不存在");
         AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(datasetEntity.getDatasetType());

@@ -66,4 +66,8 @@ public class Resp<T> {
     public static <T> Resp<T> error(String message) {
         return error(500, message);
     }
+
+    public static <T> Resp<T> authError() {
+        return error(401, "未登录或token已过期或认证异常");
+    }
 }
