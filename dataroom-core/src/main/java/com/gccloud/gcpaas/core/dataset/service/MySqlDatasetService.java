@@ -88,7 +88,7 @@ public class MySqlDatasetService extends AbstractDatasetService {
                 outputParam.setDesc(outputParam.getName());
                 structureList.add(outputParam);
             }
-            datasetRunResponse.setOutputParamList(structureList);
+            datasetRunResponse.setOutputList(structureList);
             List<Map<String, Object>> resultList = new ArrayList<>();
             while (resultSet.next()) {
                 Map<String, Object> row = new HashMap<>(columnCount);

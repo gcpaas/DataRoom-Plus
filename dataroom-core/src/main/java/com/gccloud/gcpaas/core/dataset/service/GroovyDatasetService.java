@@ -63,7 +63,7 @@ public class GroovyDatasetService extends AbstractDatasetService {
                     }
                 }
             }
-            datasetRunResponse.setOutputParamList(outputParamList);
+            datasetRunResponse.setOutputList(outputParamList);
             datasetRunResponse.setData(data);
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));

@@ -14,7 +14,7 @@ public class Resp<T> {
     /**
      * 状态码
      */
-    @Schema(name = "状态码", description = "200:成功，401:未登录,500:服务异常")
+    @Schema(description = "状态码，200:成功，401:未登录,500:服务异常")
     private Integer code = 500;
     /**
      * 异常提示信息

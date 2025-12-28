@@ -82,6 +82,7 @@ public class DatasourceController {
 
     @PostMapping("/delete/{code}")
     @Operation(summary = "删除", description = "根据编码删除数据源")
+    @Parameters({ @Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String code) {
         datasourceMapper.deleteByCode(code);
         return Resp.success(null);

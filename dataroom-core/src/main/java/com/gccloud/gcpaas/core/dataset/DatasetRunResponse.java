@@ -14,7 +14,7 @@ public class DatasetRunResponse {
     /**
      * 出参
      */
-    private List<DatasetOutputParam> outputParamList = new ArrayList<>();
+    private List<DatasetOutputParam> outputList = new ArrayList<>();
     /**
      * 数据集执行结果
      */
