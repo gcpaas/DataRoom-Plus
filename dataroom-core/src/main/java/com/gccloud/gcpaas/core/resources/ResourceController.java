@@ -1,6 +1,5 @@
 package com.gccloud.gcpaas.core.resources;
 
-import com.gccloud.gcpaas.core.SuperController;
 import com.gccloud.gcpaas.core.bean.Resp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -22,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RequestMapping("/maxv/sysResource")
 @Controller
-public class ResourceController extends SuperController {
+public class ResourceController {
 
     @GetMapping({"/icon/list"})
     @ResponseBody

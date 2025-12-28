@@ -1,8 +1,7 @@
 package com.gccloud.gcpaas.core.dataset;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gccloud.gcpaas.core.MaxvConstant;
-import com.gccloud.gcpaas.core.SuperController;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.bizComponent.ComponentDefinition;
 import com.gccloud.gcpaas.core.bizComponent.SysComponentService;
@@ -33,7 +32,7 @@ import java.util.List;
 @RestController
 @Controller
 @RequestMapping("/maxv/dataset")
-public class DatasetController extends SuperController {
+public class DatasetController {
 
     private static final Logger log = LoggerFactory.getLogger(DatasetController.class);
 
@@ -72,7 +71,7 @@ public class DatasetController extends SuperController {
 
     @PostMapping("/insert")
     public Resp<String> insert(@RequestBody DatasetEntity datasetEntity) {
-        datasetEntity.setCode(CodeWorker.generateCode(MaxvConstant.Dataset.CODE_PREFIX));
+        datasetEntity.setCode(CodeWorker.generateCode(DataRoomConstant.Dataset.CODE_PREFIX));
         datasetMapper.insert(datasetEntity);
         return Resp.success(datasetEntity.getId());
     }

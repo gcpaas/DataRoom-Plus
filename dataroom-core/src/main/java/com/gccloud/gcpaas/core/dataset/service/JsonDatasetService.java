@@ -2,7 +2,7 @@ package com.gccloud.gcpaas.core.dataset.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gccloud.gcpaas.core.MaxvConstant;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.JsonDataset;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Slf4j
-@Service(value = MaxvConstant.Dataset.TYPE.JSON + MaxvConstant.Dataset.TYPE.SERVICE_NAME)
+@Service(value = DataRoomConstant.Dataset.TYPE.JSON + DataRoomConstant.Dataset.TYPE.SERVICE_NAME)
 public class JsonDatasetService extends AbstractDatasetService {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();

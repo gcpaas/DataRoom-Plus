@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gccloud.gcpaas.core.MaxvConstant;
-import com.gccloud.gcpaas.core.SuperController;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.PageVo;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.entity.PageEntity;
@@ -36,7 +35,7 @@ import java.util.List;
 @RestController
 @Controller
 @RequestMapping("/maxv/page")
-public class PageController extends SuperController {
+public class PageController {
     @Resource
     private PageDesignService pageDesignService;
     @Resource
@@ -113,7 +112,7 @@ public class PageController extends SuperController {
     public Resp<String> publish(@RequestBody PagePublishDto pagePublishDto) throws JsonProcessingException {
         // 修改发布状态
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
-                .set(PageEntity::getState, MaxvConstant.PageDesign.STATE.PUBLISHED)
+                .set(PageEntity::getState, DataRoomConstant.PageDesign.STATE.PUBLISHED)
                 .set(PageEntity::getUpdateDate, new Date())
                 .eq(PageEntity::getCode, pagePublishDto.getCode());
         pageDesignService.update(updateWrapper);
@@ -124,7 +123,7 @@ public class PageController extends SuperController {
             PageStageEntity pageStageEntity = new PageStageEntity();
             pageStageEntity.setCode(pagePublishDto.getCode());
             pageStageEntity.setRemark("发布前自动备份");
-            pageStageEntity.setState(MaxvConstant.PageStage.STATE.HISTORY);
+            pageStageEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
             pageStageEntity.setEntityConfig(objectMapper.writeValueAsString(pageReleaseEntity));
             pageStageService.save(pageStageEntity);
         }
@@ -150,7 +149,7 @@ public class PageController extends SuperController {
     @PostMapping("/offline")
     public Resp<Void> offline(@RequestBody PageOfflineDto pageOfflineDto) throws JsonProcessingException {
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
-                .set(PageEntity::getState, MaxvConstant.PageDesign.STATE.DESIGN)
+                .set(PageEntity::getState, DataRoomConstant.PageDesign.STATE.DESIGN)
                 .set(PageEntity::getUpdateDate, new Date())
                 .eq(PageEntity::getCode, pageOfflineDto.getCode());
         pageDesignService.update(updateWrapper);
@@ -161,7 +160,7 @@ public class PageController extends SuperController {
             PageStageEntity pageStageEntity = new PageStageEntity();
             pageStageEntity.setCode(pageOfflineDto.getCode());
             pageStageEntity.setRemark("取消发布前自动备份");
-            pageStageEntity.setState(MaxvConstant.PageStage.STATE.HISTORY);
+            pageStageEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
             pageStageEntity.setEntityConfig(objectMapper.writeValueAsString(pageReleaseEntity));
             pageStageService.save(pageStageEntity);
         }
@@ -267,16 +266,16 @@ public class PageController extends SuperController {
         PageStageEntity pageHistoryEntity = new PageStageEntity();
         pageHistoryEntity.setCode(pageStageEntity.getCode());
         pageHistoryEntity.setRemark("回滚前自动备份");
-        pageHistoryEntity.setState(MaxvConstant.PageStage.STATE.HISTORY);
+        pageHistoryEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
         pageHistoryEntity.setEntityConfig(objectMapper.writeValueAsString(pageDesignEntity));
         pageStageService.save(pageHistoryEntity);
         // 回退历史为当前设计态
         PageEntity rollbackPageDesignEntity = null;
         String stateTarget = pageStageEntity.getStateTarget();
-        if (MaxvConstant.PageStage.TARGET.PAGE_RELEASE.equals(stateTarget)) {
+        if (DataRoomConstant.PageStage.TARGET.PAGE_RELEASE.equals(stateTarget)) {
             PageReleaseEntity pageReleaseEntity = objectMapper.readValue(pageStageEntity.getEntityConfig(), PageReleaseEntity.class);
             rollbackPageDesignEntity = pageReleaseEntity.getEntityConfig();
-        } else if (MaxvConstant.PageStage.TARGET.PAGE_DESIGN.equals(stateTarget)) {
+        } else if (DataRoomConstant.PageStage.TARGET.PAGE_DESIGN.equals(stateTarget)) {
             rollbackPageDesignEntity = objectMapper.readValue(pageStageEntity.getEntityConfig(), PageEntity.class);
         }
         // 覆盖回退

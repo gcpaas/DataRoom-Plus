@@ -1,6 +1,6 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
-import com.gccloud.gcpaas.core.MaxvConstant;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Service(value = MaxvConstant.Dataset.TYPE.MYSQL + MaxvConstant.Dataset.TYPE.SERVICE_NAME)
+@Service(value = DataRoomConstant.Dataset.TYPE.MYSQL + DataRoomConstant.Dataset.TYPE.SERVICE_NAME)
 public class MySqlDatasetService extends AbstractDatasetService {
 
     @Resource

@@ -1,11 +1,10 @@
 package com.gccloud.gcpaas.core.datasource;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gccloud.gcpaas.core.MaxvConstant;
-import com.gccloud.gcpaas.core.SuperController;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
-import com.gccloud.gcpaas.core.mapper.DatasourceMapper;
+import com.gccloud.gcpaas.core.mapper.DataSourceMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +20,10 @@ import java.util.List;
 @RestController
 @Controller
 @RequestMapping("/maxv/datasource")
-public class DatasourceController extends SuperController {
+public class DatasourceController  {
 
     @Resource
-    private DatasourceMapper datasourceMapper;
+    private DataSourceMapper datasourceMapper;
 
     @GetMapping("/list")
     public Resp<List<DataSourceEntity>> list(@RequestParam(name = "name", required = false) String name) {
@@ -46,7 +45,7 @@ public class DatasourceController extends SuperController {
 
     @PostMapping("/insert")
     public Resp<String> insert(@RequestBody DataSourceEntity datasourceEntity) {
-        datasourceEntity.setCode(CodeWorker.generateCode(MaxvConstant.Datasource.CODE_PREFIX));
+        datasourceEntity.setCode(CodeWorker.generateCode(DataRoomConstant.Datasource.CODE_PREFIX));
         datasourceMapper.insert(datasourceEntity);
         return Resp.success(datasourceEntity.getId());
     }

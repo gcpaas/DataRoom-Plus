@@ -2,7 +2,7 @@ package com.gccloud.gcpaas.core.dataset.service;
 
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gccloud.gcpaas.core.MaxvConstant;
+import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.KeyVal;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Slf4j
-@Service(value = MaxvConstant.Dataset.TYPE.HTTP + MaxvConstant.Dataset.TYPE.SERVICE_NAME)
+@Service(value = DataRoomConstant.Dataset.TYPE.HTTP + DataRoomConstant.Dataset.TYPE.SERVICE_NAME)
 public class HttpDatasetService extends AbstractDatasetService {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -70,10 +70,10 @@ public class HttpDatasetService extends AbstractDatasetService {
                 body = ParamUtils.replace(body, entry.getKey(), entry.getValue().toString());
             }
             Object data = null;
-            if (MaxvConstant.Dataset.HTTP_DATASET.METHOD.GET.equalsIgnoreCase(httpDataset.getMethod())) {
+            if (DataRoomConstant.Dataset.HTTP_DATASET.METHOD.GET.equalsIgnoreCase(httpDataset.getMethod())) {
                 String respBody = HttpUtil.createGet(url).addHeaders(headers).execute().body();
                 data = OBJECT_MAPPER.readValue(respBody, Object.class);
-            } else if (MaxvConstant.Dataset.HTTP_DATASET.METHOD.POST.equalsIgnoreCase(httpDataset.getMethod())) {
+            } else if (DataRoomConstant.Dataset.HTTP_DATASET.METHOD.POST.equalsIgnoreCase(httpDataset.getMethod())) {
                 String respBody = HttpUtil.createPost(url).addHeaders(headers).body(body).execute().body();
                 data = OBJECT_MAPPER.readValue(respBody, Object.class);
             }

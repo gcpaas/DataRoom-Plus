@@ -1,6 +1,5 @@
 package com.gccloud.gcpaas.server;
 
-import com.gccloud.gcpaas.core.config.MaxvConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.mybatis.spring.annotation.MapperScan;
@@ -13,8 +12,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class DataRoomApplication {
     @Resource
     private JdbcTemplate jdbcTemplate;
-    @Resource
-    private MaxvConfig maxvConfig;
 
     @PostConstruct
     public void init() {

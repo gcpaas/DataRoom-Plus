@@ -1,6 +1,5 @@
 package com.gccloud.gcpaas.core.bizComponent;
 
-import com.gccloud.gcpaas.core.SuperController;
 import com.gccloud.gcpaas.core.bean.Resp;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @RequestMapping("/maxv/sysComponent")
 @Controller
-public class SysComponentController extends SuperController {
+public class SysComponentController {
 
     private static final Logger log = LoggerFactory.getLogger(SysComponentController.class);
 

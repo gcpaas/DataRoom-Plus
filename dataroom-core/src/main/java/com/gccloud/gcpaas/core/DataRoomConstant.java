@@ -1,6 +1,6 @@
 package com.gccloud.gcpaas.core;
 
-public interface MaxvConstant {
+public interface DataRoomConstant {
 
     /**
      * 页面
