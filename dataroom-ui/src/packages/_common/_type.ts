@@ -53,11 +53,11 @@ interface PageEntityInterface {
   id: string
   // 页面名称
   name: string
-  pageCode: string
-  parentPageCode: string
+  code: string
+  parentCode: string
   pageType: string
   // 封面图片地址
-  coverPicture: string
+  thumbnail: string
   // 备注描述
   remark: string
   // 基础配置

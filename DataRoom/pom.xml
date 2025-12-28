@@ -10,12 +10,12 @@
     </parent>
 
     <groupId>com.gccloud</groupId>
-    <artifactId>dataroom</artifactId>
+    <artifactId>dataroom-plus</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>dataroom-core</module>
-        <module>dataroom-server</module>
+        <module>dataroom-plus-core</module>
+        <module>dataroom-plus-server</module>
     </modules>
 
     <properties>
