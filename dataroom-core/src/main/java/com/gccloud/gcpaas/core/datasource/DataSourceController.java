@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @Controller
 @RequestMapping("/dataRoom/dataSource")
-public class DatasourceController {
+public class DataSourceController {
 
     @Resource
     private DataSourceMapper datasourceMapper;
