@@ -1,4 +1,4 @@
-package com.gccloud.gcpaas.core;
+package com.gccloud.gcpaas.core.constant;
 
 public interface DataRoomConstant {
 

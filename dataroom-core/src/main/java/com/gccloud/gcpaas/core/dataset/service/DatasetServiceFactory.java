@@ -1,6 +1,6 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
-import com.gccloud.gcpaas.core.DataRoomConstant;
+import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;

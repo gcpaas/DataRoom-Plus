@@ -2,7 +2,7 @@ package com.gccloud.gcpaas.core.dataset.bean;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.gccloud.gcpaas.core.DataRoomConstant;
+import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "datasetType")
 @JsonSubTypes({
