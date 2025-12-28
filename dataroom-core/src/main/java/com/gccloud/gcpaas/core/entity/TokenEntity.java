@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 登录的token
+ * 登录的token、未来扩展
  */
 @Data
 @TableName(value = "dr_token")

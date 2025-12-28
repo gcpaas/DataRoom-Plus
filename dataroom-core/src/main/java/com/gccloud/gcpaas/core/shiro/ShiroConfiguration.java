@@ -67,9 +67,8 @@ public class ShiroConfiguration {
         filters.put(OAUTH, new ShiroAuthFilter());
         Map<String, String> filterMap = new LinkedHashMap<>();
         filterMap.put("/dataRoom/captcha/**", ANON);
-        filterMap.put("/dataRoom/login/**", ANON);
-        filterMap.put("/dataRoom/user/current", ANON);
-
+        filterMap.put("/dataRoom/user/login/**", ANON);
+        
         // Knife4j doc.html 需要
         filterMap.put("/webjars/**", ANON);
         filterMap.put("/v3/api-docs/**", ANON);
