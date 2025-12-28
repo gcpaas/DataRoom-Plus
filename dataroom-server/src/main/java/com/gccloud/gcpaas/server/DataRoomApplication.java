@@ -1,6 +1,6 @@
 package com.gccloud.gcpaas.server;
 
-import com.gccloud.gapaas.core.config.MaxvConfig;
+import com.gccloud.gcpaas.core.config.MaxvConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.mybatis.spring.annotation.MapperScan;
