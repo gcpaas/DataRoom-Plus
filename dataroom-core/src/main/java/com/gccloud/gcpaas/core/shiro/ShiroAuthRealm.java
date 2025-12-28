@@ -14,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -144,6 +145,7 @@ public class ShiroAuthRealm extends AuthorizingRealm {
                 loginUser.setRoleCodeList(respDataObj.getList("roleCodeList", String.class));
             }
         } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
             if (e instanceof DataRoomException) {
                 throw e;
             }

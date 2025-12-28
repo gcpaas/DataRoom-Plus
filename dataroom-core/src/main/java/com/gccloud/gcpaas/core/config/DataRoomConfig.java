@@ -16,7 +16,7 @@ public class DataRoomConfig {
     /**
      * jwt
      */
-    private Jwt jwt;
+    private Jwt jwt = new Jwt();
     /**
      * 单点登录配置
      */

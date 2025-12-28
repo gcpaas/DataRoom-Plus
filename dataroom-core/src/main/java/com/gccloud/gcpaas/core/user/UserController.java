@@ -5,7 +5,9 @@ import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.entity.UserEntity;
 import com.gccloud.gcpaas.core.mapper.UserMapper;
+import com.gccloud.gcpaas.core.shiro.LoginUser;
 import com.gccloud.gcpaas.core.user.service.UserService;
+import com.gccloud.gcpaas.core.util.LoginUserUtils;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -83,5 +85,13 @@ public class UserController {
     public Resp<Void> delete(@PathVariable("username") String username) {
         userService.deleteByUsername(username);
         return Resp.success(null);
+    }
+
+    @GetMapping("/current")
+    @RequiresRoles(value = DataRoomRole.SHARER)
+    @Operation(summary = "登录用户", description = "获取当前登录用户信息")
+    public Resp<LoginUser> current() {
+        LoginUser currentUser = LoginUserUtils.getCurrentUser();
+        return Resp.success(currentUser);
     }
 }

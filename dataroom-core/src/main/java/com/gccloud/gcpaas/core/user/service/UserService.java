@@ -19,7 +19,6 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
         return this.getOne(queryWrapper, false);
     }
 
-
     public boolean deleteByUsername(String username) {
         Assert.isTrue(StringUtils.isNotBlank(username), "用户名不能为空");
         return this.remove(new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUsername, username));
