@@ -11,5 +11,19 @@ spring:
     username: ${DATA_ROOM_DB_USER:root'}
     password: ${DATA_ROOM_DB_PWD:123456}
 
+# 接口文档配置
+knife4j:
+  # 开启增强配置
+  enable: true
+  basic:
+    # 是否开启认证
+    enable: false
+    # 证用户名
+    username: admin
+    # 认证密码
+    password: dataRoom
+  setting:
+    enable-footer: false
+
 data-room:
   apiUrl: ${DATA_ROOM_RESOURCE_PATH:D:/dataRoom}
