@@ -10,6 +10,7 @@ import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.constant.PageStatus;
 import com.gccloud.gcpaas.core.entity.PageEntity;
 import com.gccloud.gcpaas.core.entity.PageStageEntity;
+import com.gccloud.gcpaas.core.mapper.PageMapper;
 import com.gccloud.gcpaas.core.page.dto.PageOfflineDto;
 import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
@@ -34,10 +35,12 @@ import java.util.List;
 @Slf4j
 @RestController
 @Controller
-@RequestMapping("/dataroom/page")
+@RequestMapping("/dataRoom/page")
 public class PageController {
     @Resource
     private PageService pageService;
+    @Resource
+    private PageMapper pageMapper;
     @Resource
     private PageStageService pageStageService;
     @Resource
@@ -63,12 +66,12 @@ public class PageController {
     /**
      * 详情查询
      *
-     * @param id
+     * @param code
      * @return
      */
-    @GetMapping("/detail/{id}")
-    public Resp<PageEntity> detail(@PathVariable("id") String id) {
-        PageEntity pageDesignEntity = pageService.getById(id);
+    @GetMapping("/detail/{code}")
+    public Resp<PageEntity> detail(@PathVariable("code") String code) {
+        PageEntity pageDesignEntity = pageMapper.getByCode(code);
         return Resp.success(pageDesignEntity);
     }
 

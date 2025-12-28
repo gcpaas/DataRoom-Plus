@@ -40,7 +40,7 @@ public class MySqlDatasetService extends AbstractDatasetService {
         try {
             String datasourceCode = datasetEntity.getDataSourceCode();
             DataSourceEntity dataSourceDefinition = dataSourceDefinitionService.getByCode(datasourceCode);
-            MySqlDatasource dataSource = (MySqlDatasource) dataSourceDefinition.getDatasource();
+            MySqlDatasource dataSource = (MySqlDatasource) dataSourceDefinition.getDataSource();
             Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
             Map<String, Object> params = new HashMap<>();
             List<DatasetInputParam> inputParamList = datasetEntity.getInputList();

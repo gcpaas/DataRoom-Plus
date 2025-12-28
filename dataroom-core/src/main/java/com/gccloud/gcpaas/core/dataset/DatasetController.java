@@ -12,6 +12,7 @@ import com.gccloud.gcpaas.core.entity.DatasetEntity;
 import com.gccloud.gcpaas.core.mapper.DatasetMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
 import com.gccloud.gcpaas.core.util.JsonUtils;
+import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,11 +28,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 页面
+ * 数据集
  */
 @RestController
 @Controller
-@RequestMapping("/maxv/dataset")
+@RequestMapping("/dataRoom/dataset")
 public class DatasetController {
 
     private static final Logger log = LoggerFactory.getLogger(DatasetController.class);
@@ -48,7 +49,14 @@ public class DatasetController {
     @GetMapping("/list")
     public Resp<List<DatasetEntity>> list(@RequestParam(name = "name", required = false) String name) {
         LambdaQueryWrapper<DatasetEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(DatasetEntity::getId, DatasetEntity::getCode, DatasetEntity::getName, DatasetEntity::getDatasetType, DatasetEntity::getUpdateDate);
+        // 排除的字段
+        List<String> excludeFields = Lists.newArrayList("dataset","inputList","outputList");
+        queryWrapper.select(DatasetEntity.class, tableFieldInfo -> {
+            if (excludeFields.contains(tableFieldInfo.getProperty())) {
+                return false;
+            }
+            return true;
+        });
         queryWrapper.orderByDesc(DatasetEntity::getUpdateDate);
         if (StringUtils.isNotBlank(name)) {
             queryWrapper.like(DatasetEntity::getName, name);
@@ -57,9 +65,9 @@ public class DatasetController {
         return Resp.success(list);
     }
 
-    @GetMapping("/detail/{id}")
-    public Resp<DatasetEntity> detail(@PathVariable("id") String id) {
-        DatasetEntity datasetEntity = datasetMapper.selectById(id);
+    @GetMapping("/detail/{code}")
+    public Resp<DatasetEntity> detail(@PathVariable("code") String code) {
+        DatasetEntity datasetEntity = datasetMapper.getByCode(code);
         return Resp.success(datasetEntity);
     }
 
@@ -83,9 +91,9 @@ public class DatasetController {
         return Resp.success(datasetEntity.getId());
     }
 
-    @PostMapping("/delete/{id}")
-    public Resp<Void> delete(@PathVariable("id") String id) {
-        datasetMapper.deleteById(id);
+    @PostMapping("/delete/{code}")
+    public Resp<Void> delete(@PathVariable("code") String code) {
+        datasetMapper.deleteByCode(code);
         return Resp.success(null);
     }
 

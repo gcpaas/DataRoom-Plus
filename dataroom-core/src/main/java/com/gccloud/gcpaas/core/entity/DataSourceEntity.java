@@ -24,5 +24,5 @@ public class DataSourceEntity extends BaseEntity {
      * 实际数据源
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private BaseDataSource datasource;
+    private BaseDataSource dataSource;
 }
