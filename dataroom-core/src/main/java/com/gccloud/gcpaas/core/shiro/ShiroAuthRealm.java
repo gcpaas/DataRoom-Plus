@@ -5,15 +5,15 @@ import com.alibaba.fastjson2.JSONObject;
 import com.gccloud.gcpaas.core.config.DataRoomConfig;
 import com.gccloud.gcpaas.core.config.bean.Jwt;
 import com.gccloud.gcpaas.core.config.bean.Sso;
+import com.gccloud.gcpaas.core.entity.UserEntity;
 import com.gccloud.gcpaas.core.exception.DataRoomException;
+import com.gccloud.gcpaas.core.user.service.UserService;
 import com.gccloud.gcpaas.core.util.TokenUtils;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -43,6 +43,8 @@ public class ShiroAuthRealm extends AuthorizingRealm {
     private DataRoomConfig dataRoomConfig;
     @Resource
     private RestTemplate restTemplate;
+    @Resource
+    private UserService userService;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -73,7 +75,6 @@ public class ShiroAuthRealm extends AuthorizingRealm {
             throw new DataRoomException("未登录或token已过期或认证异常", 401);
         }
         String tokenIssuer = null;
-        // 非加密的token
         JSONObject jwtObj = TokenUtils.parseWithOutValidate(accessToken);
         if (jwtObj == null || !jwtObj.containsKey("iss")) {
             tokenIssuer = "unrecognized";
@@ -83,39 +84,44 @@ public class ShiroAuthRealm extends AuthorizingRealm {
         Jwt jwt = dataRoomConfig.getJwt();
         String localIssuer = jwt.getIssuer();
         LoginUser loginUser = new LoginUser();
-        if (localIssuer.equals(tokenIssuer)) {
-            try {
+        try {
+            if (localIssuer.equals(tokenIssuer)) {
                 Claims claims = Jwts.parser().setSigningKey(jwt.getSecret()).build().parseClaimsJws(accessToken).getBody();
                 // 解析token，然后获取用户相关信息
                 String username = claims.get("username", String.class);
-            } catch (ExpiredJwtException e) {
-                log.error("当前jwt策略为none，token已到期，无法访问， {}", ExceptionUtils.getStackTrace(e));
-                throw new DataRoomException("未登录或token已过期或认证异常", 401);
-            }
-        } else {
-            Sso thirdPartyRestSso = null;
-            // 单点登录，带着其他应用的token进来的
-            List<Sso> ssoList = dataRoomConfig.getSsoList();
-            for (Sso sso : ssoList) {
-                if (!sso.getEnable()) {
-                    continue;
+                UserEntity user = userService.getByUsername(username);
+                if (user == null || !"normal".equals(user.getState())) {
+                    throw new DataRoomException("用户不存在或已禁用");
                 }
-                if (sso.getIssuer().equals(tokenIssuer)) {
-                    thirdPartyRestSso = sso;
-                    break;
+                loginUser = new LoginUser();
+                loginUser.setId(user.getId());
+                loginUser.setUsername(user.getUsername());
+                loginUser.setRealName(user.getRealName());
+                loginUser.setTenantCode(user.getTenantCode());
+                loginUser.setRoleCodeList(user.getRoleCodeList());
+            } else {
+                Sso thirdPartyRestSso = null;
+                // 单点登录，带着其他应用的token进来的
+                List<Sso> ssoList = dataRoomConfig.getSsoList();
+                for (Sso sso : ssoList) {
+                    if (!sso.getEnable()) {
+                        continue;
+                    }
+                    if (sso.getIssuer().equals(tokenIssuer)) {
+                        thirdPartyRestSso = sso;
+                        break;
+                    }
                 }
-            }
-            if (thirdPartyRestSso == null) {
-                // 不是本系统的token，直接抛异常
-                log.error("不是符合指定的应用token值规范，无法完成单点登录");
-                throw new DataRoomException("单点登录失败", 401);
-            }
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(thirdPartyRestSso.getTokenKey(), accessToken);
-            headers.add("Cookie", thirdPartyRestSso.getTokenKey() + "=" + accessToken);
-            HttpEntity<Void> requestEntity = new HttpEntity<>(null, headers);
-            long start = System.currentTimeMillis();
-            try {
+                if (thirdPartyRestSso == null) {
+                    // 不是本系统的token，直接抛异常
+                    log.error("不是符合指定的应用token值规范，无法完成单点登录");
+                    throw new DataRoomException("单点登录失败");
+                }
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(thirdPartyRestSso.getTokenKey(), accessToken);
+                headers.add("Cookie", thirdPartyRestSso.getTokenKey() + "=" + accessToken);
+                HttpEntity<Void> requestEntity = new HttpEntity<>(null, headers);
+                long start = System.currentTimeMillis();
                 ResponseEntity<String> responseEntity = restTemplate.exchange(thirdPartyRestSso.getCurrentUserUrl(), HttpMethod.GET, requestEntity, String.class);
                 if (!responseEntity.getStatusCode().is2xxSuccessful()) {
                     log.error("单点登录校验失败，url: {} 响应内容: {}", thirdPartyRestSso.getCurrentUserUrl(), responseEntity.getBody());
@@ -136,13 +142,14 @@ public class ShiroAuthRealm extends AuthorizingRealm {
                 loginUser.setRealName(respDataObj.getString("realName"));
                 loginUser.setTenantCode(respDataObj.getString("tenantCode"));
                 loginUser.setRoleCodeList(respDataObj.getList("roleCodeList", String.class));
-                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(loginUser, token.getPrincipal(), getName());
-                return info;
-            } catch (Exception e) {
-                log.error(ExceptionUtils.getStackTrace(e));
+            }
+        } catch (Exception e) {
+            if (e instanceof DataRoomException) {
                 throw e;
             }
+            throw new DataRoomException("认证失败", 401);
         }
-        return null;
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(loginUser, token.getPrincipal(), getName());
+        return info;
     }
 }

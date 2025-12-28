@@ -1,6 +1,8 @@
 package com.gccloud.gcpaas.core.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
 import java.util.List;
@@ -38,5 +40,6 @@ public class UserEntity extends BaseEntity {
     /**
      * 角色编码
      */
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> roleCodeList;
 }
