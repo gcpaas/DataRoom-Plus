@@ -1,3 +1,16 @@
+dataroom:
+  # 用户列表
+  userList:
+    - username: admin
+      realName: 管理员
+      tenantCode: default
+      password: <PASSWORD>
+      state: normal
+      roleCodeList:
+        - manager
+        - developer
+        - sharer
+
 # 接口文档配置
 knife4j:
   # 开启增强配置
