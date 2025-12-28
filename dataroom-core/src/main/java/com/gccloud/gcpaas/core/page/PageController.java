@@ -16,7 +16,13 @@ import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
 import com.gccloud.gcpaas.core.page.service.PageService;
 import com.gccloud.gcpaas.core.page.service.PageStageService;
+import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.google.common.collect.Lists;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +41,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @Controller
+@Tag(name = "页面")
+@ApiSort(value = 10)
 @RequestMapping("/dataRoom/page")
 public class PageController {
     @Resource
@@ -53,6 +61,8 @@ public class PageController {
      * @return
      */
     @GetMapping("/list")
+    @Operation(summary = "列表查询", description = "根据名称查询")
+    @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY)})
     public Resp<List<PageEntity>> list(@RequestParam(name = "name") String name) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(PageEntity::getUpdateDate);
@@ -69,6 +79,8 @@ public class PageController {
      * @param code
      * @return
      */
+    @Operation(summary = "详情", description = "根据编码查询")
+    @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.PATH)})
     @GetMapping("/detail/{code}")
     public Resp<PageEntity> detail(@PathVariable("code") String code) {
         PageEntity pageDesignEntity = pageMapper.getByCode(code);
@@ -82,6 +94,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/insert")
+    @Operation(summary = "新增", description = "新增页面")
     public Resp<String> insert(@RequestBody PageEntity pageDesignEntity) {
         log.info("新增页面 {}", pageDesignEntity);
         pageService.saveOrUpdate(pageDesignEntity);
@@ -95,6 +108,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/update")
+    @Operation(summary = "更新", description = "更新页面")
     public Resp<String> update(@RequestBody PageEntity pageDesignEntity) {
         pageDesignEntity.setUpdateDate(new Date());
         pageService.updateById(pageDesignEntity);
@@ -109,6 +123,7 @@ public class PageController {
      * @throws JsonProcessingException
      */
     @PostMapping("/publish")
+    @Operation(summary = "发布", description = "发布页面")
     public Resp<String> publish(@RequestBody PagePublishDto pagePublishDto) throws JsonProcessingException {
         // 修改发布状态
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
@@ -144,6 +159,7 @@ public class PageController {
      * @throws JsonProcessingException
      */
     @PostMapping("/offline")
+    @Operation(summary = "取消发布", description = "取消发布")
     public Resp<Void> offline(@RequestBody PageOfflineDto pageOfflineDto) {
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
                 .set(PageEntity::getPageStatus, PageStatus.DESIGN)
@@ -169,6 +185,8 @@ public class PageController {
      * @return
      */
     @PostMapping("/delete/{code}")
+    @Operation(summary = "删除", description = "根据编码删除")
+    @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String pageCode) {
 
         LambdaQueryWrapper<PageStageEntity> deleteStageWrapper = new LambdaQueryWrapper<>();
@@ -189,6 +207,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/updatePageConfig")
+    @Operation(summary = "更新页面配置", description = "更新页面配置")
     public Resp<Void> updatePageConfig(@RequestBody PageStageEntity pageStage) {
         LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(PageStageEntity::getPageConfig, pageStage.getPageConfig());
@@ -207,6 +226,7 @@ public class PageController {
      * @throws ParseException
      */
     @GetMapping("/stage/list")
+    @Operation(summary = "历史记录", description = "根据时间、状态查询历史")
     public Resp<PageVo<PageStageEntity>> stagePage(PageStageSearchDto stageSearch) throws ParseException {
         Page<PageStageEntity> searchPage = new Page<>(stageSearch.getCurrent(), stageSearch.getSize());
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
@@ -234,6 +254,8 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/delete/{id}")
+    @Operation(summary = "删除单条历史", description = "根据主键删除历史")
+    @Parameters({@Parameter(name = "id", description = "历史主键", in = ParameterIn.PATH)})
     public Resp<String> stageDelete(@PathVariable("id") String id) {
         pageStageService.removeById(id);
         return Resp.success(id);
@@ -245,6 +267,8 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/clear/{code}/{state}")
+    @Operation(summary = "历史清空", description = "根据页面编码清空对应历史")
+    @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<Void> stageClear(@PathVariable("code") String code, @PathVariable("state") String state) {
         PageStatus pageStatus = PageStatus.valueOf(state);
         if (!(pageStatus == PageStatus.HISTORY || pageStatus == PageStatus.SNAPSHOT)) {
@@ -264,7 +288,9 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/rollback/{id}")
-    public Resp<String> stageRollback(@PathVariable("id") String id) throws JsonProcessingException {
+    @Operation(summary = "回退", description = "根据历史记录回退")
+    @Parameters({@Parameter(name = "id", description = "历史记录ID", in = ParameterIn.PATH)})
+    public Resp<String> stageRollback(@PathVariable("id") String id) {
         PageStageEntity pageStage = pageStageService.getById(id);
 
         // 当前设计态修改为历史
