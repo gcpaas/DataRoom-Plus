@@ -25,5 +25,16 @@ knife4j:
   setting:
     enable-footer: false
 
+springdoc:
+  # 解决实体本身默认会解析为参数问题 https://doc.xiaominfo.com/docs/faq/v4/knife4j-parameterobject-flat-param
+  default-flat-param-object: true
+  group-configs:
+    # 项目上自定义的包名可以配置多个
+    - group: 'DataRoom'
+      paths-to-match: '/**'
+      # 扫描的包、可以配置多个
+      packages-to-scan:
+        - com.gccloud.gcpaas
+
 data-room:
   apiUrl: ${DATA_ROOM_RESOURCE_PATH:D:/dataRoom}

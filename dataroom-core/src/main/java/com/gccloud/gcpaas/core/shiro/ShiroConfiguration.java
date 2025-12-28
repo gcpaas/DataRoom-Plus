@@ -69,10 +69,11 @@ public class ShiroConfiguration {
         filterMap.put("/dataRoom/captcha/**", ANON);
         filterMap.put("/dataRoom/login/**", ANON);
         filterMap.put("/dataRoom/user/current", ANON);
+
         // Knife4j doc.html 需要
         filterMap.put("/webjars/**", ANON);
         filterMap.put("/v3/api-docs/**", ANON);
-        filterMap.put("/doc.html", ANON);
+        filterMap.put("/doc.html/**", ANON);
         // 静态资源
         filterMap.put("/static/**", ANON);
         filterMap.put("/**", OAUTH);
