@@ -1,6 +1,8 @@
 package com.gccloud.gcpaas.core.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.gccloud.gcpaas.core.constant.PageStatus;
+import com.gccloud.gcpaas.core.constant.PageType;
 import lombok.Data;
 
 /**
@@ -20,11 +22,11 @@ public class PageEntity extends BaseEntity {
     /**
      * 页面类型
      */
-    private String pageType;
+    private PageType pageType = PageType.PAGE;
     /**
      * 所属目录编码
      */
-    private String parentCode;
+    private String parentCode = "root";
     /**
      * 页面描述
      */
@@ -34,11 +36,7 @@ public class PageEntity extends BaseEntity {
      */
     private String thumbnail;
     /**
-     * 页面配置
-     */
-    private String pageConfig;
-    /**
      * 页面状态
      */
-    private String state;
+    private PageStatus pageStatus = PageStatus.DESIGN;
 }

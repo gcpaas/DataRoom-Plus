@@ -5,21 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gccloud.gcpaas.core.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.PageVo;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.constant.PageStatus;
 import com.gccloud.gcpaas.core.entity.PageEntity;
-import com.gccloud.gcpaas.core.entity.PageReleaseEntity;
 import com.gccloud.gcpaas.core.entity.PageStageEntity;
 import com.gccloud.gcpaas.core.page.dto.PageOfflineDto;
 import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
-import com.gccloud.gcpaas.core.page.service.PageDesignService;
-import com.gccloud.gcpaas.core.page.service.PageReleaseService;
+import com.gccloud.gcpaas.core.page.service.PageService;
 import com.gccloud.gcpaas.core.page.service.PageStageService;
+import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +34,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @Controller
-@RequestMapping("/maxv/page")
+@RequestMapping("/dataroom/page")
 public class PageController {
     @Resource
-    private PageDesignService pageDesignService;
-    @Resource
-    private PageReleaseService pageReleaseService;
+    private PageService pageService;
     @Resource
     private PageStageService pageStageService;
     @Resource
@@ -54,12 +52,11 @@ public class PageController {
     @GetMapping("/list")
     public Resp<List<PageEntity>> list(@RequestParam(name = "name") String name) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(PageEntity::getId, PageEntity::getPageType, PageEntity::getName, PageEntity::getRemark, PageEntity::getState, PageEntity::getUpdateDate);
         queryWrapper.orderByDesc(PageEntity::getUpdateDate);
         if (StringUtils.isNotBlank(name)) {
             queryWrapper.like(PageEntity::getName, name);
         }
-        List<PageEntity> list = pageDesignService.list(queryWrapper);
+        List<PageEntity> list = pageService.list(queryWrapper);
         return Resp.success(list);
     }
 
@@ -71,7 +68,7 @@ public class PageController {
      */
     @GetMapping("/detail/{id}")
     public Resp<PageEntity> detail(@PathVariable("id") String id) {
-        PageEntity pageDesignEntity = pageDesignService.getById(id);
+        PageEntity pageDesignEntity = pageService.getById(id);
         return Resp.success(pageDesignEntity);
     }
 
@@ -84,7 +81,7 @@ public class PageController {
     @PostMapping("/insert")
     public Resp<String> insert(@RequestBody PageEntity pageDesignEntity) {
         log.info("新增页面 {}", pageDesignEntity);
-        pageDesignService.saveOrUpdate(pageDesignEntity);
+        pageService.saveOrUpdate(pageDesignEntity);
         return Resp.success(pageDesignEntity.getId());
     }
 
@@ -97,7 +94,7 @@ public class PageController {
     @PostMapping("/update")
     public Resp<String> update(@RequestBody PageEntity pageDesignEntity) {
         pageDesignEntity.setUpdateDate(new Date());
-        pageDesignService.updateById(pageDesignEntity);
+        pageService.updateById(pageDesignEntity);
         return Resp.success(pageDesignEntity.getId());
     }
 
@@ -112,31 +109,28 @@ public class PageController {
     public Resp<String> publish(@RequestBody PagePublishDto pagePublishDto) throws JsonProcessingException {
         // 修改发布状态
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
-                .set(PageEntity::getState, DataRoomConstant.PageDesign.STATE.PUBLISHED)
+                .set(PageEntity::getPageStatus, PageStatus.PUBLISHED)
                 .set(PageEntity::getUpdateDate, new Date())
                 .eq(PageEntity::getCode, pagePublishDto.getCode());
-        pageDesignService.update(updateWrapper);
-        // 发布到release表中
-        PageReleaseEntity pageReleaseEntity = pageReleaseService.getByCode(pagePublishDto.getCode());
-        // 新增一条历史记录
-        if (pageReleaseEntity != null) {
-            PageStageEntity pageStageEntity = new PageStageEntity();
-            pageStageEntity.setCode(pagePublishDto.getCode());
-            pageStageEntity.setRemark("发布前自动备份");
-            pageStageEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
-            pageStageEntity.setEntityConfig(objectMapper.writeValueAsString(pageReleaseEntity));
-            pageStageService.save(pageStageEntity);
-        }
-        if (pageReleaseEntity == null) {
-            pageReleaseEntity = new PageReleaseEntity();
-        }
-        // 更新发布记录
-        PageEntity pageDesignEntity = pageDesignService.getByCode(pagePublishDto.getCode());
-        pageReleaseEntity.setCode(pageReleaseEntity.getCode());
-        pageReleaseEntity.setRemark(pagePublishDto.getRemark());
-        pageReleaseEntity.setEntityConfig(pageDesignEntity);
-        pageReleaseService.saveOrUpdate(pageReleaseEntity);
-        return Resp.success(pageReleaseEntity.getId());
+        pageService.update(updateWrapper);
+
+        // 历史发布转为记录
+        LambdaUpdateWrapper<PageStageEntity> pageStateUpdateWrapper = new LambdaUpdateWrapper<PageStageEntity>()
+                .eq(PageStageEntity::getPageStatus, PageStatus.PUBLISHED)
+                .eq(PageStageEntity::getPageCode, pagePublishDto.getCode())
+                .set(PageStageEntity::getUpdateDate, new Date())
+                .set(PageStageEntity::getRemark, "发布自动备份")
+                .set(PageStageEntity::getPageStatus, PageStatus.HISTORY);
+        pageStageService.update(pageStateUpdateWrapper);
+
+        // 设计态生成发布
+        PageStageEntity pageStage = pageStageService.getByCode(pagePublishDto.getCode(), PageStatus.DESIGN);
+        PageStageEntity newPageStage = new PageStageEntity();
+        BeanUtils.copyProperties(pageStage, newPageStage);
+        newPageStage.setPageStatus(PageStatus.PUBLISHED);
+        newPageStage.setRemark(pagePublishDto.getRemark());
+        pageStageService.save(newPageStage);
+        return Resp.success(pageStage.getId());
     }
 
     /**
@@ -147,61 +141,58 @@ public class PageController {
      * @throws JsonProcessingException
      */
     @PostMapping("/offline")
-    public Resp<Void> offline(@RequestBody PageOfflineDto pageOfflineDto) throws JsonProcessingException {
+    public Resp<Void> offline(@RequestBody PageOfflineDto pageOfflineDto) {
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
-                .set(PageEntity::getState, DataRoomConstant.PageDesign.STATE.DESIGN)
+                .set(PageEntity::getPageStatus, PageStatus.DESIGN)
                 .set(PageEntity::getUpdateDate, new Date())
                 .eq(PageEntity::getCode, pageOfflineDto.getCode());
-        pageDesignService.update(updateWrapper);
-        // 发布到release表中
-        PageReleaseEntity pageReleaseEntity = pageReleaseService.getByCode(pageOfflineDto.getCode());
-        // 新增一条历史记录
-        if (pageReleaseEntity != null) {
-            PageStageEntity pageStageEntity = new PageStageEntity();
-            pageStageEntity.setCode(pageOfflineDto.getCode());
-            pageStageEntity.setRemark("取消发布前自动备份");
-            pageStageEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
-            pageStageEntity.setEntityConfig(objectMapper.writeValueAsString(pageReleaseEntity));
-            pageStageService.save(pageStageEntity);
-        }
-        // 删除
-        LambdaQueryWrapper<PageReleaseEntity> deleteWrapper = new LambdaQueryWrapper<>();
-        deleteWrapper.eq(PageReleaseEntity::getCode, pageOfflineDto.getCode());
-        pageReleaseService.remove(deleteWrapper);
+        pageService.update(updateWrapper);
+
+        // 历史发布转为记录
+        LambdaUpdateWrapper<PageStageEntity> pageStateUpdateWrapper = new LambdaUpdateWrapper<PageStageEntity>()
+                .eq(PageStageEntity::getPageStatus, PageStatus.PUBLISHED)
+                .eq(PageStageEntity::getPageCode, pageOfflineDto.getCode())
+                .set(PageStageEntity::getUpdateDate, new Date())
+                .set(PageStageEntity::getRemark, pageOfflineDto.getRemark())
+                .set(PageStageEntity::getPageStatus, PageStatus.HISTORY);
+        pageStageService.update(pageStateUpdateWrapper);
         return Resp.success(null);
     }
 
     /**
      * 删除
      *
-     * @param code
+     * @param pageCode
      * @return
      */
     @PostMapping("/delete/{code}")
-    public Resp<Void> delete(@PathVariable("code") String code) {
-        LambdaQueryWrapper<PageReleaseEntity> deleteReleaseWrapper = new LambdaQueryWrapper<>();
-        deleteReleaseWrapper.eq(PageReleaseEntity::getCode, code);
-        pageReleaseService.remove(deleteReleaseWrapper);
+    public Resp<Void> delete(@PathVariable("code") String pageCode) {
 
         LambdaQueryWrapper<PageStageEntity> deleteStageWrapper = new LambdaQueryWrapper<>();
-        deleteStageWrapper.eq(PageStageEntity::getCode, code);
+        deleteStageWrapper.eq(PageStageEntity::getCode, pageCode);
         pageStageService.remove(deleteStageWrapper);
 
         LambdaQueryWrapper<PageEntity> deleteDesignWrapper = new LambdaQueryWrapper<>();
-        deleteDesignWrapper.eq(PageEntity::getCode, code);
-        pageDesignService.remove(deleteDesignWrapper);
+        deleteDesignWrapper.eq(PageEntity::getCode, pageCode);
+        pageService.remove(deleteDesignWrapper);
 
         return Resp.success(null);
     }
 
+    /**
+     * 更新页面配置、仅能更新设计态
+     *
+     * @param pageStage
+     * @return
+     */
     @PostMapping("/updatePageConfig")
-    public Resp<Void> updatePageConfig(@RequestBody PageEntity pageDefinition) {
-        LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(PageEntity::getPageConfig, pageDefinition.getPageConfig());
-        updateWrapper.eq(PageEntity::getId, pageDefinition.getId());
-        updateWrapper.set(PageEntity::getUpdateDate, new Date());
-        updateWrapper.set(PageEntity::getName, pageDefinition.getName());
-        pageDesignService.update(updateWrapper);
+    public Resp<Void> updatePageConfig(@RequestBody PageStageEntity pageStage) {
+        LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(PageStageEntity::getPageConfig, pageStage.getPageConfig());
+        updateWrapper.eq(PageStageEntity::getPageCode, pageStage.getPageCode());
+        updateWrapper.eq(PageStageEntity::getPageStatus, PageStatus.DESIGN);
+        updateWrapper.set(PageStageEntity::getUpdateDate, new Date());
+        pageStageService.update(updateWrapper);
         return Resp.success(null);
     }
 
@@ -212,13 +203,20 @@ public class PageController {
      * @return
      * @throws ParseException
      */
-    @GetMapping("/stage")
+    @GetMapping("/stage/list")
     public Resp<PageVo<PageStageEntity>> stagePage(PageStageSearchDto stageSearch) throws ParseException {
         Page<PageStageEntity> searchPage = new Page<>(stageSearch.getCurrent(), stageSearch.getSize());
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(PageStageEntity::getId, PageStageEntity::getCode, PageStageEntity::getRemark, PageStageEntity::getState, PageStageEntity::getCreateDate, PageStageEntity::getCreateUser);
-        queryWrapper.eq(PageStageEntity::getCode, stageSearch.getCode());
-        queryWrapper.eq(StringUtils.isNotBlank(stageSearch.getState()), PageStageEntity::getState, stageSearch.getState());
+        // 排除的字段
+        List<String> excludeFields = Lists.newArrayList("pageConfig");
+        queryWrapper.select(PageStageEntity.class, tableFieldInfo -> {
+            if (excludeFields.contains(tableFieldInfo.getProperty())) {
+                return false;
+            }
+            return true;
+        });
+        queryWrapper.eq(PageStageEntity::getPageCode, stageSearch.getCode());
+        queryWrapper.eq(stageSearch.getPageStatus() != null, PageStageEntity::getPageStatus, stageSearch.getPageStatus());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         queryWrapper.ge(StringUtils.isNotBlank(stageSearch.getStartDate()), PageStageEntity::getCreateDate, sdf.parse(stageSearch.getStartDate()));
         queryWrapper.lt(StringUtils.isNotBlank(stageSearch.getEndDate()), PageStageEntity::getCreateDate, sdf.parse(stageSearch.getEndDate()));
@@ -239,49 +237,49 @@ public class PageController {
     }
 
     /**
-     * 清空历史记录
+     * 清空历史、快照记录
      *
      * @return
      */
     @PostMapping("/stage/clear/{code}/{state}")
     public Resp<Void> stageClear(@PathVariable("code") String code, @PathVariable("state") String state) {
+        PageStatus pageStatus = PageStatus.valueOf(state);
+        if (!(pageStatus == PageStatus.HISTORY || pageStatus == PageStatus.SNAPSHOT)) {
+            throw new RuntimeException("状态错误");
+        }
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PageStageEntity::getCode, code);
-        queryWrapper.eq(PageStageEntity::getState, state);
+        queryWrapper.eq(PageStageEntity::getPageStatus, pageStatus);
         pageStageService.remove(queryWrapper);
         return Resp.success(null);
     }
 
     /**
-     * 回退到设计态
+     * 回退到某个历史、快照
      *
      * @param id
      * @return
      */
     @PostMapping("/stage/rollback/{id}")
     public Resp<String> stageRollback(@PathVariable("id") String id) throws JsonProcessingException {
-        PageStageEntity pageStageEntity = pageStageService.getById(id);
-        PageEntity pageDesignEntity = pageDesignService.getByCode(pageStageEntity.getCode());
-        // 当前设计态转为历史记录
-        PageStageEntity pageHistoryEntity = new PageStageEntity();
-        pageHistoryEntity.setCode(pageStageEntity.getCode());
-        pageHistoryEntity.setRemark("回滚前自动备份");
-        pageHistoryEntity.setState(DataRoomConstant.PageStage.STATE.HISTORY);
-        pageHistoryEntity.setEntityConfig(objectMapper.writeValueAsString(pageDesignEntity));
-        pageStageService.save(pageHistoryEntity);
-        // 回退历史为当前设计态
-        PageEntity rollbackPageDesignEntity = null;
-        String stateTarget = pageStageEntity.getStateTarget();
-        if (DataRoomConstant.PageStage.TARGET.PAGE_RELEASE.equals(stateTarget)) {
-            PageReleaseEntity pageReleaseEntity = objectMapper.readValue(pageStageEntity.getEntityConfig(), PageReleaseEntity.class);
-            rollbackPageDesignEntity = pageReleaseEntity.getEntityConfig();
-        } else if (DataRoomConstant.PageStage.TARGET.PAGE_DESIGN.equals(stateTarget)) {
-            rollbackPageDesignEntity = objectMapper.readValue(pageStageEntity.getEntityConfig(), PageEntity.class);
-        }
-        // 覆盖回退
-        pageDesignEntity.setPageConfig(rollbackPageDesignEntity.getPageConfig());
-        pageDesignService.updateById(pageDesignEntity);
-        return Resp.success(pageDesignEntity.getId());
+        PageStageEntity pageStage = pageStageService.getById(id);
+
+        // 当前设计态修改为历史
+        LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(PageStageEntity::getPageCode, pageStage.getPageCode());
+        updateWrapper.eq(PageStageEntity::getPageStatus, PageStatus.DESIGN);
+        updateWrapper.set(PageStageEntity::getUpdateDate, new Date());
+        updateWrapper.set(PageStageEntity::getPageStatus, PageStatus.HISTORY);
+        pageStageService.update(updateWrapper);
+
+        // 历史态转为设计态
+        updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(PageStageEntity::getId, id);
+        updateWrapper.set(PageStageEntity::getUpdateDate, new Date());
+        updateWrapper.set(PageStageEntity::getPageStatus, PageStatus.DESIGN);
+        pageStageService.update(updateWrapper);
+
+        return Resp.success(id);
     }
 
 }

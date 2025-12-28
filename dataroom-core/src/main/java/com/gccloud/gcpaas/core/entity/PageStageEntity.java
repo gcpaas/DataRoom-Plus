@@ -1,33 +1,38 @@
 package com.gccloud.gcpaas.core.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.gccloud.gcpaas.core.constant.PageStatus;
+import com.gccloud.gcpaas.core.constant.PageType;
+import com.gccloud.gcpaas.core.page.bean.BasePageConfig;
 import lombok.Data;
 
 /**
  * 中转态页面（历史记录、快照）
  */
 @Data
-@TableName("`mv_page_stage`")
+@TableName("dr_page_stage")
 public class PageStageEntity extends BaseEntity {
     /**
      * 页面编码
      */
-    private String code;
+    private String pageCode;
     /**
-     * 记录说明
+     * 历史记录、快照、版本发布说明
      */
     private String remark;
     /**
-     * 中转状态、如：快照、历史记录、临时保存等
-     * 参考 ${@link  com.xiaoka.maxv.MaxvConstant.PageStage.STATE}
+     * 页面状态
      */
-    private String state;
+    private PageStatus pageStatus = PageStatus.DESIGN;
     /**
-     * 中转的目标对象，用于反序列化使用
+     * 页面类型
      */
-    private String stateTarget;
+    private PageType pageType;
     /**
-     * 配置信息
+     * 页面配置
      */
-    private String entityConfig;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private BasePageConfig pageConfig;
 }

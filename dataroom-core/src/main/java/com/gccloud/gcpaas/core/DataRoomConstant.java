@@ -2,24 +2,6 @@ package com.gccloud.gcpaas.core;
 
 public interface DataRoomConstant {
 
-    /**
-     * 页面
-     */
-    interface PageDesign {
-        /**
-         * 页面状态
-         */
-        interface STATE {
-            /**
-             * 已发布
-             */
-            String PUBLISHED = "published";
-            /**
-             * 设计中
-             */
-            String DESIGN = "design";
-        }
-    }
 
     /**
      * 页面中转
