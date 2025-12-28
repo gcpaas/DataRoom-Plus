@@ -164,8 +164,8 @@ local.properties
 .buildpath
 
 # sbteclipse plugin
-.target
-
+target/
+*.class
 # Tern plugin
 .tern-project
 
