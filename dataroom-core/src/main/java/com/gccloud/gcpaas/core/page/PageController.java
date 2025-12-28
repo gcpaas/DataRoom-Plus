@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gccloud.gcpaas.core.bean.PageVo;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.constant.PageStatus;
 import com.gccloud.gcpaas.core.entity.PageEntity;
 import com.gccloud.gcpaas.core.entity.PageStageEntity;
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +63,7 @@ public class PageController {
      * @return
      */
     @GetMapping("/list")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
     @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY)})
     public Resp<List<PageEntity>> list(@RequestParam(name = "name") String name) {
@@ -79,9 +82,10 @@ public class PageController {
      * @param code
      * @return
      */
+    @GetMapping("/detail/{code}")
+    @RequiresRoles(value = DataRoomRole.SHARER)
     @Operation(summary = "详情", description = "根据编码查询")
     @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.PATH)})
-    @GetMapping("/detail/{code}")
     public Resp<PageEntity> detail(@PathVariable("code") String code) {
         PageEntity pageDesignEntity = pageMapper.getByCode(code);
         return Resp.success(pageDesignEntity);
@@ -94,6 +98,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/insert")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "新增", description = "新增页面")
     public Resp<String> insert(@RequestBody PageEntity pageDesignEntity) {
         log.info("新增页面 {}", pageDesignEntity);
@@ -108,6 +113,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/update")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新", description = "更新页面")
     public Resp<String> update(@RequestBody PageEntity pageDesignEntity) {
         pageDesignEntity.setUpdateDate(new Date());
@@ -123,6 +129,7 @@ public class PageController {
      * @throws JsonProcessingException
      */
     @PostMapping("/publish")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "发布", description = "发布页面")
     public Resp<String> publish(@RequestBody PagePublishDto pagePublishDto) throws JsonProcessingException {
         // 修改发布状态
@@ -159,6 +166,7 @@ public class PageController {
      * @throws JsonProcessingException
      */
     @PostMapping("/offline")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "取消发布", description = "取消发布")
     public Resp<Void> offline(@RequestBody PageOfflineDto pageOfflineDto) {
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
@@ -185,6 +193,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/delete/{code}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "删除", description = "根据编码删除")
     @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String pageCode) {
@@ -207,6 +216,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/updatePageConfig")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新页面配置", description = "更新页面配置")
     public Resp<Void> updatePageConfig(@RequestBody PageStageEntity pageStage) {
         LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
@@ -226,6 +236,7 @@ public class PageController {
      * @throws ParseException
      */
     @GetMapping("/stage/list")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "历史记录", description = "根据时间、状态查询历史")
     public Resp<PageVo<PageStageEntity>> stagePage(PageStageSearchDto stageSearch) throws ParseException {
         Page<PageStageEntity> searchPage = new Page<>(stageSearch.getCurrent(), stageSearch.getSize());
@@ -254,6 +265,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/delete/{id}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "删除单条历史", description = "根据主键删除历史")
     @Parameters({@Parameter(name = "id", description = "历史主键", in = ParameterIn.PATH)})
     public Resp<String> stageDelete(@PathVariable("id") String id) {
@@ -267,6 +279,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/clear/{code}/{state}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "历史清空", description = "根据页面编码清空对应历史")
     @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<Void> stageClear(@PathVariable("code") String code, @PathVariable("state") String state) {
@@ -288,6 +301,7 @@ public class PageController {
      * @return
      */
     @PostMapping("/stage/rollback/{id}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "回退", description = "根据历史记录回退")
     @Parameters({@Parameter(name = "id", description = "历史记录ID", in = ParameterIn.PATH)})
     public Resp<String> stageRollback(@PathVariable("id") String id) {
@@ -310,5 +324,5 @@ public class PageController {
 
         return Resp.success(id);
     }
-
+    
 }

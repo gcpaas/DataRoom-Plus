@@ -3,6 +3,7 @@ package com.gccloud.gcpaas.core.datasource;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
 import com.gccloud.gcpaas.core.mapper.DataSourceMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,7 @@ public class DataSourceController {
     private DataSourceMapper datasourceMapper;
 
     @GetMapping("/list")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
     @Parameters({ @Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
     public Resp<List<DataSourceEntity>> list(@RequestParam(name = "name", required = false) String name) {
@@ -57,6 +60,7 @@ public class DataSourceController {
 
 
     @GetMapping("/detail/{code}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "详情", description = "根据编码查询")
     @Parameters({ @Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
     public Resp<DataSourceEntity> detail(@PathVariable("code") String code) {
@@ -65,6 +69,7 @@ public class DataSourceController {
     }
 
     @PostMapping("/insert")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "新增", description = "新增数据源")
     public Resp<String> insert(@RequestBody DataSourceEntity datasourceEntity) {
         datasourceEntity.setCode(CodeWorker.generateCode(DataRoomConstant.Datasource.CODE_PREFIX));
@@ -73,6 +78,7 @@ public class DataSourceController {
     }
 
     @PostMapping("/update")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新", description = "更新数据源")
     public Resp<String> update(@RequestBody DataSourceEntity datasourceEntity) {
         datasourceEntity.setUpdateDate(new Date());
@@ -81,6 +87,7 @@ public class DataSourceController {
     }
 
     @PostMapping("/delete/{code}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "删除", description = "根据编码删除数据源")
     @Parameters({ @Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String code) {

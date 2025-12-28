@@ -1,13 +1,12 @@
 package com.gccloud.gcpaas.core.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
-import com.gccloud.gcpaas.core.entity.DataSourceEntity;
-import com.gccloud.gcpaas.core.mapper.DataSourceMapper;
-import com.gccloud.gcpaas.core.util.CodeWorker;
+import com.gccloud.gcpaas.core.constant.DataRoomRole;
+import com.gccloud.gcpaas.core.entity.UserEntity;
+import com.gccloud.gcpaas.core.mapper.UserMapper;
+import com.gccloud.gcpaas.core.user.service.UserService;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
-import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -15,10 +14,10 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,59 +31,57 @@ import java.util.List;
 public class UserController {
 
     @Resource
-    private DataSourceMapper datasourceMapper;
+    private UserMapper userMapper;
+    @Resource
+    private UserService userService;
+
 
     @GetMapping("/list")
+    @RequiresRoles(value = DataRoomRole.MANAGER)
     @Operation(summary = "列表查询", description = "根据名称查询")
-    @Parameters({@Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
-    public Resp<List<DataSourceEntity>> list(@RequestParam(name = "name", required = false) String name) {
-        LambdaQueryWrapper<DataSourceEntity> queryWrapper = new LambdaQueryWrapper<>();
-        // 排除的字段
-        List<String> excludeFields = Lists.newArrayList("dataSource");
-        queryWrapper.select(DataSourceEntity.class, tableFieldInfo -> {
-            if (excludeFields.contains(tableFieldInfo.getProperty())) {
-                return false;
-            }
-            return true;
-        });
-        queryWrapper.orderByDesc(DataSourceEntity::getUpdateDate);
-        if (StringUtils.isNotBlank(name)) {
-            queryWrapper.like(DataSourceEntity::getName, name);
+    @Parameters({@Parameter(name = "username", description = "用户名称", in = ParameterIn.QUERY)})
+    public Resp<List<UserEntity>> list(@RequestParam(name = "username", required = false) String username) {
+        LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(UserEntity::getId, UserEntity::getUsername, UserEntity::getRealName, UserEntity::getRoleCodeList, UserEntity::getState);
+        queryWrapper.orderByDesc(UserEntity::getUpdateDate);
+        if (StringUtils.isNotBlank(username)) {
+            queryWrapper.like(UserEntity::getUsername, username);
         }
-        List<DataSourceEntity> list = datasourceMapper.selectList(queryWrapper);
+        List<UserEntity> list = userMapper.selectList(queryWrapper);
         return Resp.success(list);
     }
 
-
-    @GetMapping("/detail/{code}")
-    @Operation(summary = "详情", description = "根据编码查询")
-    @Parameters({@Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
-    public Resp<DataSourceEntity> detail(@PathVariable("code") String code) {
-        DataSourceEntity datasourceEntity = datasourceMapper.getByCode(code);
-        return Resp.success(datasourceEntity);
+    @GetMapping("/detail/{username}")
+    @RequiresRoles(value = DataRoomRole.MANAGER)
+    @Operation(summary = "详情", description = "根据用户名查询")
+    @Parameters({@Parameter(name = "username", description = "用户名", in = ParameterIn.PATH)})
+    public Resp<UserEntity> detail(@PathVariable("username") String username) {
+        UserEntity user = userService.getByUsername(username);
+        return Resp.success(user);
     }
 
     @PostMapping("/insert")
-    @Operation(summary = "新增", description = "新增数据源")
-    public Resp<String> insert(@RequestBody DataSourceEntity datasourceEntity) {
-        datasourceEntity.setCode(CodeWorker.generateCode(DataRoomConstant.Datasource.CODE_PREFIX));
-        datasourceMapper.insert(datasourceEntity);
-        return Resp.success(datasourceEntity.getId());
+    @RequiresRoles(value = DataRoomRole.MANAGER)
+    @Operation(summary = "新增", description = "新增用户")
+    public Resp<String> insert(@RequestBody UserEntity user) {
+        userMapper.insert(user);
+        return Resp.success(user.getId());
     }
 
     @PostMapping("/update")
-    @Operation(summary = "更新", description = "更新数据源")
-    public Resp<String> update(@RequestBody DataSourceEntity datasourceEntity) {
-        datasourceEntity.setUpdateDate(new Date());
-        datasourceMapper.updateById(datasourceEntity);
-        return Resp.success(datasourceEntity.getId());
+    @RequiresRoles(value = DataRoomRole.MANAGER)
+    @Operation(summary = "更新", description = "更新用户")
+    public Resp<String> update(@RequestBody UserEntity user) {
+        userMapper.updateById(user);
+        return Resp.success(user.getId());
     }
 
-    @PostMapping("/delete/{code}")
-    @Operation(summary = "删除", description = "根据编码删除数据源")
-    @Parameters({@Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
-    public Resp<Void> delete(@PathVariable("code") String code) {
-        datasourceMapper.deleteByCode(code);
+    @PostMapping("/delete/{username}")
+    @RequiresRoles(value = DataRoomRole.MANAGER)
+    @Operation(summary = "删除", description = "根据用户名称删除")
+    @Parameters({@Parameter(name = "username", description = "用户名", in = ParameterIn.PATH)})
+    public Resp<Void> delete(@PathVariable("username") String username) {
+        userService.deleteByUsername(username);
         return Resp.success(null);
     }
 }

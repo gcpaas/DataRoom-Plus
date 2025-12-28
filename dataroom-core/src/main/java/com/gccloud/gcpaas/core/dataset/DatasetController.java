@@ -3,6 +3,7 @@ package com.gccloud.gcpaas.core.dataset;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.dataset.service.AbstractDatasetService;
 import com.gccloud.gcpaas.core.dataset.service.DatasetServiceFactory;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,7 @@ public class DatasetController {
     private DatasetServiceFactory datasetServiceFactory;
 
     @GetMapping("/list")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
     @Parameters({@Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
     public Resp<List<DatasetEntity>> list(@RequestParam(name = "name", required = false) String name) {
@@ -64,6 +67,7 @@ public class DatasetController {
 
 
     @GetMapping("/detail/{code}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "详情", description = "根据编码查询")
     @Parameters({@Parameter(name = "code", description = "数据集编码", in = ParameterIn.PATH)})
     public Resp<DatasetEntity> detail(@PathVariable("code") String code) {
@@ -72,6 +76,7 @@ public class DatasetController {
     }
 
     @PostMapping("/insert")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "新增", description = "新增数据集")
     public Resp<String> insert(@RequestBody DatasetEntity datasetEntity) {
         datasetEntity.setCode(CodeWorker.generateCode(DataRoomConstant.Dataset.CODE_PREFIX));
@@ -80,6 +85,7 @@ public class DatasetController {
     }
 
     @PostMapping("/update")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新", description = "更新数据集")
     public Resp<String> update(@RequestBody DatasetEntity datasetEntity) {
         datasetEntity.setUpdateDate(new Date());
@@ -88,6 +94,7 @@ public class DatasetController {
     }
 
     @PostMapping("/delete/{code}")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "删除", description = "根据编码删除数据集")
     @Parameters({@Parameter(name = "code", description = "数据集编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String code) {
@@ -96,6 +103,7 @@ public class DatasetController {
     }
 
     @PostMapping("/run")
+    @RequiresRoles(value = DataRoomRole.SHARER)
     @Operation(summary = "执行", description = "执行数据集")
     public Resp<DatasetRunResponse> run(@RequestBody DatasetRunRequest datasetRunRequest) {
         DatasetEntity datasetEntity = datasetMapper.getByCode(datasetRunRequest.getDatasetCode());
@@ -106,6 +114,7 @@ public class DatasetController {
     }
 
     @PostMapping("/run/test")
+    @RequiresRoles(value = DataRoomRole.SHARER)
     @Operation(summary = "测试执行", description = "测试数据集")
     public Resp<DatasetRunResponse> runTest(@RequestBody DatasetTestRequest datasetTestRequest) {
         log.info("入参 {}", datasetTestRequest.getInputParam());
