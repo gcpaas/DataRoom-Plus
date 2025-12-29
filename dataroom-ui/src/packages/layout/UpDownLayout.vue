@@ -23,7 +23,7 @@ const jumpMenu = (path: string) => {
       </div>
       <div class="user">用户</div>
     </div>
-    <RouterView/>
+    <RouterView style="padding: 16px"/>
   </div>
 </template>
 
@@ -31,7 +31,6 @@ const jumpMenu = (path: string) => {
 .dr-up-down-layout {
   height: 100vh;
   width: 100%;
-
   & .header {
     background-color: var(--dr-primary);
     height: 60px;

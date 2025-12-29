@@ -1,6 +1,8 @@
 import { request } from '@/packages/_common/_request'
 
-// 页面实体接口
+/**
+ * 页面实体接口
+ */
 export interface PageEntity {
   id?: string
   code: string
@@ -14,13 +16,17 @@ export interface PageEntity {
   remark?: string
 }
 
-// 发布参数
+/**
+ * 发布参数
+ */
 export interface PagePublishDto {
   pageCode: string
   remark: string
 }
 
-// 取消发布参数
+/**
+ * 取消发布参数
+ */
 export interface PageOfflineDto {
   code: string
   remark: string

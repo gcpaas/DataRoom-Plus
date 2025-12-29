@@ -41,6 +41,11 @@ const router = createRouter({
       component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
     },
     {
+      path: '/dataRoom/visualScreenPreview',
+      name: 'visualScreenPreview',
+      component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
+    },
+    {
       path: '/dataRoom/pageDesigner',
       name: 'pageDesigner',
       component: () => import('@/packages/PageDesigner/PageDesigner.vue'),

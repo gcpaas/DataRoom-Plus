@@ -10,8 +10,10 @@ const searchName = ref('')
 const pageList = ref<PageEntity[]>([])
 const loading = ref(false)
 
-// 查询列表
-const fetchPageList = async () => {
+/**
+ * 查询
+ */
+const getPageList = () => {
   loading.value = true
   try {
     const params: { name?: string } = {}
@@ -28,13 +30,8 @@ const fetchPageList = async () => {
   }
 }
 
-// 搜索
-const handleSearch = () => {
-  fetchPageList()
-}
-
 // 新增页面
-const handleAdd = async () => {
+const handleAdd = () => {
   ElMessageBox.prompt('请输入页面名称', '新增页面', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -42,13 +39,14 @@ const handleAdd = async () => {
     inputErrorMessage: '页面名称不能为空'
   }).then(async ({value}) => {
     try {
-      await pageApi.insert({
+      pageApi.insert({
         name: value,
         code: 'page_' + Date.now(),
         pageType: 'visualScreen'
+      }).then((res) => {
+        ElMessage.success('新增成功')
+        getPageList()
       })
-      ElMessage.success('新增成功')
-      fetchPageList()
     } catch (error) {
       console.error('新增失败:', error)
     }
@@ -56,7 +54,10 @@ const handleAdd = async () => {
   })
 }
 
-// 编辑页面
+/**
+ * 编辑页面
+ * @param item
+ */
 const handleEdit = (item: PageEntity) => {
   router.push({
     path: '/dataRoom/pageDesigner',
@@ -64,7 +65,10 @@ const handleEdit = (item: PageEntity) => {
   })
 }
 
-// 发布
+/**
+ * 发布
+ * @param item
+ */
 const handlePublish = async (item: PageEntity) => {
   try {
     await pageApi.publish({
@@ -72,13 +76,16 @@ const handlePublish = async (item: PageEntity) => {
       remark: '发布'
     })
     ElMessage.success('发布成功')
-    fetchPageList()
+    getPageList()
   } catch (error) {
     console.error('发布失败:', error)
   }
 }
 
-// 取消发布
+/**
+ * 取消发布
+ * @param item
+ */
 const handleOffline = async (item: PageEntity) => {
   try {
     await pageApi.offline({
@@ -86,23 +93,27 @@ const handleOffline = async (item: PageEntity) => {
       remark: '取消发布'
     })
     ElMessage.success('取消发布成功')
-    fetchPageList()
+    getPageList()
   } catch (error) {
     console.error('取消发布失败:', error)
   }
 }
 
-// 删除
-const handleDelete = (item: PageEntity) => {
-  ElMessageBox.confirm('确定要删除该页面吗？', '提示', {
+/**
+ * 删除
+ * @param page
+ */
+const handleDelete = (page: PageEntity) => {
+  ElMessageBox.confirm(`确定要删除${page.name}吗？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
     try {
-      await pageApi.delete(item.code)
-      ElMessage.success('删除成功')
-      fetchPageList()
+      pageApi.delete(page.code).then((res) => {
+        ElMessage.success('删除成功')
+        getPageList()
+      })
     } catch (error) {
       console.error('删除失败:', error)
     }
@@ -110,17 +121,24 @@ const handleDelete = (item: PageEntity) => {
   })
 }
 
-// 预览
-const handlePreview = (item: PageEntity) => {
+/**
+ * 预览
+ * @param page
+ */
+const handlePreview = (page: PageEntity) => {
+  let path = '/dataRoom/pagePreviewer'
+  if (page.pageType = 'visualScreen') {
+    path = '/dataRoom/visualScreenPreview'
+  }
   router.push({
-    path: '/dataRoom/pagePreviewer',
-    query: {code: item.code}
+    path: path,
+    query: {code: page.code}
   })
 }
 
 // 页面加载时获取列表
 onMounted(() => {
-  fetchPageList()
+  getPageList()
 })
 </script>
 
@@ -133,11 +151,11 @@ onMounted(() => {
           placeholder="请输入页面名称"
           :prefix-icon="Search"
           clearable
-          @keyup.enter="handleSearch"
+          @keyup.enter="getPageList"
         />
       </div>
       <div class="button-group">
-        <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
+        <el-button :icon="Search" @click="getPageList">查询</el-button>
         <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
       </div>
     </div>
@@ -153,7 +171,7 @@ onMounted(() => {
           </div>
           <div class="card-footer">
             <div class="card-name" :title="item.name">{{ item.name }}</div>
-            <el-dropdown trigger="click" @command="(command) => {
+            <el-dropdown trigger="click" @command="(command:string) => {
               if (command === 'edit') handleEdit(item)
               else if (command === 'publish') handlePublish(item)
               else if (command === 'offline') handleOffline(item)
@@ -176,16 +194,13 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div v-if="!loading && pageList.length === 0" class="empty-text">
-        暂无数据
-      </div>
+      <el-empty :image-size="200" v-if="!loading && pageList.length === 0" description="暂无页面"/>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .dr-page {
-  padding: 20px;
   height: calc(100vh - 60px);
   overflow: hidden;
   display: flex;
@@ -194,7 +209,7 @@ onMounted(() => {
   .page-header {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     gap: 16px;
 
     .search-box {
@@ -277,13 +292,6 @@ onMounted(() => {
           }
         }
       }
-    }
-
-    .empty-text {
-      text-align: center;
-      padding: 100px 0;
-      color: #909399;
-      font-size: 14px;
     }
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getComponent, getComponentInstance } from '@DrPackage/components/install.ts'
+import { getComponent, getComponentInstance } from '@DrPackage/components/AutoInstall.ts'
 import { ref, provide, onMounted } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { ChartConfigInterface } from '@DrPackage/components/type/define.ts'

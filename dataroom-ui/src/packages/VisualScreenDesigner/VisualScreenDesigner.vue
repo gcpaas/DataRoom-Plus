@@ -3,7 +3,7 @@ import {
   getComponent,
   getComponentInstance,
   getPanelComponent,
-} from '@DrPackage/components/install.ts'
+} from '@DrPackage/components/AutoInstall.ts'
 import { type ComputedRef, type CSSProperties } from 'vue'
 import { debounce } from 'lodash'
 import Moveable, {
