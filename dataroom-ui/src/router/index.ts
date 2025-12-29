@@ -6,16 +6,28 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: '/dataRoom/pageDesigner'
+      redirect: '/dataRoom/page/index'
     },
     {
       path: '/dataRoom',
       name: 'dataRoom',
       component: () => import('@/packages/layout/UpDownLayout.vue'),
       children: [{
-        path: 'resource',
+        path: 'page/index',
+        name: 'page',
+        component: () => import('@/packages/page/index.vue'),
+      }, {
+        path: 'resource/index',
         name: 'resource',
         component: () => import('@/packages/resource/index.vue'),
+      }, {
+        path: 'dataSource/index',
+        name: 'dataSource',
+        component: () => import('@/packages/dataSource/index.vue'),
+      }, {
+        path: 'dataset/index',
+        name: 'dataset',
+        component: () => import('@/packages/dataset/index.vue'),
       }]
     },
     {
