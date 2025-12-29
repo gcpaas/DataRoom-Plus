@@ -3,40 +3,44 @@ import {ElMessage} from 'element-plus'
 import {getCookie, getCookieName} from './_cookie'
 import router from '@/router'
 
-// 响应数据接口
+/**
+ * 响应数据
+ */
 interface ResponseData<T = any> {
   code: number
   message?: string
   data?: T
 }
 
-// 创建 axios 实例
 const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
-  },
+  }
 })
 
-// 请求拦截器
+/**
+ * 请求拦截器
+ */
 service.interceptors.request.use(
   (config) => {
     // 从 Cookie 中获取认证信息并添加到请求头
     const cookieName = getCookieName()
-    const cookieValue = getCookie()
+    const cookieValue = getCookie(cookieName)
     if (cookieValue) {
       config.headers[cookieName] = cookieValue
     }
     return config
-  },
-  (error) => {
+  }, (error) => {
     console.error('请求错误:', error)
     return Promise.reject(error)
   },
 )
 
-// 响应拦截器
+/**
+ * 响应拦截器
+ */
 service.interceptors.response.use(
   (response: AxiosResponse<ResponseData>) => {
     const res = response.data
@@ -45,12 +49,10 @@ service.interceptors.response.use(
       // 直接返回 data 数据
       return res.data as any
     } else if (res.code === 401) {
-      // 401 未授权，跳转到登录页面
       ElMessage.error(res.message || '未授权，请重新登录')
       router.push('/login')
       return Promise.reject(new Error(res.message || '未授权'))
     } else {
-      // 其他错误码，提示异常信息
       ElMessage.error(res.message || '请求失败')
       return Promise.reject(new Error(res.message || '请求失败'))
     }
@@ -61,7 +63,9 @@ service.interceptors.response.use(
   },
 )
 
-// 封装请求方法
+/**
+ * 封装请求方法
+ */
 export const request = {
   get<T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
     return service.get(url, {params, ...config})
