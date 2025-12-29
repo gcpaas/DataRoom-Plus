@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/packages/page/index.vue'), // 请根据实际登录页面路径修改
+      component: () => import('@/packages/Login.vue'),
     },
     {
       path: '/dataRoom',

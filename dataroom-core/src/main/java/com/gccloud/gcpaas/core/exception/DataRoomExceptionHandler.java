@@ -81,7 +81,7 @@ public class DataRoomExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public Resp<String> illegalArgumentException(Exception e) {
         log.error(ExceptionUtils.getStackTrace(e));
-        return Resp.error("参数非法");
+        return Resp.error(e.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

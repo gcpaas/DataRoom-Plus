@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import logo from '@/assets/logo.png';
 import {useRouter, useRoute} from "vue-router";
-import {request} from "@/packages/_common/_request.ts";
+import request from "@/packages/_common/_request.ts";
 import {onMounted, ref, computed} from "vue";
 
 const router = useRouter()

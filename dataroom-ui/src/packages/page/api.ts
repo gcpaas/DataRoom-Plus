@@ -1,4 +1,4 @@
-import { request } from '@/packages/_common/_request'
+import  request from '@/packages/_common/_request'
 
 /**
  * 页面实体接口

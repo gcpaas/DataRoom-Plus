@@ -66,7 +66,7 @@ service.interceptors.response.use(
 /**
  * 封装请求方法
  */
-export const request = {
+const request = {
   get<T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
     return service.get(url, {params, ...config})
   },
@@ -83,3 +83,4 @@ export const request = {
     return service.delete(url, {params, ...config})
   },
 }
+export default request
