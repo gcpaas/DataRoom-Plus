@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -7,6 +7,16 @@ const router = createRouter({
       path: '/',
       name: 'home',
       redirect: '/dataRoom/pageDesigner'
+    },
+    {
+      path: '/dataRoom',
+      name: 'dataRoom',
+      component: () => import('@/packages/layout/UpDownLayout.vue'),
+      children: [{
+        path: 'resource',
+        name: 'resource',
+        component: () => import('@/packages/resource/index.vue'),
+      }]
     },
     {
       path: '/dataRoom/visualScreenDesigner',

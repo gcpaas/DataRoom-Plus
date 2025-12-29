@@ -72,7 +72,7 @@ public class PageController {
             @Parameter(name = "parentCode", description = "目录编码", in = ParameterIn.QUERY)
     })
     public Resp<List<PageEntity>> list(
-            @RequestParam(name = "name") String name,
+            @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "parentCode", required = false) String parentCode) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(parentCode), PageEntity::getParentCode, parentCode);
@@ -91,7 +91,7 @@ public class PageController {
     @GetMapping("/detail/{code}")
     @RequiresRoles(value = DataRoomRole.SHARER)
     @Operation(summary = "详情", description = "根据编码查询")
-    @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.PATH)})
+    @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<PageEntity> detail(@PathVariable("code") String code) {
         PageEntity pageDesignEntity = pageMapper.getByCode(code);
         return Resp.success(pageDesignEntity);

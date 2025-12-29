@@ -29,6 +29,7 @@ dataroom:
       state: normal
       roleCodeList: [ sharer ]
 
+
 # 接口文档配置
 knife4j:
   # 开启增强配置
@@ -53,3 +54,7 @@ springdoc:
       # 扫描的包、可以配置多个
       packages-to-scan:
         - com.gccloud.gcpaas
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
