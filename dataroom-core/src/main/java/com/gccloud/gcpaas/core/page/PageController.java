@@ -2,7 +2,6 @@ package com.gccloud.gcpaas.core.page;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,11 +110,11 @@ public class PageController {
         // 新增一个开发态
         PageStageEntity pageStage = new PageStageEntity();
         pageStage.setPageCode(pageEntity.getCode());
-        pageStage.setCode(IdWorker.getIdStr());
         pageStage.setRemark("初始化新建");
         pageStage.setPageStatus(PageStatus.DESIGN);
         pageStage.setPageType(pageEntity.getPageType());
-        pageStage.setPageConfig(new BasePageConfig());
+        BasePageConfig basePageConfig = pageStageService.getDefaultPageConfig(pageEntity.getPageType().getType());
+        pageStage.setPageConfig(basePageConfig);
         pageStageService.save(pageStage);
         return Resp.success(pageEntity.getId());
     }
@@ -150,20 +149,20 @@ public class PageController {
         LambdaUpdateWrapper<PageEntity> updateWrapper = new LambdaUpdateWrapper<PageEntity>()
                 .set(PageEntity::getPageStatus, PageStatus.PUBLISHED)
                 .set(PageEntity::getUpdateDate, new Date())
-                .eq(PageEntity::getCode, pagePublishDto.getCode());
+                .eq(PageEntity::getCode, pagePublishDto.getPageCode());
         pageService.update(updateWrapper);
 
         // 历史发布转为记录
         LambdaUpdateWrapper<PageStageEntity> pageStateUpdateWrapper = new LambdaUpdateWrapper<PageStageEntity>()
                 .eq(PageStageEntity::getPageStatus, PageStatus.PUBLISHED)
-                .eq(PageStageEntity::getPageCode, pagePublishDto.getCode())
+                .eq(PageStageEntity::getPageCode, pagePublishDto.getPageCode())
                 .set(PageStageEntity::getUpdateDate, new Date())
                 .set(PageStageEntity::getRemark, "发布自动备份")
                 .set(PageStageEntity::getPageStatus, PageStatus.HISTORY);
         pageStageService.update(pageStateUpdateWrapper);
 
         // 设计态生成发布
-        PageStageEntity pageStage = pageStageService.getByCode(pagePublishDto.getCode(), PageStatus.DESIGN);
+        PageStageEntity pageStage = pageStageService.getByCode(pagePublishDto.getPageCode(), PageStatus.DESIGN);
         PageStageEntity newPageStage = new PageStageEntity();
         BeanUtils.copyProperties(pageStage, newPageStage);
         newPageStage.setPageStatus(PageStatus.PUBLISHED);
@@ -213,7 +212,7 @@ public class PageController {
     public Resp<Void> delete(@PathVariable("code") String pageCode) {
 
         LambdaQueryWrapper<PageStageEntity> deleteStageWrapper = new LambdaQueryWrapper<>();
-        deleteStageWrapper.eq(PageStageEntity::getCode, pageCode);
+        deleteStageWrapper.eq(PageStageEntity::getPageCode, pageCode);
         pageStageService.remove(deleteStageWrapper);
 
         LambdaQueryWrapper<PageEntity> deleteDesignWrapper = new LambdaQueryWrapper<>();
@@ -324,7 +323,7 @@ public class PageController {
             throw new RuntimeException("状态错误");
         }
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(PageStageEntity::getCode, code);
+        queryWrapper.eq(PageStageEntity::getPageCode, code);
         queryWrapper.eq(PageStageEntity::getPageStatus, pageStatus);
         pageStageService.remove(queryWrapper);
         return Resp.success(null);

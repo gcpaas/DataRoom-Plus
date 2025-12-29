@@ -12,6 +12,10 @@ import lombok.Data;
         @JsonSubTypes.Type(value = VisualScreenPageConfig.class, name = PageType.VISUAL_SCREEN_TYPE),
         @JsonSubTypes.Type(value = PageConfig.class, name = PageType.PAGE_TYPE)
 })
-public class BasePageConfig {
+public abstract class BasePageConfig {
 
+    /**
+     * 初始化默认配置
+     */
+    public abstract void init();
 }

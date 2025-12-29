@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PagePublishDto {
-    private String code;
+    private String pageCode;
     private String remark;
 }

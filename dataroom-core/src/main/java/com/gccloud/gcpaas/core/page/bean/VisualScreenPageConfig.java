@@ -4,4 +4,8 @@ import lombok.Data;
 
 @Data
 public class VisualScreenPageConfig extends BasePageConfig {
+    @Override
+    public void init() {
+
+    }
 }
