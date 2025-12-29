@@ -71,7 +71,7 @@ public class PageController {
             @Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY),
             @Parameter(name = "parentCode", description = "目录编码", in = ParameterIn.QUERY)
     })
-    public Resp<List<PageEntity>> list(
+    public Resp<List<PageEntity>>   list(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "parentCode", required = false) String parentCode) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();

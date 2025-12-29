@@ -1,18 +1,27 @@
-import { fileURLToPath, URL } from 'node:url'
+import {fileURLToPath, URL} from 'node:url'
 
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { ReplaceThisPluginType } from './ReplaceThisPluginType'
+import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import {ReplaceThisPluginType} from './ReplaceThisPluginType'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: './',
   define: {
     __THIS_PLUGIN_TYPE__: JSON.stringify(process.env.THIS_PLUGIN_TYPE || ''),
+  },
+  server: {
+    // port: 5173,
+    // proxy: {
+    //   '/dataRoom': {
+    //     target: 'http://localhost:8081',
+    //     changeOrigin: true,
+    //   },
+    // },
   },
   plugins: [
     vue(),

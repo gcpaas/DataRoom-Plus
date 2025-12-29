@@ -9,6 +9,11 @@ const router = createRouter({
       redirect: '/dataRoom/page/index'
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/packages/page/index.vue'), // 请根据实际登录页面路径修改
+    },
+    {
       path: '/dataRoom',
       name: 'dataRoom',
       component: () => import('@/packages/layout/UpDownLayout.vue'),
