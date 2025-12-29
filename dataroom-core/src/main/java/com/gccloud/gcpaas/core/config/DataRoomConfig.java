@@ -15,6 +15,14 @@ import java.util.List;
 @ConfigurationProperties(prefix = "dataroom")
 public class DataRoomConfig {
     /**
+     * 公钥
+     */
+    private String publicKey;
+    /**
+     * 私钥
+     */
+    private String privateKey;
+    /**
      * jwt
      */
     private Jwt jwt = new Jwt();

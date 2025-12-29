@@ -1,6 +1,8 @@
 package com.gccloud.gcpaas.server;
 
+import com.gccloud.gcpaas.core.bean.Rsa;
 import com.gccloud.gcpaas.core.user.service.TokenService;
+import com.gccloud.gcpaas.core.util.RsaUtils;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -12,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 
 @Slf4j
 @SpringBootApplication(scanBasePackages = "com.gccloud.gcpaas")
@@ -33,8 +36,13 @@ public class DataRoomApplication {
         // 生成一个安全的 256 位 HMAC 密钥
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         // 将密钥转换为 Base64 编码的字符串z
-        String base64Key = java.util.Base64.getEncoder().encodeToString(key.getEncoded());
-        log.info("生成的JWT密钥: {}", base64Key);
+        String base64Key = Base64.getEncoder().encodeToString(key.getEncoded());
+        Rsa rsa = RsaUtils.generateRsaKeyPair();
+        log.info("------------以下信息可用于配置文件配置，每次重启随机生成-----------\n\n");
+        log.info("JWT密钥: {}", base64Key);
+        log.info("公钥: {}", rsa.getPublicKey());
+        log.info("私钥: {}", rsa.getPrivateKey());
+        log.info("\n\b-----------------------------------------------------------");
         SpringApplication.run(DataRoomApplication.class, args);
     }
 }

@@ -1,4 +1,4 @@
-package com.gccloud.gcpaas.core;
+package com.gccloud.gcpaas.core.dataset.service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -26,8 +26,7 @@ import java.util.regex.Pattern;
 
 @Service
 @Slf4j
-public class TestParse {
-
+public class MyBatisService {
 
     @Resource
     private SqlSessionFactory sqlSessionFactory;
