@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import logo from '@/assets/logo.png';
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {request} from "@/packages/_common/_request.ts";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, computed} from "vue";
 
 const router = useRouter()
+const route = useRoute()
 const jumpMenu = (path: string) => {
   router.push({
     path: path
   })
 };
 const username = ref('')
+
+// 判断菜单是否激活
+const isMenuActive = (path: string) => {
+  return route.path.includes(path)
+}
+
 onMounted(() => {
   request.get<any>(`/dataRoom/user/current`).then((res) => {
     console.log(res)
@@ -25,10 +32,10 @@ onMounted(() => {
       <div class="logo"><img :src="logo"></div>
       <div class="title">DataRoom设计器</div>
       <div class="menu">
-        <div class="item" @click="jumpMenu('/dataRoom/page/index')">页面设计</div>
-        <div class="item" @click="jumpMenu('/dataRoom/resource/index')">素材库</div>
-        <div class="item" @click="jumpMenu('/dataRoom/dataSource/index')">数据源</div>
-        <div class="item" @click="jumpMenu('/dataRoom/dataset/index')">数据集</div>
+        <div class="item" :class="{active: isMenuActive('/dataRoom/page')}" @click="jumpMenu('/dataRoom/page/index')">页面设计</div>
+        <div class="item" :class="{active: isMenuActive('/dataRoom/resource')}" @click="jumpMenu('/dataRoom/resource/index')">素材库</div>
+        <div class="item" :class="{active: isMenuActive('/dataRoom/dataSource')}" @click="jumpMenu('/dataRoom/dataSource/index')">数据源</div>
+        <div class="item" :class="{active: isMenuActive('/dataRoom/dataset')}" @click="jumpMenu('/dataRoom/dataset/index')">数据集</div>
       </div>
       <div class="user">{{ username }}</div>
     </div>
@@ -71,7 +78,6 @@ onMounted(() => {
       margin-left: auto;
       text-align: center;
       display: flex;
-      gap: 32px;
 
       & .item {
         cursor: pointer;
@@ -79,9 +85,26 @@ onMounted(() => {
         padding: 4px 16px;
         border-radius: 4px;
         transition: background-color 0.3s ease;
+        position: relative;
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        &.active {
+          background-color: rgba(255, 255, 255, 0.2);
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+          }
         }
       }
     }
