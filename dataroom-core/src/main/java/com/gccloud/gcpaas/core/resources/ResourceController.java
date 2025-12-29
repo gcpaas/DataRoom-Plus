@@ -2,6 +2,8 @@ package com.gccloud.gcpaas.core.resources;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.config.DataRoomConfig;
+import com.gccloud.gcpaas.core.config.bean.ResourceBean;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.entity.ResourceEntity;
 import com.gccloud.gcpaas.core.mapper.ResourceMapper;
@@ -13,13 +15,18 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 素材库
@@ -33,6 +40,8 @@ public class ResourceController {
 
     @Resource
     private ResourceMapper resourceMapper;
+    @Resource
+    private DataRoomConfig dataRoomConfig;
 
     @GetMapping("/list")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
@@ -64,12 +73,16 @@ public class ResourceController {
     @PostMapping("/upload")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "上传", description = "上传素材")
-    public Resp<String> upload(@RequestParam(value = "file", required = false) MultipartFile file,
-                               @RequestParam("hide") Integer hide,
-                               @RequestParam("coverUrl") String coverUrl,
-                               @RequestParam("coverId") String coverId,
-                               @RequestParam("type") String type) {
-        return Resp.success("");
+    public Resp<ResourceEntity> upload(@RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        ResourceBean resource = dataRoomConfig.getResource();
+        ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setName(file.getOriginalFilename());
+        resourceEntity.setOriginalName(file.getOriginalFilename());
+        String newFileName = UUID.randomUUID().toString().replace("-", "") + "." + FilenameUtils.getExtension(file.getOriginalFilename());
+        resourceEntity.setPath(newFileName);
+        resourceEntity.setUrl("/" + newFileName);
+        FileUtils.copyInputStreamToFile(file.getInputStream(), new File(resource.getBasePath() + File.separator + newFileName));
+        return Resp.success(resourceEntity);
     }
 
     @PostMapping("/insert")

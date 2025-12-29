@@ -1,8 +1,8 @@
 package com.gccloud.gcpaas.core.dataset;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.Resp;
+import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.dataset.service.AbstractDatasetService;
 import com.gccloud.gcpaas.core.dataset.service.DatasetServiceFactory;
@@ -46,8 +46,11 @@ public class DatasetController {
     @GetMapping("/list")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
-    @Parameters({@Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
-    public Resp<List<DatasetEntity>> list(@RequestParam(name = "name", required = false) String name) {
+    @Parameters({
+            @Parameter(name = "name", description = "数据集名称", in = ParameterIn.QUERY),
+            @Parameter(name = "parentCode", description = "目录编码", in = ParameterIn.QUERY)
+    })
+    public Resp<List<DatasetEntity>> list(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "parentCode", required = false) String parentCode) {
         LambdaQueryWrapper<DatasetEntity> queryWrapper = new LambdaQueryWrapper<>();
         // 排除的字段
         List<String> excludeFields = Lists.newArrayList("dataset", "inputList", "outputList");
@@ -57,10 +60,9 @@ public class DatasetController {
             }
             return true;
         });
+        queryWrapper.eq(StringUtils.isNotBlank(parentCode), DatasetEntity::getParentCode, parentCode);
+        queryWrapper.like(StringUtils.isNotBlank(name), DatasetEntity::getName, name);
         queryWrapper.orderByDesc(DatasetEntity::getUpdateDate);
-        if (StringUtils.isNotBlank(name)) {
-            queryWrapper.like(DatasetEntity::getName, name);
-        }
         List<DatasetEntity> list = datasetMapper.selectList(queryWrapper);
         return Resp.success(list);
     }

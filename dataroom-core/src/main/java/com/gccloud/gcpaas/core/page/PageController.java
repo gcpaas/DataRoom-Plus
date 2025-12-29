@@ -67,13 +67,17 @@ public class PageController {
     @GetMapping("/list")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
-    @Parameters({@Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY)})
-    public Resp<List<PageEntity>> list(@RequestParam(name = "name") String name) {
+    @Parameters({
+            @Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY),
+            @Parameter(name = "parentCode", description = "目录编码", in = ParameterIn.QUERY)
+    })
+    public Resp<List<PageEntity>> list(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "parentCode", required = false) String parentCode) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StringUtils.isNotBlank(parentCode), PageEntity::getParentCode, parentCode);
+        queryWrapper.like(StringUtils.isNotBlank(name), PageEntity::getName, name);
         queryWrapper.orderByDesc(PageEntity::getUpdateDate);
-        if (StringUtils.isNotBlank(name)) {
-            queryWrapper.like(PageEntity::getName, name);
-        }
         List<PageEntity> list = pageService.list(queryWrapper);
         return Resp.success(list);
     }

@@ -1,6 +1,7 @@
 package com.gccloud.gcpaas.core.config;
 
 import com.gccloud.gcpaas.core.config.bean.Jwt;
+import com.gccloud.gcpaas.core.config.bean.ResourceBean;
 import com.gccloud.gcpaas.core.config.bean.Sso;
 import com.gccloud.gcpaas.core.entity.UserEntity;
 import lombok.Data;
@@ -26,6 +27,10 @@ public class DataRoomConfig {
      * jwt
      */
     private Jwt jwt = new Jwt();
+    /**
+     * 素材资源存储访问配置
+     */
+    private ResourceBean resource = new ResourceBean();
     /**
      * 单点登录配置
      */

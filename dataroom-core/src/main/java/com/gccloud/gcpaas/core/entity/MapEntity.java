@@ -13,8 +13,8 @@ import lombok.experimental.Accessors;
 @TableName("dr_map")
 public class MapEntity extends BaseEntity {
 
-    @Schema(description = "父级地图id")
-    private String parentId;
+    @Schema(description = "地图名称")
+    private String name;
 
     /**
      * 唯一编码
@@ -23,8 +23,8 @@ public class MapEntity extends BaseEntity {
     @Schema(description = "编码")
     private String code;
 
-    @Schema(description = "地图名称")
-    private String name;
+    @Schema(description = "父级地图编码")
+    private String parentCode;
 
     @Schema(description = "地图级别 0-世界 1-国家 2-省 3-市 4-区县")
     private Integer level;
