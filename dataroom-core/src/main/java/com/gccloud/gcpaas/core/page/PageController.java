@@ -2,6 +2,7 @@ package com.gccloud.gcpaas.core.page;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +12,9 @@ import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.constant.PageStatus;
 import com.gccloud.gcpaas.core.entity.PageEntity;
 import com.gccloud.gcpaas.core.entity.PageStageEntity;
+import com.gccloud.gcpaas.core.exception.DataRoomException;
 import com.gccloud.gcpaas.core.mapper.PageMapper;
+import com.gccloud.gcpaas.core.page.bean.BasePageConfig;
 import com.gccloud.gcpaas.core.page.dto.PageOfflineDto;
 import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
@@ -94,16 +97,27 @@ public class PageController {
     /**
      * 新增
      *
-     * @param pageDesignEntity
+     * @param pageEntity
      * @return
      */
     @PostMapping("/insert")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "新增", description = "新增页面")
-    public Resp<String> insert(@RequestBody PageEntity pageDesignEntity) {
-        log.info("新增页面 {}", pageDesignEntity);
-        pageService.saveOrUpdate(pageDesignEntity);
-        return Resp.success(pageDesignEntity.getId());
+    public Resp<String> insert(@RequestBody PageEntity pageEntity) {
+        log.info("新增页面 {}", pageEntity);
+        pageEntity.setPageStatus(PageStatus.DESIGN);
+        pageService.save(pageEntity);
+
+        // 新增一个开发态
+        PageStageEntity pageStage = new PageStageEntity();
+        pageStage.setPageCode(pageEntity.getCode());
+        pageStage.setCode(IdWorker.getIdStr());
+        pageStage.setRemark("初始化新建");
+        pageStage.setPageStatus(PageStatus.DESIGN);
+        pageStage.setPageType(pageEntity.getPageType());
+        pageStage.setPageConfig(new BasePageConfig());
+        pageStageService.save(pageStage);
+        return Resp.success(pageEntity.getId());
     }
 
     /**
@@ -229,6 +243,28 @@ public class PageController {
     }
 
     /**
+     * 获取指定页面指定状态数据
+     *
+     * @param pageCode
+     * @param pageStatusStr
+     * @return
+     */
+    @GetMapping("/getPageConfig/{pageCode}/{pageStatus}")
+    @RequiresRoles(value = DataRoomRole.SHARER)
+    @Operation(summary = "更新页面配置", description = "更新页面配置")
+    public Resp<BasePageConfig> getPageConfig(@PathVariable("pageCode") String pageCode, @PathVariable("pageStatus") String pageStatusStr) {
+        PageStatus pageStatus = PageStatus.valueOf(pageStatusStr);
+        LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PageStageEntity::getPageCode, pageCode);
+        queryWrapper.eq(PageStageEntity::getPageStatus, pageStatus);
+        PageStageEntity stageEntity = pageStageService.getOne(queryWrapper);
+        if (stageEntity == null) {
+            throw new DataRoomException("该页面不存在" + pageStatusStr + "状态数据");
+        }
+        return Resp.success(stageEntity.getPageConfig());
+    }
+
+    /**
      * 获取页面中转状态列表
      *
      * @param stageSearch
@@ -324,5 +360,5 @@ public class PageController {
 
         return Resp.success(id);
     }
-    
+
 }

@@ -10,6 +10,7 @@ public enum PageStatus implements IEnum<String> {
     DESIGN("design", "设计态"),
     PUBLISHED("published", "已发布"),
     HISTORY("history", "历史记录"),
+    PREVIEW("preview", "预览"),
     SNAPSHOT("snapshot", "快照");
 
     private String type;

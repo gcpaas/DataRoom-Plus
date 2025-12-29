@@ -18,12 +18,6 @@ public class BaseEntity {
     @Schema(description = "主键")
     private String id;
     /**
-     * 唯一编码
-     */
-    @TableField(updateStrategy = FieldStrategy.NEVER)
-    @Schema(description = "编码")
-    private String code;
-    /**
      * 创建时间
      */
     @Schema(description = "创建时间")

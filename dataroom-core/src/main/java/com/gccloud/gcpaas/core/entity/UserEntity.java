@@ -1,7 +1,6 @@
 package com.gccloud.gcpaas.core.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
@@ -11,8 +10,7 @@ import java.util.List;
  * 用户
  */
 @Data
-@TableName(value = "dr_user", autoResultMap = true)
-public class UserEntity extends BaseEntity {
+public class UserEntity {
     /**
      * 账号
      */
@@ -37,6 +35,10 @@ public class UserEntity extends BaseEntity {
      * 状态
      */
     private String state;
+    /**
+     * 租户编码
+     */
+    private String tenantCode;
     /**
      * 角色编码
      */

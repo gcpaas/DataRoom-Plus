@@ -23,6 +23,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -95,13 +96,9 @@ public class ShiroAuthRealm extends AuthorizingRealm {
                     throw new DataRoomException("用户不存在或已禁用");
                 }
                 loginUser = new LoginUser();
-                loginUser.setId(user.getId());
-                loginUser.setUsername(user.getUsername());
-                loginUser.setRealName(user.getRealName());
-                loginUser.setTenantCode(user.getTenantCode());
-                loginUser.setRoleCodeList(user.getRoleCodeList());
+                BeanUtils.copyProperties(user, loginUser);
             } else {
-                Sso thirdPartyRestSso = null;
+                Sso thirdPartySso = null;
                 // 单点登录，带着其他应用的token进来的
                 List<Sso> ssoList = dataRoomConfig.getSsoList();
                 for (Sso sso : ssoList) {
@@ -109,27 +106,27 @@ public class ShiroAuthRealm extends AuthorizingRealm {
                         continue;
                     }
                     if (sso.getIssuer().equals(tokenIssuer)) {
-                        thirdPartyRestSso = sso;
+                        thirdPartySso = sso;
                         break;
                     }
                 }
-                if (thirdPartyRestSso == null) {
+                if (thirdPartySso == null) {
                     // 不是本系统的token，直接抛异常
                     log.error("不是符合指定的应用token值规范，无法完成单点登录");
-                    throw new DataRoomException("单点登录失败");
+                    throw new DataRoomException("单点登录接入失败");
                 }
                 HttpHeaders headers = new HttpHeaders();
-                headers.add(thirdPartyRestSso.getTokenKey(), accessToken);
-                headers.add("Cookie", thirdPartyRestSso.getTokenKey() + "=" + accessToken);
+                headers.add(thirdPartySso.getTokenKey(), accessToken);
+                headers.add("Cookie", thirdPartySso.getTokenKey() + "=" + accessToken);
                 HttpEntity<Void> requestEntity = new HttpEntity<>(null, headers);
                 long start = System.currentTimeMillis();
-                ResponseEntity<String> responseEntity = restTemplate.exchange(thirdPartyRestSso.getCurrentUserUrl(), HttpMethod.GET, requestEntity, String.class);
+                ResponseEntity<String> responseEntity = restTemplate.exchange(thirdPartySso.getCurrentUserUrl(), HttpMethod.GET, requestEntity, String.class);
                 if (!responseEntity.getStatusCode().is2xxSuccessful()) {
-                    log.error("单点登录校验失败，url: {} 响应内容: {}", thirdPartyRestSso.getCurrentUserUrl(), responseEntity.getBody());
+                    log.error("单点登录校验失败，url: {} 响应内容: {}", thirdPartySso.getCurrentUserUrl(), responseEntity.getBody());
                     throw new DataRoomException("单点登录校验失败");
                 }
                 String respBody = responseEntity.getBody();
-                log.info("单点登录校验结果，url: {} 响应内容: {} 耗时: {} 毫秒", thirdPartyRestSso.getCurrentUserUrl(), respBody, System.currentTimeMillis() - start);
+                log.info("单点登录校验结果，url: {} 响应内容: {} 耗时: {} 毫秒", thirdPartySso.getCurrentUserUrl(), respBody, System.currentTimeMillis() - start);
                 JSONObject respObj = JSON.parseObject(respBody);
                 int code = respObj.getIntValue("code");
                 if (code != 200) {
@@ -137,12 +134,7 @@ public class ShiroAuthRealm extends AuthorizingRealm {
                 }
                 JSONObject respDataObj = respObj.getJSONObject("data");
                 // 设置当前用户、用于下面去远程获取权限后使用
-                loginUser = new LoginUser();
-                loginUser.setId(respDataObj.getString("id"));
-                loginUser.setUsername(respDataObj.getString("username"));
-                loginUser.setRealName(respDataObj.getString("realName"));
-                loginUser.setTenantCode(respDataObj.getString("tenantCode"));
-                loginUser.setRoleCodeList(respDataObj.getList("roleCodeList", String.class));
+                loginUser = respDataObj.toJavaObject(LoginUser.class);
             }
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));

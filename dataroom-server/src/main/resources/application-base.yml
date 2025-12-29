@@ -5,11 +5,23 @@ dataroom:
       realName: 管理员
       tenantCode: default
       password: <PASSWORD>
+      # 状态，可选值: normal: 正常，disabled: 禁用
       state: normal
-      roleCodeList:
-        - manager
-        - developer
-        - sharer
+      # 角色列表，可选值: manager： 管理员, developer:开发者, sharer:分享者
+      roleCodeList: [ manager,developer,sharer ]
+    - username: developer
+      realName: 开发者
+      tenantCode: default
+      password: <PASSWORD>
+      state: normal
+      roleCodeList: [ developer,sharer ]
+    - username: sharer
+      # 用于分享使用、用户名不可改变
+      realName: 分享者
+      tenantCode: default
+      password: <PASSWORD>
+      state: normal
+      roleCodeList: [ sharer ]
 
 # 接口文档配置
 knife4j:

@@ -1,5 +1,6 @@
 package com.gccloud.gcpaas.core.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
@@ -22,6 +23,12 @@ public class DataSourceEntity extends BaseEntity {
     @Schema(description = "名称")
     @NotBlank(message = "名称不能为空")
     private String name;
+    /**
+     * 唯一编码
+     */
+    @TableField(updateStrategy = FieldStrategy.NEVER)
+    @Schema(description = "编码")
+    private String code;
     /**
      * 数据源类型
      */

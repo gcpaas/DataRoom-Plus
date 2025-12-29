@@ -13,4 +13,5 @@ import lombok.Data;
         @JsonSubTypes.Type(value = PageConfig.class, name = PageType.PAGE_TYPE)
 })
 public class BasePageConfig {
+
 }
