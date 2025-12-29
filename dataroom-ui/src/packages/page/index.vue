@@ -161,40 +161,42 @@ onMounted(() => {
     </div>
 
     <div class="page-content" v-loading="loading">
-      <div class="card-list">
-        <div class="page-card" v-for="item in pageList" :key="item.id">
-          <div class="card-thumbnail">
-            <!-- 缩略图占位 -->
-            <div class="thumbnail-placeholder">
-              <span>{{ item.name }}</span>
+      <el-scrollbar>
+        <div class="card-list">
+          <div class="page-card" v-for="item in pageList" :key="item.id">
+            <div class="card-thumbnail">
+              <!-- 缩略图占位 -->
+              <div class="thumbnail-placeholder">
+                <span>{{ item.name }}</span>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="card-name" :title="item.name">{{ item.name }}</div>
+              <el-dropdown trigger="click" @command="(command:string) => {
+                if (command === 'edit') handleEdit(item)
+                else if (command === 'publish') handlePublish(item)
+                else if (command === 'offline') handleOffline(item)
+                else if (command === 'delete') handleDelete(item)
+                else if (command === 'preview') handlePreview(item)
+              }">
+                <el-icon class="more-icon">
+                  <MoreFilled/>
+                </el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                    <el-dropdown-item command="publish" v-if="item.pageStatus !== 'PUBLISHED'">发布</el-dropdown-item>
+                    <el-dropdown-item command="offline" v-if="item.pageStatus === 'PUBLISHED'">取消发布</el-dropdown-item>
+                    <el-dropdown-item command="preview">预览</el-dropdown-item>
+                    <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
-          <div class="card-footer">
-            <div class="card-name" :title="item.name">{{ item.name }}</div>
-            <el-dropdown trigger="click" @command="(command:string) => {
-              if (command === 'edit') handleEdit(item)
-              else if (command === 'publish') handlePublish(item)
-              else if (command === 'offline') handleOffline(item)
-              else if (command === 'delete') handleDelete(item)
-              else if (command === 'preview') handlePreview(item)
-            }">
-              <el-icon class="more-icon">
-                <MoreFilled/>
-              </el-icon>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                  <el-dropdown-item command="publish" v-if="item.pageStatus !== 'PUBLISHED'">发布</el-dropdown-item>
-                  <el-dropdown-item command="offline" v-if="item.pageStatus === 'PUBLISHED'">取消发布</el-dropdown-item>
-                  <el-dropdown-item command="preview">预览</el-dropdown-item>
-                  <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
         </div>
-      </div>
-      <el-empty :image-size="200" v-if="!loading && pageList.length === 0" description="暂无页面"/>
+        <el-empty :image-size="200" v-if="!loading && pageList.length === 0" description="暂无页面"/>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -202,8 +204,8 @@ onMounted(() => {
 <style scoped lang="scss">
 .dr-page {
   height: calc(100vh - 60px);
-  overflow: hidden;
   display: flex;
+  box-sizing: content-box;
   flex-direction: column;
 
   .page-header {
@@ -224,17 +226,17 @@ onMounted(() => {
 
   .page-content {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
 
     .card-list {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      padding: 0 20px;
+      margin-bottom: 20px;
 
       .page-card {
         background: #fff;
-        border: 1px solid #e4e7ed;
+        border: 1px solid var(--dr-border);
         border-radius: 4px;
         overflow: hidden;
         transition: all 0.3s;
@@ -247,7 +249,7 @@ onMounted(() => {
         .card-thumbnail {
           width: 100%;
           height: 180px;
-          background: #f5f7fa;
+          background: var(--dr-bg2);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -258,7 +260,7 @@ onMounted(() => {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #909399;
+            color: var(--dr-text);
             font-size: 14px;
           }
         }
@@ -268,12 +270,12 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-top: 1px solid #e4e7ed;
+          border-top: 1px solid var(--dr-border);
 
           .card-name {
             flex: 1;
             font-size: 14px;
-            color: #303133;
+            color: var(--dr-text);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -282,12 +284,12 @@ onMounted(() => {
 
           .more-icon {
             font-size: 18px;
-            color: #606266;
+            color: var(--dr-text);
             cursor: pointer;
             transition: color 0.3s;
 
             &:hover {
-              color: #409eff;
+              color: var(--dr-primary);
             }
           }
         }

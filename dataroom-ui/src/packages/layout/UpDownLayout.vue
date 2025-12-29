@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import logo from '@/assets/logo.png';
 import {useRouter} from "vue-router";
+import {request} from "@/packages/_common/_request.ts";
+import {onMounted, ref} from "vue";
 
 const router = useRouter()
 const jumpMenu = (path: string) => {
@@ -8,6 +10,13 @@ const jumpMenu = (path: string) => {
     path: path
   })
 };
+const username = ref('')
+onMounted(() => {
+  request.get<any>(`/dataRoom/user/current`).then((res) => {
+    console.log(res)
+    username.value = res.realName || res.username
+  })
+})
 </script>
 
 <template>
@@ -21,9 +30,9 @@ const jumpMenu = (path: string) => {
         <div class="item" @click="jumpMenu('/dataRoom/dataSource/index')">数据源</div>
         <div class="item" @click="jumpMenu('/dataRoom/dataset/index')">数据集</div>
       </div>
-      <div class="user">用户</div>
+      <div class="user">{{ username }}</div>
     </div>
-    <RouterView style="padding: 16px"/>
+    <RouterView style="padding: 16px;box-sizing: border-box"/>
   </div>
 </template>
 
@@ -31,6 +40,7 @@ const jumpMenu = (path: string) => {
 .dr-up-down-layout {
   height: 100vh;
   width: 100%;
+
   & .header {
     background-color: var(--dr-primary);
     height: 60px;
@@ -71,6 +81,7 @@ const jumpMenu = (path: string) => {
 
     & .user {
       width: 100px;
+      font-size: 14px;
       text-align: right;
     }
   }
