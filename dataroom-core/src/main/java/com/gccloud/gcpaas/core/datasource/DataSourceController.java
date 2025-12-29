@@ -39,7 +39,7 @@ public class DataSourceController {
     @GetMapping("/list")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "列表查询", description = "根据名称查询")
-    @Parameters({ @Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
+    @Parameters({@Parameter(name = "name", description = "数据源名称", in = ParameterIn.QUERY)})
     public Resp<List<DataSourceEntity>> list(@RequestParam(name = "name", required = false) String name) {
         LambdaQueryWrapper<DataSourceEntity> queryWrapper = new LambdaQueryWrapper<>();
         // 排除的字段
@@ -62,9 +62,11 @@ public class DataSourceController {
     @GetMapping("/detail/{code}")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "详情", description = "根据编码查询")
-    @Parameters({ @Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
+    @Parameters({@Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
     public Resp<DataSourceEntity> detail(@PathVariable("code") String code) {
         DataSourceEntity datasourceEntity = datasourceMapper.getByCode(code);
+        // 脱敏
+        datasourceEntity.getDataSource().desensitize();
         return Resp.success(datasourceEntity);
     }
 
@@ -81,6 +83,8 @@ public class DataSourceController {
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新", description = "更新数据源")
     public Resp<String> update(@RequestBody DataSourceEntity datasourceEntity) {
+        DataSourceEntity dbDataSourceEntity = datasourceMapper.getByCode(datasourceEntity.getCode());
+        datasourceEntity.getDataSource().updatedSensitive(dbDataSourceEntity.getDataSource());
         datasourceEntity.setUpdateDate(new Date());
         datasourceMapper.updateById(datasourceEntity);
         return Resp.success(datasourceEntity.getId());
@@ -89,7 +93,7 @@ public class DataSourceController {
     @PostMapping("/delete/{code}")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "删除", description = "根据编码删除数据源")
-    @Parameters({ @Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
+    @Parameters({@Parameter(name = "code", description = "数据源编码", in = ParameterIn.PATH)})
     public Resp<Void> delete(@PathVariable("code") String code) {
         datasourceMapper.deleteByCode(code);
         return Resp.success(null);

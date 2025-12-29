@@ -11,4 +11,13 @@ import com.gccloud.gcpaas.core.constant.DataRoomConstant;
         @JsonSubTypes.Type(value = OracleDatasource.class, name = DataRoomConstant.Datasource.TYPE.ORACLE)
 })
 public abstract class BaseDataSource {
+    /**
+     * 脱敏
+     */
+    public abstract void desensitize();
+
+    /**
+     * 更新敏感信息
+     */
+    public abstract void updatedSensitive(BaseDataSource baseDataSource);
 }
