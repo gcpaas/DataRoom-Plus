@@ -9,6 +9,7 @@ import com.gccloud.gcpaas.core.bean.PageVo;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
 import com.gccloud.gcpaas.core.constant.PageStatus;
+import com.gccloud.gcpaas.core.constant.PageType;
 import com.gccloud.gcpaas.core.entity.PageEntity;
 import com.gccloud.gcpaas.core.entity.PageStageEntity;
 import com.gccloud.gcpaas.core.exception.DataRoomException;
@@ -71,7 +72,7 @@ public class PageController {
             @Parameter(name = "name", description = "页面名称", in = ParameterIn.QUERY),
             @Parameter(name = "parentCode", description = "目录编码", in = ParameterIn.QUERY)
     })
-    public Resp<List<PageEntity>>   list(
+    public Resp<List<PageEntity>> list(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "parentCode", required = false) String parentCode) {
         LambdaQueryWrapper<PageEntity> queryWrapper = new LambdaQueryWrapper<>();
@@ -110,16 +111,17 @@ public class PageController {
         log.info("新增页面 {}", pageEntity);
         pageEntity.setPageStatus(PageStatus.DESIGN);
         pageService.save(pageEntity);
-
-        // 新增一个开发态
-        PageStageEntity pageStage = new PageStageEntity();
-        pageStage.setPageCode(pageEntity.getCode());
-        pageStage.setRemark("初始化新建");
-        pageStage.setPageStatus(PageStatus.DESIGN);
-        pageStage.setPageType(pageEntity.getPageType());
-        BasePageConfig basePageConfig = pageStageService.getDefaultPageConfig(pageEntity.getPageType().getType());
-        pageStage.setPageConfig(basePageConfig);
-        pageStageService.save(pageStage);
+        if (PageType.DIRECTORY != pageEntity.getPageType()) {
+            // 新增一个开发态
+            PageStageEntity pageStage = new PageStageEntity();
+            pageStage.setPageCode(pageEntity.getCode());
+            pageStage.setRemark("初始化新建");
+            pageStage.setPageStatus(PageStatus.DESIGN);
+            pageStage.setPageType(pageEntity.getPageType());
+            BasePageConfig basePageConfig = pageStageService.getDefaultPageConfig(pageEntity.getPageType().getType());
+            pageStage.setPageConfig(basePageConfig);
+            pageStageService.save(pageStage);
+        }
         return Resp.success(pageEntity.getId());
     }
 
@@ -169,6 +171,7 @@ public class PageController {
         PageStageEntity pageStage = pageStageService.getByCode(pagePublishDto.getPageCode(), PageStatus.DESIGN);
         PageStageEntity newPageStage = new PageStageEntity();
         BeanUtils.copyProperties(pageStage, newPageStage);
+        newPageStage.setId(null);
         newPageStage.setPageStatus(PageStatus.PUBLISHED);
         newPageStage.setRemark(pagePublishDto.getRemark());
         pageStageService.save(newPageStage);

@@ -73,10 +73,44 @@ const handleAdd = (pageType: string) => {
 }
 
 /**
- * 编辑页面
+ * 编辑名称
  * @param item
  */
 const handleEdit = (item: PageEntity) => {
+  let title = '编辑页面'
+  if (item.pageType === 'directory') {
+    title = '编辑目录'
+  } else if (item.pageType === 'visualScreen') {
+    title = '编辑大屏'
+  }
+  
+  ElMessageBox.prompt('请输入名称', title, {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputPattern: /\S+/,
+    inputErrorMessage: '名称不能为空',
+    inputValue: item.name
+  }).then(async ({value}) => {
+    try {
+      pageApi.update({
+        ...item,
+        name: value
+      }).then((res) => {
+        ElMessage.success('修改成功')
+        getPageList()
+      })
+    } catch (error) {
+      console.error('修改失败:', error)
+    }
+  }).catch(() => {
+  })
+}
+
+/**
+ * 进入设计器
+ * @param item
+ */
+const handleDesign = (item: PageEntity) => {
   router.push({
     path: '/dataRoom/pageDesigner',
     query: {code: item.code}
@@ -88,16 +122,23 @@ const handleEdit = (item: PageEntity) => {
  * @param item
  */
 const handlePublish = async (item: PageEntity) => {
-  try {
-    await pageApi.publish({
-      pageCode: item.code,
-      remark: '发布'
-    })
-    ElMessage.success('发布成功')
-    getPageList()
-  } catch (error) {
-    console.error('发布失败:', error)
-  }
+  ElMessageBox.confirm(`确定要发布${item.name}吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    try {
+      await pageApi.publish({
+        pageCode: item.code,
+        remark: '发布'
+      })
+      ElMessage.success('发布成功')
+      getPageList()
+    } catch (error) {
+      console.error('发布失败:', error)
+    }
+  }).catch(() => {
+  })
 }
 
 /**
@@ -105,16 +146,23 @@ const handlePublish = async (item: PageEntity) => {
  * @param item
  */
 const handleOffline = async (item: PageEntity) => {
-  try {
-    await pageApi.offline({
-      code: item.code,
-      remark: '取消发布'
-    })
-    ElMessage.success('取消发布成功')
-    getPageList()
-  } catch (error) {
-    console.error('取消发布失败:', error)
-  }
+  ElMessageBox.confirm(`确定要取消发布${item.name}吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    try {
+      await pageApi.offline({
+        code: item.code,
+        remark: '取消发布'
+      })
+      ElMessage.success('取消发布成功')
+      getPageList()
+    } catch (error) {
+      console.error('取消发布失败:', error)
+    }
+  }).catch(() => {
+  })
 }
 
 /**
@@ -168,8 +216,8 @@ const handleCardClick = (item: PageEntity) => {
     })
     getPageList(item.code)
   } else {
-    // 如果是页面或大屏,直接编辑
-    handleEdit(item)
+    // 如果是页面或大屏,进入设计器
+    handleDesign(item)
   }
 }
 
@@ -316,6 +364,7 @@ onMounted(() => {
                 </el-tag>
                 <el-dropdown trigger="click" @command="(command:string) => {
                   if (command === 'edit') handleEdit(item)
+                  else if (command === 'design') handleDesign(item)
                   else if (command === 'publish') handlePublish(item)
                   else if (command === 'offline') handleOffline(item)
                   else if (command === 'delete') handleDelete(item)
@@ -324,12 +373,13 @@ onMounted(() => {
                   <el-icon class="more-icon">
                     <MoreFilled/>
                   </el-icon>
-                  <template #dropdown>
+                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                      <el-dropdown-item command="publish" v-if="item.pageStatus !== 'PUBLISHED'">发布</el-dropdown-item>
-                      <el-dropdown-item command="offline" v-if="item.pageStatus === 'PUBLISHED'">取消发布</el-dropdown-item>
-                      <el-dropdown-item command="preview">预览</el-dropdown-item>
+                      <el-dropdown-item command="design" v-if="item.pageType !== 'directory'">设计</el-dropdown-item>
+                      <el-dropdown-item command="publish" v-if="item.pageStatus?.toLowerCase() !== 'published' && item.pageType !== 'directory'">发布</el-dropdown-item>
+                      <el-dropdown-item command="offline" v-if="item.pageStatus?.toLowerCase() === 'published' && item.pageType !== 'directory'">取消发布</el-dropdown-item>
+                      <el-dropdown-item command="preview" v-if="item.pageType !== 'directory'">预览</el-dropdown-item>
                       <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
