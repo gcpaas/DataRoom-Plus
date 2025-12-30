@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div>数据源</div>
+  <div class="dr-data-source">数据源</div>
 </template>
 
 <style scoped>
