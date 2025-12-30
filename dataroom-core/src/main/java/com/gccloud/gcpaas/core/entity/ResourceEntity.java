@@ -1,6 +1,7 @@
 package com.gccloud.gcpaas.core.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.gccloud.gcpaas.core.constant.ResourceType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -25,7 +26,7 @@ public class ResourceEntity extends BaseEntity {
      * 资源类型
      */
     @Schema(description = "资源类型")
-    private String resourceType;
+    private ResourceType resourceType;
     /**
      * 上级目录
      */
