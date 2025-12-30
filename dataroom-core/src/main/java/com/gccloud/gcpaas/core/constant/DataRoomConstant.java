@@ -71,28 +71,5 @@ public interface DataRoomConstant {
          * 编码前缀
          */
         String CODE_PREFIX = "datasource";
-
-        /**
-         * 数据源类型
-         */
-        interface TYPE {
-            String MYSQL = "mysql";
-            String POSTGRESQL = "postgresql";
-            String ORACLE = "oracle";
-        }
-    }
-
-    /**
-     * 角色
-     */
-    interface Role {
-        /**
-         * 数据源类型
-         */
-        interface TYPE {
-            String MYSQL = "mysql";
-            String POSTGRESQL = "postgresql";
-            String ORACLE = "oracle";
-        }
     }
 }

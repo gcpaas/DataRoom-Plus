@@ -2,13 +2,13 @@ package com.gccloud.gcpaas.core.datasource.bean;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.gccloud.gcpaas.core.constant.DataRoomConstant;
+import com.gccloud.gcpaas.core.constant.DataSourceType;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dataSourceType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = MySqlDatasource.class, name = DataRoomConstant.Datasource.TYPE.MYSQL),
-        @JsonSubTypes.Type(value = PostgreSqlDatasource.class, name = DataRoomConstant.Datasource.TYPE.POSTGRESQL),
-        @JsonSubTypes.Type(value = OracleDatasource.class, name = DataRoomConstant.Datasource.TYPE.ORACLE)
+        @JsonSubTypes.Type(value = MySqlDatasource.class, name = DataSourceType.MYSQL_TYPE),
+        @JsonSubTypes.Type(value = PostgreSqlDatasource.class, name = DataSourceType.POSTGRESQL_TYPE),
+        @JsonSubTypes.Type(value = OracleDatasource.class, name = DataSourceType.ORACLE_TYPE)
 })
 public abstract class BaseDataSource {
     /**

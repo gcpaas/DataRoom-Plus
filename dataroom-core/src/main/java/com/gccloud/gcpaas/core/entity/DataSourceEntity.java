@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.gccloud.gcpaas.core.constant.DataSourceType;
 import com.gccloud.gcpaas.core.datasource.bean.BaseDataSource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -33,8 +34,8 @@ public class DataSourceEntity extends BaseEntity {
      * 数据源类型
      */
     @Schema(description = "数据源类型")
-    @NotBlank(message = "数据源类型不能为空")
-    private String dataSourceType;
+    @NotNull(message = "数据源类型不能为空")
+    private DataSourceType dataSourceType;
     /**
      * 实际数据源
      */
