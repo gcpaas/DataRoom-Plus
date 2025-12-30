@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {Search, Plus, MoreFilled} from '@element-plus/icons-vue'
+import {Search, Plus, MoreFilled, Folder, Monitor, Document} from '@element-plus/icons-vue'
 import {useRouter} from 'vue-router'
 import {pageApi, type PageEntity} from './api'
 
@@ -10,13 +10,23 @@ const searchName = ref('')
 const pageList = ref<PageEntity[]>([])
 const loading = ref(false)
 
+// 面包屑导航
+interface BreadcrumbItem {
+  code: string
+  name: string
+}
+const breadcrumbs = ref<BreadcrumbItem[]>([{code: 'root', name: '全部'}])
+const currentParentCode = ref('root')
+
 /**
  * 查询
  */
-const getPageList = () => {
+const getPageList = (parentCode?: string) => {
   loading.value = true
   try {
-    const params: { name?: string } = {}
+    const params: { name?: string; parentCode?: string } = {
+      parentCode: parentCode || currentParentCode.value
+    }
     if (searchName.value) {
       params.name = searchName.value
     }
@@ -30,19 +40,27 @@ const getPageList = () => {
   }
 }
 
-// 新增页面
-const handleAdd = () => {
-  ElMessageBox.prompt('请输入页面名称', '新增页面', {
+// 新增页面/目录/大屏
+const handleAdd = (pageType: string) => {
+  let title = '新增页面'
+  if (pageType === 'directory') {
+    title = '新增目录'
+  } else if (pageType === 'visualScreen') {
+    title = '新增大屏'
+  }
+  
+  ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     inputPattern: /\S+/,
-    inputErrorMessage: '页面名称不能为空'
+    inputErrorMessage: '名称不能为空'
   }).then(async ({value}) => {
     try {
       pageApi.insert({
         name: value,
-        code: 'page_' + Date.now(),
-        pageType: 'visualScreen'
+        code: '',
+        pageType: pageType,
+        parentCode: currentParentCode.value
       }).then((res) => {
         ElMessage.success('新增成功')
         getPageList()
@@ -127,13 +145,89 @@ const handleDelete = (page: PageEntity) => {
  */
 const handlePreview = (page: PageEntity) => {
   let path = '/dataRoom/pagePreviewer'
-  if (page.pageType = 'visualScreen') {
+  if (page.pageType === 'visualScreen') {
     path = '/dataRoom/visualScreenPreview'
   }
   router.push({
     path: path,
     query: {code: page.code}
   })
+}
+
+/**
+ * 点击卡片
+ * @param item
+ */
+const handleCardClick = (item: PageEntity) => {
+  if (item.pageType === 'directory') {
+    // 如果是目录,进入该目录
+    currentParentCode.value = item.code
+    breadcrumbs.value.push({
+      code: item.code,
+      name: item.name
+    })
+    getPageList(item.code)
+  } else {
+    // 如果是页面或大屏,直接编辑
+    handleEdit(item)
+  }
+}
+
+/**
+ * 获取类型名称
+ * @param pageType
+ */
+const getTypeName = (pageType: string) => {
+  switch (pageType) {
+    case 'directory':
+      return '目录'
+    case 'visualScreen':
+      return '大屏'
+    case 'page':
+      return '页面'
+    default:
+      return ''
+  }
+}
+
+/**
+ * 获取状态名称
+ * @param status
+ */
+const getStatusName = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case 'published':
+      return '已发布'
+    case 'design':
+      return '设计态'
+    default:
+      return '设计态'
+  }
+}
+
+/**
+ * 获取状态类型
+ * @param status
+ */
+const getStatusType = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case 'published':
+      return 'success'
+    case 'design':
+    default:
+      return 'info'
+  }
+}
+
+/**
+ * 面包屑点击
+ * @param index
+ */
+const handleBreadcrumbClick = (index: number) => {
+  const item = breadcrumbs.value[index]
+  currentParentCode.value = item.code
+  breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
+  getPageList(item.code)
 }
 
 // 页面加载时获取列表
@@ -156,7 +250,39 @@ onMounted(() => {
       </div>
       <div class="button-group">
         <el-button :icon="Search" @click="getPageList">查询</el-button>
-        <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
+        <el-dropdown trigger="click" @command="handleAdd">
+          <el-button type="primary" :icon="Plus">
+            新增<el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="directory">
+                <el-icon><Folder /></el-icon>
+                <span>目录</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="visualScreen">
+                <el-icon><Monitor /></el-icon>
+                <span>大屏</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="page">
+                <el-icon><Document /></el-icon>
+                <span>页面</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+      <div class="breadcrumb-box">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item
+            v-for="(item, index) in breadcrumbs"
+            :key="item.code"
+            :class="{clickable: index < breadcrumbs.length - 1}"
+            @click="index < breadcrumbs.length - 1 ? handleBreadcrumbClick(index) : null"
+          >
+            {{ item.name }}
+          </el-breadcrumb-item>
+        </el-breadcrumb>
       </div>
     </div>
 
@@ -164,34 +290,51 @@ onMounted(() => {
       <el-scrollbar>
         <div class="card-list">
           <div class="page-card" v-for="item in pageList" :key="item.id">
-            <div class="card-thumbnail">
+            <div class="card-thumbnail" @click="handleCardClick(item)">
               <!-- 缩略图占位 -->
               <div class="thumbnail-placeholder">
-                <span>{{ item.name }}</span>
+                <el-icon v-if="item.pageType === 'directory'" :size="48" class="type-icon">
+                  <Folder />
+                </el-icon>
+                <el-icon v-else-if="item.pageType === 'visualScreen'" :size="48" class="type-icon">
+                  <Monitor />
+                </el-icon>
+                <el-icon v-else :size="48" class="type-icon">
+                  <Document />
+                </el-icon>
+                <span class="item-name">{{ item.name }}</span>
               </div>
             </div>
             <div class="card-footer">
-              <div class="card-name" :title="item.name">{{ item.name }}</div>
-              <el-dropdown trigger="click" @command="(command:string) => {
-                if (command === 'edit') handleEdit(item)
-                else if (command === 'publish') handlePublish(item)
-                else if (command === 'offline') handleOffline(item)
-                else if (command === 'delete') handleDelete(item)
-                else if (command === 'preview') handlePreview(item)
-              }">
-                <el-icon class="more-icon">
-                  <MoreFilled/>
-                </el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                    <el-dropdown-item command="publish" v-if="item.pageStatus !== 'PUBLISHED'">发布</el-dropdown-item>
-                    <el-dropdown-item command="offline" v-if="item.pageStatus === 'PUBLISHED'">取消发布</el-dropdown-item>
-                    <el-dropdown-item command="preview">预览</el-dropdown-item>
-                    <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <div class="card-info">
+                <span class="type-label">{{ getTypeName(item.pageType) }}</span>
+                <span class="card-name" :title="item.name">{{ item.name }}</span>
+              </div>
+              <div class="card-actions">
+                <el-tag :type="getStatusType(item.pageStatus)" size="small" v-if="item.pageType !== 'directory'">
+                  {{ getStatusName(item.pageStatus) }}
+                </el-tag>
+                <el-dropdown trigger="click" @command="(command:string) => {
+                  if (command === 'edit') handleEdit(item)
+                  else if (command === 'publish') handlePublish(item)
+                  else if (command === 'offline') handleOffline(item)
+                  else if (command === 'delete') handleDelete(item)
+                  else if (command === 'preview') handlePreview(item)
+                }">
+                  <el-icon class="more-icon">
+                    <MoreFilled/>
+                  </el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                      <el-dropdown-item command="publish" v-if="item.pageStatus !== 'PUBLISHED'">发布</el-dropdown-item>
+                      <el-dropdown-item command="offline" v-if="item.pageStatus === 'PUBLISHED'">取消发布</el-dropdown-item>
+                      <el-dropdown-item command="preview">预览</el-dropdown-item>
+                      <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
             </div>
           </div>
         </div>
@@ -221,6 +364,22 @@ onMounted(() => {
     .button-group {
       display: flex;
       gap: 8px;
+    }
+
+    .breadcrumb-box {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      .clickable {
+        cursor: pointer;
+        color: var(--el-color-primary);
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 
@@ -258,10 +417,21 @@ onMounted(() => {
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: var(--dr-text);
             font-size: 14px;
+            gap: 12px;
+
+            .type-icon {
+              color: var(--el-color-primary);
+            }
+
+            .item-name {
+              font-size: 16px;
+              font-weight: 500;
+            }
           }
         }
 
@@ -272,24 +442,46 @@ onMounted(() => {
           justify-content: space-between;
           border-top: 1px solid var(--dr-border);
 
-          .card-name {
+          .card-info {
             flex: 1;
-            font-size: 14px;
-            color: var(--dr-text);
+            display: flex;
+            align-items: center;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             margin-right: 8px;
+
+            .type-label {
+              flex-shrink: 0;
+              font-size: 14px;
+              color: var(--el-color-primary);
+              font-weight: 500;
+              margin-right: 16px;
+            }
+
+            .card-name {
+              flex: 1;
+              font-size: 14px;
+              color: var(--dr-text);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
           }
 
-          .more-icon {
-            font-size: 18px;
-            color: var(--dr-text);
-            cursor: pointer;
-            transition: color 0.3s;
+          .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
 
-            &:hover {
-              color: var(--dr-primary);
+            .more-icon {
+              font-size: 18px;
+              color: var(--dr-text);
+              cursor: pointer;
+              transition: color 0.3s;
+
+              &:hover {
+                color: var(--dr-primary);
+              }
             }
           }
         }
