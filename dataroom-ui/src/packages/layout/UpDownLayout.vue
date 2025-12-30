@@ -2,7 +2,10 @@
 import logo from '@/assets/logo.png';
 import {useRouter, useRoute} from "vue-router";
 import request from "@/packages/_common/_request.ts";
+import {removeCookie} from "@/packages/_common/_cookie";
 import {onMounted, ref, computed} from "vue";
+import {ElMessage} from 'element-plus';
+import {ArrowDown} from '@element-plus/icons-vue';
 
 const router = useRouter()
 const route = useRoute()
@@ -16,6 +19,15 @@ const username = ref('')
 // 判断菜单是否激活
 const isMenuActive = (path: string) => {
   return route.path.includes(path)
+}
+
+// 退出登录
+const handleLogout = () => {
+  // 删除cookie中的token
+  removeCookie()
+  ElMessage.success('退出成功')
+  // 跳转到登录页
+  router.push('/login')
 }
 
 onMounted(() => {
@@ -37,7 +49,21 @@ onMounted(() => {
         <div class="item" :class="{active: isMenuActive('/dataRoom/dataSource')}" @click="jumpMenu('/dataRoom/dataSource/index')">数据源</div>
         <div class="item" :class="{active: isMenuActive('/dataRoom/dataset')}" @click="jumpMenu('/dataRoom/dataset/index')">数据集</div>
       </div>
-      <div class="user">{{ username }}</div>
+      <div class="user">
+        <el-dropdown @command="handleLogout">
+          <span class="el-dropdown-link">
+            {{ username }}
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </div>
     <RouterView style="padding: 16px;box-sizing: border-box"/>
   </div>
@@ -112,7 +138,28 @@ onMounted(() => {
     & .user {
       width: 100px;
       font-size: 14px;
-      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .el-dropdown-link {
+        cursor: pointer;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        font-size: 14px;
+        transition: opacity 0.3s ease;
+        line-height: 1;
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        .el-icon--right {
+          margin-left: 4px;
+        }
+      }
     }
   }
 }
