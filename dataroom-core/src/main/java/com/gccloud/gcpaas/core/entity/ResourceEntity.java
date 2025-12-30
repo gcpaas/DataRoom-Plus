@@ -31,7 +31,7 @@ public class ResourceEntity extends BaseEntity {
      * 上级目录
      */
     @Schema(description = "上级目录")
-    private String parentCode;
+    private String parentCode = "root";
     /**
      * 存储的路径
      */
