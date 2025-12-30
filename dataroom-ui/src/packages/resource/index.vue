@@ -100,9 +100,10 @@ const handleUploadSuccess = (response: any) => {
     console.log(response)
     const res = response.data as ResourceEntity
     // 将上传返回的数据中的path、url、size、resourceType、originalName更新到editingResource
+    // 如果用户没有填写资源名称，则使用原始文件名自动填充
     editingResource.value = {
       ...editingResource.value,
-      name: editingResource.value?.name || response.name,
+      name: editingResource.value?.name || res.originalName || response.name,
       originalName: res.originalName,
       path: res.path,
       url: res.url,
@@ -370,12 +371,9 @@ onMounted(() => {
             <template #trigger>
               <el-button type="primary">选择文件</el-button>
             </template>
-            <el-button class="ml-3" size="small" type="success" v-if="editingResource?.id">
-              重新上传
-            </el-button>
             <template #tip>
               <div class="el-upload__tip">
-                {{ editingResource?.id ? '重新上传文件' : '请选择要上传的文件' }}
+                {{ editingResource?.id ? '点击选择文件重新上传' : '请选择要上传的文件' }}
               </div>
             </template>
           </el-upload>
