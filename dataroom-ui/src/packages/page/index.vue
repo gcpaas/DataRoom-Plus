@@ -21,11 +21,11 @@ const currentParentCode = ref('root')
 /**
  * 查询
  */
-const getPageList = (parentCode?: string) => {
+const getPageList = () => {
   loading.value = true
   try {
     const params: { name?: string; parentCode?: string } = {
-      parentCode: parentCode || currentParentCode.value
+      parentCode: currentParentCode.value
     }
     if (searchName.value) {
       params.name = searchName.value
@@ -48,7 +48,7 @@ const handleAdd = (pageType: string) => {
   } else if (pageType === 'visualScreen') {
     title = '新增大屏'
   }
-  
+
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -83,7 +83,7 @@ const handleEdit = (item: PageEntity) => {
   } else if (item.pageType === 'visualScreen') {
     title = '编辑大屏'
   }
-  
+
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
