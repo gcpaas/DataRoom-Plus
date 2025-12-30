@@ -4,6 +4,7 @@ import {ElMessage, ElMessageBox} from 'element-plus'
 import {Search, Plus, MoreFilled, Folder, Monitor, Document} from '@element-plus/icons-vue'
 import {useRouter} from 'vue-router'
 import {pageApi, type PageEntity} from './api'
+import {PageType, PageStatus} from '@/packages/_common/_constant'
 
 const router = useRouter()
 const searchName = ref('')
@@ -43,12 +44,12 @@ const getPageList = () => {
 // 新增页面/目录/大屏
 const handleAdd = (pageType: string) => {
   let title = '新增页面'
-  if (pageType === 'directory') {
+  if (pageType === PageType.DIRECTORY) {
     title = '新增目录'
-  } else if (pageType === 'visualScreen') {
+  } else if (pageType === PageType.VISUAL_SCREEN) {
     title = '新增大屏'
   }
-
+  
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -78,12 +79,12 @@ const handleAdd = (pageType: string) => {
  */
 const handleEdit = (item: PageEntity) => {
   let title = '编辑页面'
-  if (item.pageType === 'directory') {
+  if (item.pageType === PageType.DIRECTORY) {
     title = '编辑目录'
-  } else if (item.pageType === 'visualScreen') {
+  } else if (item.pageType === PageType.VISUAL_SCREEN) {
     title = '编辑大屏'
   }
-
+    
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -207,7 +208,7 @@ const handlePreview = (page: PageEntity) => {
  * @param item
  */
 const handleCardClick = (item: PageEntity) => {
-  if (item.pageType === 'directory') {
+  if (item.pageType === PageType.DIRECTORY) {
     // 如果是目录,进入该目录
     currentParentCode.value = item.code
     breadcrumbs.value.push({
@@ -227,11 +228,11 @@ const handleCardClick = (item: PageEntity) => {
  */
 const getTypeName = (pageType: string) => {
   switch (pageType) {
-    case 'directory':
+    case PageType.DIRECTORY:
       return '目录'
-    case 'visualScreen':
+    case PageType.VISUAL_SCREEN:
       return '大屏'
-    case 'page':
+    case PageType.PAGE:
       return '页面'
     default:
       return ''
@@ -244,9 +245,9 @@ const getTypeName = (pageType: string) => {
  */
 const getStatusName = (status?: string) => {
   switch (status?.toLowerCase()) {
-    case 'published':
+    case PageStatus.PUBLISHED:
       return '已发布'
-    case 'design':
+    case PageStatus.DESIGN:
       return '设计态'
     default:
       return '设计态'
@@ -259,9 +260,9 @@ const getStatusName = (status?: string) => {
  */
 const getStatusType = (status?: string) => {
   switch (status?.toLowerCase()) {
-    case 'published':
+    case PageStatus.PUBLISHED:
       return 'success'
-    case 'design':
+    case PageStatus.DESIGN:
     default:
       return 'info'
   }
@@ -359,7 +360,7 @@ onMounted(() => {
                 <span class="card-name" :title="item.name">{{ item.name }}</span>
               </div>
               <div class="card-actions">
-                <el-tag :type="getStatusType(item.pageStatus)" size="small" v-if="item.pageType !== 'directory'">
+                <el-tag :type="getStatusType(item.pageStatus)" size="small" v-if="item.pageType !== PageType.DIRECTORY">
                   {{ getStatusName(item.pageStatus) }}
                 </el-tag>
                 <el-dropdown trigger="click" @command="(command:string) => {
@@ -376,10 +377,10 @@ onMounted(() => {
                    <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                      <el-dropdown-item command="design" v-if="item.pageType !== 'directory'">设计</el-dropdown-item>
-                      <el-dropdown-item command="publish" v-if="item.pageStatus?.toLowerCase() !== 'published' && item.pageType !== 'directory'">发布</el-dropdown-item>
-                      <el-dropdown-item command="offline" v-if="item.pageStatus?.toLowerCase() === 'published' && item.pageType !== 'directory'">取消发布</el-dropdown-item>
-                      <el-dropdown-item command="preview" v-if="item.pageType !== 'directory'">预览</el-dropdown-item>
+                      <el-dropdown-item command="design" v-if="item.pageType !== PageType.DIRECTORY">设计</el-dropdown-item>
+                      <el-dropdown-item command="publish" v-if="item.pageStatus?.toLowerCase() !== PageStatus.PUBLISHED && item.pageType !== PageType.DIRECTORY">发布</el-dropdown-item>
+                      <el-dropdown-item command="offline" v-if="item.pageStatus?.toLowerCase() === PageStatus.PUBLISHED && item.pageType !== PageType.DIRECTORY">取消发布</el-dropdown-item>
+                      <el-dropdown-item command="preview" v-if="item.pageType !== PageType.DIRECTORY">预览</el-dropdown-item>
                       <el-dropdown-item command="delete" divided>删除</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>

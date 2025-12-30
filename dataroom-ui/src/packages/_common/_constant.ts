@@ -1,4 +1,4 @@
-enum DrConst {
+export enum DrConst {
   /**
    * 画布实例
    */
@@ -9,7 +9,7 @@ enum DrConst {
   THIS_PLUGIN_TYPE = 'THIS_PLUGIN_TYPE',
 }
 
-enum ComponentLibTagTypeConst {
+export  enum ComponentLibTagTypeConst {
   /**
    * 折线图、面积图
    */
@@ -55,5 +55,23 @@ enum ComponentLibTagTypeConst {
    */
   FORM = 'form',
 }
+/**
+ * 页面类型枚举
+ */
+export const PageType = {
+  DIRECTORY: 'directory',
+  VISUAL_SCREEN: 'visualScreen',
+  PAGE: 'page'
+} as const;
 
-export { DrConst, ComponentLibTagTypeConst }
+
+/**
+ * 页面状态枚举
+ */
+export const PageStatus = {
+  DESIGN: 'design',
+  PUBLISHED: 'published',
+  HISTORY: 'history',
+  PREVIEW: 'preview',
+  SNAPSHOT: 'snapshot'
+} as const;
