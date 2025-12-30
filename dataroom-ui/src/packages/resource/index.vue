@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox, ElUpload } from 'element-plus'
 import { Search, Plus, MoreFilled, Folder, Picture, VideoCamera } from '@element-plus/icons-vue'
 import { resourceApi, type ResourceEntity } from './api'
 import { ResourceType } from '@/packages/_common/_constant'
+import { getCookie, getCookieName } from '@/packages/_common/_cookie'
 
 const searchName = ref('')
 const resourceList = ref<ResourceEntity[]>([])
@@ -22,6 +23,27 @@ const uploadDialogVisible = ref(false)
 const editingResource = ref<ResourceEntity | null>(null)
 const uploadRef = ref<InstanceType<typeof ElUpload>>()
 const uploadUrl = `${import.meta.env.VITE_API_BASE_URL}/dataRoom/resource/upload`
+const resourceBaseUrl = import.meta.env.VITE_RESOURCE_BASE_URL || ''
+
+// 上传请求头，携带token
+const uploadHeaders = computed(() => {
+  const cookieName = getCookieName()
+  const cookieValue = getCookie(cookieName)
+  return {
+    [cookieName]: cookieValue
+  }
+})
+
+// 获取完整的资源URL
+const getResourceUrl = (url?: string) => {
+  if (!url) return ''
+  // 如果URL已经是完整的http/https地址，直接返回
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  // 否则拼接基础路径
+  return `${resourceBaseUrl}${url}`
+}
 
 /**
  * 查询
@@ -70,35 +92,22 @@ const handleEdit = (item: ResourceEntity) => {
   uploadDialogVisible.value = true
 }
 
-// 文件上传成功回调
-const handleUploadSuccess = (response: ResourceEntity) => {
+// 文件上传成功回调 - 只更新临时数据，不直接保存
+const handleUploadSuccess = (response: any) => {
   if (response) {
-    // 将上传返回的数据中的path、url、size、resourceType、originalName作为参数
-    const resourceData: ResourceEntity = {
+    console.log(response)
+    const res = response.data as ResourceEntity
+    // 将上传返回的数据中的path、url、size、resourceType、originalName更新到editingResource
+    editingResource.value = {
       ...editingResource.value,
-      name: response.name || editingResource.value?.name,
-      originalName: response.originalName,
-      path: response.path,
-      url: response.url,
-      size: response.size,
-      resourceType: response.resourceType || editingResource.value?.resourceType
+      name: editingResource.value?.name || response.name,
+      originalName: res.originalName,
+      path: res.path,
+      url: res.url,
+      size: res.size,
+      resourceType: res.resourceType || editingResource.value?.resourceType
     }
-
-    if (editingResource.value?.id) {
-      // 更新资源
-      resourceApi.update(resourceData).then(() => {
-        ElMessage.success('更新成功')
-        uploadDialogVisible.value = false
-        getResourceList()
-      })
-    } else {
-      // 新增资源
-      resourceApi.insert(resourceData).then(() => {
-        ElMessage.success('上传成功')
-        uploadDialogVisible.value = false
-        getResourceList()
-      })
-    }
+    ElMessage.success('文件上传成功，请点击确定保存')
   }
 }
 
@@ -191,24 +200,35 @@ const handleBreadcrumbClick = (index: number) => {
   getResourceList()
 }
 
-// 确认编辑
+// 确认保存
 const handleEditConfirm = () => {
+  if (!editingResource.value?.name) {
+    ElMessage.warning('请输入资源名称')
+    return
+  }
+
+  // 对于图片和视频类型，需要检查是否已上传文件
+  if (editingResource.value?.resourceType !== ResourceType.DIRECTORY) {
+    if (!editingResource.value?.path && !editingResource.value?.id) {
+      ElMessage.warning('请先上传文件')
+      return
+    }
+  }
+
   if (editingResource.value?.id) {
-    // 更新资源（不包含文件上传信息，仅更新基本信息）
+    // 更新资源
     resourceApi.update(editingResource.value).then(() => {
       ElMessage.success('更新成功')
       uploadDialogVisible.value = false
       getResourceList()
     })
   } else {
-    // 新增资源（对于目录等不需要上传文件的资源类型）
-    if (editingResource.value?.resourceType === ResourceType.DIRECTORY) {
-      resourceApi.insert(editingResource.value).then(() => {
-        ElMessage.success('创建成功')
-        uploadDialogVisible.value = false
-        getResourceList()
-      })
-    }
+    // 新增资源
+    resourceApi.insert(editingResource.value).then(() => {
+      ElMessage.success('创建成功')
+      uploadDialogVisible.value = false
+      getResourceList()
+    })
   }
 }
 
@@ -278,7 +298,7 @@ onMounted(() => {
                 <el-icon v-if="item.resourceType === 'directory'" :size="48" class="type-icon">
                   <Folder />
                 </el-icon>
-                <img v-else-if="item.resourceType === 'image'" :src="item.url" :alt="item.name" class="resource-image" />
+                <img v-else-if="item.resourceType === 'image'" :src="getResourceUrl(item.url)" :alt="item.name" class="resource-image" />
                 <el-icon v-else-if="item.resourceType === 'video'" :size="48" class="type-icon">
                   <VideoCamera />
                 </el-icon>
@@ -341,6 +361,7 @@ onMounted(() => {
           <el-upload
             ref="uploadRef"
             :action="uploadUrl"
+            :headers="uploadHeaders"
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
             :auto-upload="true"
@@ -360,7 +381,7 @@ onMounted(() => {
             </template>
           </el-upload>
         </el-form-item>
-        <el-form-item label="描述" v-if="editingResource?.id || editingResource?.resourceType === ResourceType.DIRECTORY">
+        <el-form-item label="描述">
           <el-input
             v-model="editingResource!.remark"
             type="textarea"
@@ -372,15 +393,7 @@ onMounted(() => {
         <el-button @click="uploadDialogVisible = false">取消</el-button>
         <el-button
           type="primary"
-          @click="uploadRef?.submit()"
-          v-if="!editingResource?.id && editingResource?.resourceType !== ResourceType.DIRECTORY"
-        >
-          上传
-        </el-button>
-        <el-button
-          type="primary"
           @click="handleEditConfirm()"
-          v-else
         >
           确定
         </el-button>
