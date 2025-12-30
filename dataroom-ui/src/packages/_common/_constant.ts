@@ -84,3 +84,12 @@ export const ResourceType = {
   IMAGE: 'image',
   VIDEO: 'video'
 } as const;
+
+/**
+ * 数据源类型枚举
+ */
+export const DataSourceType = {
+  MYSQL: 'mysql',
+  POSTGRESQL: 'postgresql',
+  ORACLE: 'oracle'
+} as const;
