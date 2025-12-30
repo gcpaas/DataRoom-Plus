@@ -1,6 +1,16 @@
 import request from '@DrPackage/_common/_request.ts'
 
 /**
+ * 关系型数据源配置
+ */
+export interface RelationalDataSource {
+  driverName: string
+  username: string
+  password: string
+  url: string
+}
+
+/**
  * 数据源实体
  */
 export interface DataSourceEntity {
@@ -8,14 +18,13 @@ export interface DataSourceEntity {
   name: string
   code?: string
   dataSourceType: 'mysql' | 'postgresql' | 'oracle'
-  dataSource: {
-    driverName?: string
-    username: string
-    password: string
-    url: string
-  }
+  dataSource: RelationalDataSource
   createDate?: string
   updateDate?: string
+  createUser?: string
+  updateUser?: string
+  tenantCode?: string
+  delFlag?: string
 }
 
 /**

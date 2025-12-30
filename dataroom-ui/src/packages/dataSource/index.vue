@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, defineAsyncComponent, shallowRef } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, MoreFilled, Edit, Delete, Connection } from '@element-plus/icons-vue'
 import { dataSourceApi, type DataSourceEntity } from './api'
@@ -13,6 +13,7 @@ const currentDataSource = ref<DataSourceEntity>({
   name: '',
   dataSourceType: 'mysql',
   dataSource: {
+    driverName: 'com.mysql.cj.jdbc.Driver',
     username: '',
     password: '',
     url: ''
@@ -25,17 +26,17 @@ const dataSourceTypeMap: Record<string, { name: string; icon: string; component:
   mysql: {
     name: 'MySQL',
     icon: '🐬',
-    component: shallowRef(defineAsyncComponent(() => import('./components/MysqlEditor.vue')))
+    component: defineAsyncComponent(() => import('./components/MysqlEditor.vue'))
   },
   postgresql: {
     name: 'PostgreSQL',
     icon: '🐘',
-    component: shallowRef(defineAsyncComponent(() => import('./components/PostgresqlEditor.vue')))
+    component: defineAsyncComponent(() => import('./components/PostgresqlEditor.vue'))
   },
   oracle: {
     name: 'Oracle',
     icon: '🔷',
-    component: shallowRef(defineAsyncComponent(() => import('./components/OracleEditor.vue')))
+    component: defineAsyncComponent(() => import('./components/OracleEditor.vue'))
   }
 }
 
@@ -63,10 +64,22 @@ const getDataSourceList = async () => {
  */
 const handleAdd = (dataSourceType: 'mysql' | 'postgresql' | 'oracle') => {
   dialogTitle.value = `新增${dataSourceTypeMap[dataSourceType].name}数据源`
+  
+  // 根据数据源类型设置默认驱动名称
+  let defaultDriverName = ''
+  if (dataSourceType === 'mysql') {
+    defaultDriverName = 'com.mysql.cj.jdbc.Driver'
+  } else if (dataSourceType === 'postgresql') {
+    defaultDriverName = 'org.postgresql.Driver'
+  } else if (dataSourceType === 'oracle') {
+    defaultDriverName = 'oracle.jdbc.driver.OracleDriver'
+  }
+  
   currentDataSource.value = {
     name: '',
     dataSourceType,
     dataSource: {
+      driverName: defaultDriverName,
       username: '',
       password: '',
       url: ''
