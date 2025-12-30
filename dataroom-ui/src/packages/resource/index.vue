@@ -73,14 +73,16 @@ const handleUpload = (command?: string) => {
     // 对于目录，直接弹出对话框让用户输入名称，不需要上传文件
     editingResource.value = {
       name: '',
-      resourceType: ResourceType.DIRECTORY
+      resourceType: ResourceType.DIRECTORY,
+      parentCode: currentParentCode.value
     }
     uploadDialogVisible.value = true
   } else {
     // 对于图片和视频，需要上传文件
     editingResource.value = {
       name: '',
-      resourceType: command === 'video' ? ResourceType.VIDEO : ResourceType.IMAGE
+      resourceType: command === 'video' ? ResourceType.VIDEO : ResourceType.IMAGE,
+      parentCode: currentParentCode.value
     }
     uploadDialogVisible.value = true
   }
