@@ -316,9 +316,6 @@ onMounted(() => {
                 <span class="card-name" :title="item.name">{{ item.name }}</span>
               </div>
               <div class="card-actions">
-                <el-tag :type="item.resourceType === 'image' ? 'primary' : item.resourceType === 'video' ? 'warning' : 'info'" size="small">
-                  {{ getTypeName(item.resourceType) }}
-                </el-tag>
                 <el-dropdown trigger="click" @command="(command: string) => {
                   if (command === 'edit') handleEdit(item)
                   else if (command === 'delete') handleDelete(item)
