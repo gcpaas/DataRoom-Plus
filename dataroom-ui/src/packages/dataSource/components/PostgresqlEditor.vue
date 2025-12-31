@@ -17,6 +17,7 @@ const formData = reactive<DataSourceEntity>({
   name: '',
   dataSourceType: 'postgresql',
   dataSource: {
+    dataSourceType: 'postgresql',
     driverName: 'org.postgresql.Driver',
     username: '',
     password: '',

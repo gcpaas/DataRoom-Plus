@@ -64,7 +64,7 @@ const getDataSourceList = async () => {
  */
 const handleAdd = (dataSourceType: 'mysql' | 'postgresql' | 'oracle') => {
   dialogTitle.value = `新增${dataSourceTypeMap[dataSourceType].name}数据源`
-  
+
   // 根据数据源类型设置默认驱动名称
   let defaultDriverName = ''
   if (dataSourceType === 'mysql') {
@@ -74,11 +74,12 @@ const handleAdd = (dataSourceType: 'mysql' | 'postgresql' | 'oracle') => {
   } else if (dataSourceType === 'oracle') {
     defaultDriverName = 'oracle.jdbc.driver.OracleDriver'
   }
-  
+
   currentDataSource.value = {
     name: '',
     dataSourceType,
     dataSource: {
+      dataSourceType : dataSourceType,
       driverName: defaultDriverName,
       username: '',
       password: '',

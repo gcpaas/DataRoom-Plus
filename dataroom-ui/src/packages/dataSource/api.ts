@@ -5,6 +5,7 @@ import request from '@DrPackage/_common/_request.ts'
  */
 export interface RelationalDataSource {
   driverName: string
+  dataSourceType: 'mysql' | 'postgresql' | 'oracle'
   username: string
   password: string
   url: string

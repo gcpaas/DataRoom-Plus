@@ -17,6 +17,7 @@ const formData = reactive<DataSourceEntity>({
   name: '',
   dataSourceType: 'mysql',
   dataSource: {
+    dataSourceType: 'mysql',
     driverName: 'com.mysql.cj.jdbc.Driver',
     username: '',
     password: '',

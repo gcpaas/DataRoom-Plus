@@ -17,6 +17,7 @@ const formData = reactive<DataSourceEntity>({
   name: '',
   dataSourceType: 'oracle',
   dataSource: {
+    dataSourceType: 'oracle',
     driverName: 'oracle.jdbc.driver.OracleDriver',
     username: '',
     password: '',

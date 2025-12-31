@@ -1,34 +1,8 @@
 package com.gccloud.gcpaas.core.datasource.bean;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 @Data
-public class MySqlDatasource extends BaseDataSource {
-    @Schema(description = "驱动名称")
-    private String driverName;
-    @Schema(description = "用户名")
-    private String username;
-    /**
-     * 数据源密码
-     */
-    @Schema(description = "数据源密码")
-    private String password;
-    @Schema(description = "地址")
-    private String url;
+public class MySqlDatasource extends RelationalDatasource {
 
-    @Override
-    public void desensitize() {
-        // 清空密码
-        this.setPassword(null);
-    }
-
-    @Override
-    public void updatedSensitive(BaseDataSource baseDataSource) {
-        if (StringUtils.isBlank(password)) {
-            MySqlDatasource db = (MySqlDatasource) baseDataSource;
-            password = db.getPassword();
-        }
-    }
 }
