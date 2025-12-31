@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gccloud.gcpaas.core.constant.DataSourceType;
 import com.gccloud.gcpaas.core.datasource.bean.BaseDataSource;
+import com.gccloud.gcpaas.core.datasource.bean.MySqlDatasource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,4 +46,18 @@ public class DataSourceEntity extends BaseEntity {
     @NotNull(message = "数据源不能为空")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private BaseDataSource dataSource;
+
+    public static void main(String[] args) throws JsonProcessingException {
+        DataSourceEntity baseEntity = new DataSourceEntity();
+        baseEntity.setId("1");
+        MySqlDatasource mySqlDatasource = new MySqlDatasource();
+        mySqlDatasource.setDriverName("mysql");
+        baseEntity.setDataSource(mySqlDatasource);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String data = objectMapper.writeValueAsString(baseEntity);
+        System.out.println(data);
+
+        DataSourceEntity dataSourceEntity = objectMapper.readValue(data, DataSourceEntity.class);
+        System.out.println(dataSourceEntity);
+    }
 }
