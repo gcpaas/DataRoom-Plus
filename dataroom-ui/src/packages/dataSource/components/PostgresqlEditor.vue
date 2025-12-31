@@ -2,6 +2,7 @@
 import { ref, reactive, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { DataSourceEntity } from '../api'
+import { encryptByRsa } from '@/packages/_common/_encrypt'
 
 const props = defineProps<{
   modelValue: DataSourceEntity
@@ -70,9 +71,25 @@ const resetFields = () => {
   formRef.value?.resetFields()
 }
 
+/**
+ * 获取加密后的数据源信息（用于保存）
+ */
+const getEncryptedData = (): DataSourceEntity => {
+  const data = { ...formData }
+  // 只有当密码字段有值时才加密
+  if (data.dataSource?.password) {
+    data.dataSource = {
+      ...data.dataSource,
+      password: encryptByRsa(data.dataSource.password)
+    }
+  }
+  return data
+}
+
 defineExpose({
   validate,
-  resetFields
+  resetFields,
+  getEncryptedData
 })
 </script>
 

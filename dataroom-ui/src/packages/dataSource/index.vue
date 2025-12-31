@@ -130,11 +130,17 @@ const handleDelete = (item: DataSourceEntity) => {
 const handleSave = async () => {
   try {
     await editorRef.value?.validate()
+    // 获取加密后的数据
+    const encryptedData = editorRef.value?.getEncryptedData()
+    if (!encryptedData) {
+      throw new Error('获取数据失败')
+    }
+    
     if (currentDataSource.value.code) {
-      await dataSourceApi.update(currentDataSource.value)
+      await dataSourceApi.update(encryptedData)
       ElMessage.success('更新成功')
     } else {
-      await dataSourceApi.insert(currentDataSource.value)
+      await dataSourceApi.insert(encryptedData)
       ElMessage.success('新增成功')
     }
     dialogVisible.value = false

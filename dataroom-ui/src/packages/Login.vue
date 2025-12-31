@@ -5,7 +5,7 @@ import {ElMessage} from 'element-plus'
 import {User, Lock} from '@element-plus/icons-vue'
 import {setCookie} from '@/packages/_common/_cookie'
 import request from '@/packages/_common/_request.ts'
-import JSEncrypt from 'jsencrypt'
+import {encryptByRsa} from '@/packages/_common/_encrypt'
 import logo from '@/assets/logo.png'
 
 const router = useRouter()
@@ -31,17 +31,6 @@ const rules = {
 const formRef = ref()
 const loading = ref(false)
 
-// RSA公钥 (从环境变量获取)
-const PUBLIC_KEY = import.meta.env.VITE_RSA_PUBLIC_KEY || ''
-
-// RSA加密密码
-const encryptPassword = (password: string): string => {
-  const encrypt = new JSEncrypt()
-  encrypt.setPublicKey(PUBLIC_KEY)
-  const encrypted = encrypt.encrypt(password)
-  return encrypted || ''
-}
-
 // 登录处理
 const handleLogin = async () => {
   if (!formRef.value) return
@@ -51,7 +40,7 @@ const handleLogin = async () => {
       loading.value = true
       try {
         // 加密密码
-        const encryptedPassword = encryptPassword(loginForm.password)
+        const encryptedPassword = encryptByRsa(loginForm.password)
         if (!encryptedPassword) {
           ElMessage.error('密码加密失败,请重试')
           loading.value = false
