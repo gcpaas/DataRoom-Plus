@@ -22,7 +22,7 @@ public class DatasetServiceFactory {
      */
     public AbstractDatasetService getDatasetService(String type) {
         try {
-            AbstractDatasetService datasetService = (AbstractDatasetService) applicationContext.getBean(type + DataRoomConstant.Dataset.TYPE.SERVICE_NAME);
+            AbstractDatasetService datasetService = (AbstractDatasetService) applicationContext.getBean(type + DataRoomConstant.Dataset.SERVICE_NAME);
             return datasetService;
         } catch (Exception e) {
             log.error("获取 {} 类型的数据集实现类失败，{}", type, ExceptionUtils.getStackTrace(e));

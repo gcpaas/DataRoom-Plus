@@ -4,6 +4,7 @@ import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.bean.KeyVal;
+import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Slf4j
-@Service(value = DataRoomConstant.Dataset.TYPE.HTTP + DataRoomConstant.Dataset.TYPE.SERVICE_NAME)
+@Service(value = DatasetType.HTTP_TYPE + DataRoomConstant.Dataset.SERVICE_NAME)
 public class HttpDatasetService extends AbstractDatasetService {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();

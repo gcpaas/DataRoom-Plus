@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.bean.BaseDataset;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
@@ -23,7 +24,7 @@ public class DatasetEntity extends BaseEntity {
     /**
      * 数据源编码
      */
-    @Schema(description = "数据源编码")
+    @Schema(description = "数据源编码",requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String dataSourceCode;
     /**
      * 名称
@@ -41,7 +42,7 @@ public class DatasetEntity extends BaseEntity {
      * 数据集类型
      */
     @Schema(description = "数据集类型")
-    private String datasetType;
+    private DatasetType datasetType;
     /**
      * 所属目录编码
      */

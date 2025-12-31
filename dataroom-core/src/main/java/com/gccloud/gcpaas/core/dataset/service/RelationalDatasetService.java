@@ -1,11 +1,12 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
+import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
-import com.gccloud.gcpaas.core.dataset.bean.MySqlDataset;
+import com.gccloud.gcpaas.core.dataset.bean.RelationalDataset;
 import com.gccloud.gcpaas.core.datasource.bean.MySqlDatasource;
 import com.gccloud.gcpaas.core.datasource.service.DatasourceService;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
@@ -23,8 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Service(value = DataRoomConstant.Dataset.TYPE.MYSQL + DataRoomConstant.Dataset.TYPE.SERVICE_NAME)
-public class MySqlDatasetService extends AbstractDatasetService {
+@Service(value = DatasetType.RELATIONAL_TYPE + DataRoomConstant.Dataset.SERVICE_NAME)
+public class RelationalDatasetService extends AbstractDatasetService {
 
     @Resource
     private DatasourceService dataSourceDefinitionService;
@@ -36,7 +37,7 @@ public class MySqlDatasetService extends AbstractDatasetService {
     @Override
     public DatasetRunResponse run(DatasetRunRequest datasetRunRequest, DatasetEntity datasetEntity) {
         DatasetRunResponse datasetRunResponse = new DatasetRunResponse();
-        MySqlDataset mySqlDataset = (MySqlDataset) datasetEntity.getDataset();
+        RelationalDataset relationalDataset = (RelationalDataset) datasetEntity.getDataset();
         try {
             String datasourceCode = datasetEntity.getDataSourceCode();
             DataSourceEntity dataSourceDefinition = dataSourceDefinitionService.getByCode(datasourceCode);
@@ -60,7 +61,7 @@ public class MySqlDatasetService extends AbstractDatasetService {
                 }
             });
             // 参数替换
-            String sql = mySqlDataset.getSql();
+            String sql = relationalDataset.getSql();
             Set<String> sqlParam = ParamUtils.parse(sql);
             // 替换参数
             for (String paramName : sqlParam) {

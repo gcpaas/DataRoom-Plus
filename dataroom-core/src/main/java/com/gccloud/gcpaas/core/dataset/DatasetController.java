@@ -110,7 +110,7 @@ public class DatasetController {
     public Resp<DatasetRunResponse> run(@RequestBody DatasetRunRequest datasetRunRequest) {
         DatasetEntity datasetEntity = datasetMapper.getByCode(datasetRunRequest.getDatasetCode());
         Assert.isTrue(datasetEntity != null, "数据集不存在");
-        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(datasetEntity.getDatasetType());
+        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(datasetEntity.getDatasetType().getType());
         DatasetRunResponse datasetRunResponse = dataSetService.run(datasetRunRequest, datasetEntity);
         return Resp.success(datasetRunResponse);
     }
@@ -122,7 +122,7 @@ public class DatasetController {
         log.info("入参 {}", datasetTestRequest.getInputParam());
         DatasetEntity dataSetDefinition = datasetTestRequest.getDataset();
         Assert.isTrue(dataSetDefinition != null, "数据集不存在");
-        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(dataSetDefinition.getDatasetType());
+        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(dataSetDefinition.getDatasetType().getType());
         DatasetRunRequest runDTO = new DatasetRunRequest();
         runDTO.setInputParam(datasetTestRequest.getInputParam());
         DatasetRunResponse datasetRunResponse = dataSetService.run(runDTO, dataSetDefinition);
