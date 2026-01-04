@@ -26,7 +26,6 @@ const isMenuActive = (path: string) => {
 const handleLogout = () => {
   // 删除cookie中的token
   removeCookie()
-  ElMessage.success('退出成功')
   // 跳转到登录页
   router.push('/login')
 }
