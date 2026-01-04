@@ -314,6 +314,13 @@ const handleSave = async () => {
 }
 
 /**
+ * 关闭对话框
+ */
+const handleCloseDialog = () => {
+  dialogVisible.value = false
+}
+
+/**
  * 刷新数据预览
  */
 const handleRefresh = async () => {
@@ -369,6 +376,34 @@ onMounted(() => {
   loadTree()
   loadDataSourceList()
 })
+
+// 测试按钮loading状态
+const testLoading = ref(false)
+const testAndSaveLoading = ref(false)
+
+/**
+ * 仅测试
+ */
+const handleTest = async () => {
+  try {
+    testLoading.value = true
+    await editorRef.value?.test()
+  } finally {
+    testLoading.value = false
+  }
+}
+
+/**
+ * 测试并保存
+ */
+const handleTestAndSave = async () => {
+  try {
+    testAndSaveLoading.value = true
+    await editorRef.value?.testAndSave()
+  } finally {
+    testAndSaveLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -502,11 +537,11 @@ onMounted(() => {
           <el-tabs v-model="activeTab" class="dataset-tabs">
             <el-tab-pane label="数据预览" name="preview" />
             <el-tab-pane v-if="selectedNode.datasetType !== 'json'" label="入参预览" name="inputParams" />
-            <el-tab-pane label="出参预览" name="outputParams" />
+            <el-tab-pane label="字段说明" name="outputParams" />
           </el-tabs>
           <div class="right-actions">
-            <el-button type="text" :icon="Edit" @click="handleEdit">编辑</el-button>
-            <el-button type="text" :icon="Refresh" @click="handleRefresh">刷新</el-button>
+            <el-button link :icon="Edit" @click="handleEdit">编辑</el-button>
+            <el-button link :icon="Refresh" @click="handleRefresh">刷新</el-button>
           </div>
         </div>
         <div class="right-content">
@@ -580,13 +615,16 @@ onMounted(() => {
           v-if="currentDataset.datasetType !== 'directory'"
           v-model="currentDataset"
           :data-source-list="dataSourceList"
+          :on-save="handleSave"
+          :on-close="handleCloseDialog"
           ref="editorRef"
         />
       </el-scrollbar>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSave">确定</el-button>
+          <el-button @click="handleCloseDialog">取消</el-button>
+          <el-button @click="handleTest" :loading="testLoading">仅测试</el-button>
+          <el-button type="primary" @click="handleTestAndSave" :loading="testAndSaveLoading">测试并保存</el-button>
         </span>
       </template>
     </el-dialog>

@@ -98,6 +98,14 @@ export interface DatasetRunRequest {
 }
 
 /**
+ * 数据集测试请求
+ */
+export interface DatasetTestRequest {
+  dataset: DatasetEntity
+  inputParam?: Record<string, any>
+}
+
+/**
  * 数据集执行响应
  */
 export interface DatasetRunResponse {
@@ -151,5 +159,12 @@ export const datasetApi = {
    */
   run(data: DatasetRunRequest) {
     return request.post<DatasetRunResponse>('/dataRoom/dataset/run', data)
+  },
+
+  /**
+   * 测试数据集
+   */
+  test(data: DatasetTestRequest) {
+    return request.post<DatasetRunResponse>('/dataRoom/dataset/run/test', data)
   }
 }

@@ -2,10 +2,14 @@
 import { ref, reactive, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { DatasetEntity } from '../api'
+import { datasetApi } from '../api'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps<{
   modelValue: DatasetEntity
+  dataSourceList?: any[]
+  onSave?: () => Promise<void>
+  onClose?: () => void
 }>()
 
 const emit = defineEmits<{
@@ -78,6 +82,81 @@ const getData = (): DatasetEntity => {
 }
 
 /**
+ * 测试数据集
+ */
+const test = async () => {
+  try {
+    if (!formData.dataset || !('json' in formData.dataset) || !formData.dataset.json) {
+      ElMessage.error('请先输入JSON数据')
+      return
+    }
+    // 验证JSON格式
+    try {
+      JSON.parse(formData.dataset.json)
+    } catch (e) {
+      ElMessage.error('JSON格式错误，请检查')
+      return
+    }
+    
+    // 调用测试接口
+    const res = await datasetApi.test({ dataset: formData })
+    if (res.outputList && res.outputList.length > 0) {
+      // 保存现有的用户配置
+      const existingConfig = new Map(
+        (formData.outputList || []).map(item => [item.name, { type: item.type, desc: item.desc }])
+      )
+      // 更新字段列表，保留用户已配置的类型和描述
+      formData.outputList = res.outputList.map(field => ({
+        name: field.name,
+        type: existingConfig.get(field.name)?.type || field.type || 'String',
+        desc: existingConfig.get(field.name)?.desc || field.desc || ''
+      }))
+    } else {
+      // 解析JSON获取字段
+      const jsonData = JSON.parse(formData.dataset.json)
+      const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData]
+      if (dataArray.length > 0) {
+        const fields = Object.keys(dataArray[0])
+        // 保存现有的用户配置
+        const existingConfig = new Map(
+          (formData.outputList || []).map(item => [item.name, { type: item.type, desc: item.desc }])
+        )
+        // 更新字段列表，保留用户已配置的类型和描述
+        formData.outputList = fields.map(name => ({
+          name,
+          type: existingConfig.get(name)?.type || 'String',
+          desc: existingConfig.get(name)?.desc || ''
+        }))
+      }
+    }
+    ElMessage.success('测试成功，字段列表已更新')
+  } catch (error) {
+    console.error('测试数据集失败:', error)
+    ElMessage.error('测试失败')
+  }
+}
+
+/**
+ * 测试并保存
+ */
+const testAndSave = async () => {
+  try {
+    // 先验证表单
+    await validate()
+    
+    // 先测试
+    await test()
+    
+    // 然后保存
+    if (props.onSave) {
+      await props.onSave()
+    }
+  } catch (error) {
+    console.error('测试并保存失败:', error)
+  }
+}
+
+/**
  * 格式化JSON
  */
 const formatJson = () => {
@@ -95,7 +174,9 @@ const formatJson = () => {
 defineExpose({
   validate,
   resetFields,
-  getData
+  getData,
+  test,
+  testAndSave
 })
 </script>
 
@@ -118,23 +199,18 @@ defineExpose({
         </div>
       </div>
     </el-form-item>
-    <el-form-item label="出参配置">
+    <el-form-item label="字段说明">
       <div style="width: 100%">
-        <el-button size="small" @click="formData.outputList?.push({ name: '', type: 'String' })">
-          添加出参
-        </el-button>
-        <el-table :data="formData.outputList" border style="width: 100%; margin-top: 8px">
-          <el-table-column label="参数名" width="150">
-            <template #default="{ row }">
-              <el-input v-model="row.name" size="small" placeholder="参数名" />
-            </template>
-          </el-table-column>
-          <el-table-column label="类型" width="120">
+        <el-table :data="formData.outputList" border style="width: 100%">
+          <el-table-column prop="name" label="字段名" width="200" />
+          <el-table-column label="类型" width="150">
             <template #default="{ row }">
               <el-select v-model="row.type" size="small" placeholder="类型">
                 <el-option label="String" value="String" />
                 <el-option label="Number" value="Number" />
                 <el-option label="Boolean" value="Boolean" />
+                <el-option label="Object" value="Object" />
+                <el-option label="Array" value="Array" />
               </el-select>
             </template>
           </el-table-column>
@@ -143,19 +219,12 @@ defineExpose({
               <el-input v-model="row.desc" size="small" placeholder="描述" />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="80" fixed="right">
-            <template #default="{ $index }">
-              <el-button
-                type="danger"
-                size="small"
-                link
-                @click="formData.outputList?.splice($index, 1)"
-              >
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
         </el-table>
+        <el-empty
+          v-if="!formData.outputList || formData.outputList.length === 0"
+          description="请点击测试按钮获取字段列表"
+          :image-size="100"
+        />
       </div>
     </el-form-item>
   </el-form>
