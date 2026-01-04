@@ -1,5 +1,6 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
+import com.gccloud.gcpaas.core.exception.DataRoomException;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.mapping.BoundSql;
@@ -63,7 +64,7 @@ public class MyBatisService {
             return parsedSql;
         } catch (Exception e) {
             log.error("生成SQL失败", e);
-            throw new RuntimeException("生成SQL失败");
+            throw new DataRoomException("生成SQL失败");
         }
     }
 }

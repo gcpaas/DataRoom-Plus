@@ -12,6 +12,7 @@ import com.gccloud.gcpaas.core.datasource.bean.MySqlDatasource;
 import com.gccloud.gcpaas.core.datasource.service.DatasourceService;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
+import com.gccloud.gcpaas.core.exception.DataRoomException;
 import com.gccloud.gcpaas.core.util.RsaUtils;
 import com.gccloud.gcpaas.core.util.TypeUtils;
 import jakarta.annotation.Resource;
@@ -71,7 +72,7 @@ public class RelationalDatasetService extends AbstractDatasetService {
             sql = myBatisService.generateSql(sql, params);
             // 仅允许执行查询操作
             if (!sql.toLowerCase().startsWith("select")) {
-                throw new RuntimeException("仅允许执行select操作");
+                throw new DataRoomException("仅允许执行select操作");
             }
             String privateKey = dataRoomConfig.getPrivateKey();
             String pwd = RsaUtils.decryptByPrivateKey(dataSource.getPassword(), privateKey);

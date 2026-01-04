@@ -8,6 +8,7 @@ import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
 import com.gccloud.gcpaas.core.dataset.service.AbstractDatasetService;
 import com.gccloud.gcpaas.core.dataset.service.DatasetServiceFactory;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
+import com.gccloud.gcpaas.core.exception.DataRoomException;
 import com.gccloud.gcpaas.core.mapper.DatasetMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
 import com.gccloud.gcpaas.core.util.TypeUtils;
@@ -131,6 +132,9 @@ public class DatasetController {
         datasetRunRequest.setInputParam(datasetTestRequest.getInputParam());
         DatasetRunResponse datasetRunResponse = dataSetService.run(datasetRunRequest, datasetEntity);
         Object data = datasetRunResponse.getData();
+        if (data == null) {
+            throw new DataRoomException("数据集执行结果为空");
+        }
         if (!(data instanceof List)) {
             List<Object> list = new ArrayList<>();
             list.add(data);

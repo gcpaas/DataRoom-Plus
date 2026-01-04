@@ -203,7 +203,7 @@ const handleAddDataset = (datasetType: 'json' | 'http' | 'relational', node?: Da
       datasetType === 'json'
         ? { datasetType: 'json', json: '' }
         : datasetType === 'http'
-          ? { datasetType: 'http', url: '', method: 'GET', headerList: [] }
+          ? { datasetType: 'http', url: '', method: 'GET', headerList: [], body: '', respJsonPath: '' }
           : { datasetType: 'relational', sql: '' }
   }
   dialogVisible.value = true

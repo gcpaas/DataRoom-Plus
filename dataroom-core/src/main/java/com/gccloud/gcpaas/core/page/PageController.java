@@ -327,7 +327,7 @@ public class PageController {
     public Resp<Void> stageClear(@PathVariable("code") String code, @PathVariable("state") String state) {
         PageStatus pageStatus = PageStatus.valueOf(state);
         if (!(pageStatus == PageStatus.HISTORY || pageStatus == PageStatus.SNAPSHOT)) {
-            throw new RuntimeException("状态错误");
+            throw new DataRoomException("状态错误");
         }
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PageStageEntity::getPageCode, code);

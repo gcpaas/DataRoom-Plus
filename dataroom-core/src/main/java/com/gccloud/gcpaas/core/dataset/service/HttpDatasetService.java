@@ -10,6 +10,7 @@ import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
 import com.gccloud.gcpaas.core.dataset.bean.HttpDataset;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
+import com.gccloud.gcpaas.core.exception.DataRoomException;
 import com.gccloud.gcpaas.core.util.ParamUtils;
 import com.gccloud.gcpaas.core.util.TypeUtils;
 import jakarta.annotation.Resource;
@@ -86,7 +87,7 @@ public class HttpDatasetService extends AbstractDatasetService {
                 String respBody = response.getBody();
                 if (!response.getStatusCode().is2xxSuccessful()) {
                     log.error("数据集 {} 请求失败，状态码：{}, 响应: {}", datasetEntity.getName(), response.getStatusCode(), respBody);
-                    throw new RuntimeException("数据集" + datasetEntity.getName() + "执行失败");
+                    throw new DataRoomException("数据集" + datasetEntity.getName() + "执行失败");
                 }
                 data = JSON.parse(respBody);
             } else if (DataRoomConstant.Dataset.HTTP_DATASET.METHOD.POST.equalsIgnoreCase(httpDataset.getMethod())) {
@@ -95,11 +96,11 @@ public class HttpDatasetService extends AbstractDatasetService {
                 String respBody = response.getBody();
                 if (!response.getStatusCode().is2xxSuccessful()) {
                     log.error("数据集 {} 请求失败，状态码：{}, 响应: {}", datasetEntity.getName(), response.getStatusCode(), respBody);
-                    throw new RuntimeException("数据集" + datasetEntity.getName() + "执行失败");
+                    throw new DataRoomException("数据集" + datasetEntity.getName() + "执行失败");
                 }
                 data = JSON.parse(respBody);
             } else {
-                throw new RuntimeException("不支持的请求方法");
+                throw new DataRoomException("不支持的请求方法");
             }
             if (StringUtils.isNotBlank(httpDataset.getRespJsonPath())) {
                 data = JSONPath.eval(data, httpDataset.getRespJsonPath());

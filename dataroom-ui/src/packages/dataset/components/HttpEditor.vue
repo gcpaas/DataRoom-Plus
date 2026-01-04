@@ -49,6 +49,17 @@ watch(
           body: '',
           respJsonPath: ''
         }
+      } else if ('url' in formData.dataset) {
+        // 确保dataset中包含所有必需字段
+        if (!formData.dataset.body) {
+          formData.dataset.body = ''
+        }
+        if (!formData.dataset.respJsonPath) {
+          formData.dataset.respJsonPath = ''
+        }
+        if (!formData.dataset.headerList) {
+          formData.dataset.headerList = []
+        }
       }
     }
   },
