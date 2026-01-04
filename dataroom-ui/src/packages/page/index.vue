@@ -5,6 +5,9 @@ import {Search, Plus, MoreFilled, Folder, Monitor, Document} from '@element-plus
 import {useRouter} from 'vue-router'
 import {pageApi, type PageEntity} from './api'
 import {PageType, PageStatus} from '@/packages/_common/_constant'
+import visualScreenPlaceholder from './assets/image/大屏占位符.png'
+import pagePlaceholder from './assets/image/仪表盘占位符.png'
+import directoryPlaceholder from './assets/image/目录占位符.png'
 
 const router = useRouter()
 const searchName = ref('')
@@ -16,6 +19,7 @@ interface BreadcrumbItem {
   code: string
   name: string
 }
+
 const breadcrumbs = ref<BreadcrumbItem[]>([{code: 'root', name: '全部'}])
 const currentParentCode = ref('root')
 
@@ -279,6 +283,23 @@ const handleBreadcrumbClick = (index: number) => {
   getPageList(item.code)
 }
 
+/**
+ * 获取默认占位图
+ * @param pageType
+ */
+const getDefaultPlaceholder = (pageType: string) => {
+  switch (pageType) {
+    case PageType.DIRECTORY:
+      return directoryPlaceholder
+    case PageType.VISUAL_SCREEN:
+      return visualScreenPlaceholder
+    case PageType.PAGE:
+      return pagePlaceholder
+    default:
+      return ''
+  }
+}
+
 // 页面加载时获取列表
 onMounted(() => {
   getPageList()
@@ -301,20 +322,29 @@ onMounted(() => {
         <el-button :icon="Search" @click="getPageList">查询</el-button>
         <el-dropdown trigger="click" @command="handleAdd">
           <el-button type="primary" :icon="Plus">
-            新增<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            新增
+            <el-icon class="el-icon--right">
+              <arrow-down/>
+            </el-icon>
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="directory">
-                <el-icon><Folder /></el-icon>
+                <el-icon>
+                  <Folder/>
+                </el-icon>
                 <span>目录</span>
               </el-dropdown-item>
               <el-dropdown-item command="visualScreen">
-                <el-icon><Monitor /></el-icon>
+                <el-icon>
+                  <Monitor/>
+                </el-icon>
                 <span>大屏</span>
               </el-dropdown-item>
               <el-dropdown-item command="page">
-                <el-icon><Document /></el-icon>
+                <el-icon>
+                  <Document/>
+                </el-icon>
                 <span>页面</span>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -341,18 +371,19 @@ onMounted(() => {
           <div class="page-card" v-for="item in pageList" :key="item.id">
             <div class="card-thumbnail" @click="handleCardClick(item)">
               <!-- 缩略图占位 -->
-              <div class="thumbnail-placeholder">
-                <el-icon v-if="item.pageType === 'directory'" :size="48" class="type-icon">
-                  <Folder />
-                </el-icon>
-                <el-icon v-else-if="item.pageType === 'visualScreen'" :size="48" class="type-icon">
-                  <Monitor />
-                </el-icon>
-                <el-icon v-else :size="48" class="type-icon">
-                  <Document />
-                </el-icon>
-                <span class="item-name">{{ item.name }}</span>
-              </div>
+              <el-image
+                :src="item.thumbnail?item.thumbnail:getDefaultPlaceholder(item.pageType)"
+                :lazy="true"
+                fit="fill"
+                class="thumbnail-image"
+                :class="item.pageType"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.pageType)" alt="默认占位图"/>
+                  </div>
+                </template>
+              </el-image>
             </div>
             <div class="card-footer">
               <div class="card-info">
@@ -374,7 +405,7 @@ onMounted(() => {
                   <el-icon class="more-icon">
                     <MoreFilled/>
                   </el-icon>
-                   <template #dropdown>
+                  <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item command="edit">编辑</el-dropdown-item>
                       <el-dropdown-item command="design" v-if="item.pageType !== PageType.DIRECTORY">设计</el-dropdown-item>
@@ -456,12 +487,13 @@ onMounted(() => {
         }
 
         .card-thumbnail {
-          width: 100%;
           height: 180px;
           background: var(--dr-bg2);
           display: flex;
           align-items: center;
           justify-content: center;
+          overflow: hidden;
+          padding: 16px;
 
           .thumbnail-placeholder {
             width: 100%;
@@ -482,6 +514,30 @@ onMounted(() => {
               font-size: 16px;
               font-weight: 500;
             }
+          }
+
+          .thumbnail-image {
+            width: 100%;
+            height: 100%;
+
+            .image-error {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              img {
+                width: 60%;
+                height: 60%;
+                object-fit: contain;
+              }
+            }
+          }
+
+          .directory {
+            width: 100px !important;
+            height: 100px !important;
           }
         }
 
