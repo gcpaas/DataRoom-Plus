@@ -105,10 +105,7 @@ defineExpose({
       <el-input v-model="formData.name" placeholder="请输入数据集名称" clearable />
     </el-form-item>
     <el-form-item label="JSON数据">
-      <div style="width: 100%">
-        <div style="margin-bottom: 8px; text-align: right">
-          <el-button size="small" @click="formatJson">格式化</el-button>
-        </div>
+      <div style="width: 100%; position: relative">
         <el-input
           v-if="formData.dataset && 'json' in formData.dataset"
           v-model="formData.dataset.json"
@@ -116,56 +113,9 @@ defineExpose({
           :rows="15"
           placeholder='请输入JSON数据，例如：[{"name": "张三", "age": 20}]'
         />
-      </div>
-    </el-form-item>
-    <el-form-item label="入参配置">
-      <div style="width: 100%">
-        <el-button size="small" @click="formData.inputList?.push({ name: '', type: 'String', required: false })">
-          添加入参
-        </el-button>
-        <el-table :data="formData.inputList" border style="width: 100%; margin-top: 8px">
-          <el-table-column label="参数名" width="120">
-            <template #default="{ row }">
-              <el-input v-model="row.name" size="small" placeholder="参数名" />
-            </template>
-          </el-table-column>
-          <el-table-column label="类型" width="100">
-            <template #default="{ row }">
-              <el-select v-model="row.type" size="small" placeholder="类型">
-                <el-option label="String" value="String" />
-                <el-option label="Number" value="Number" />
-                <el-option label="Boolean" value="Boolean" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="必填" width="80">
-            <template #default="{ row }">
-              <el-checkbox v-model="row.required" />
-            </template>
-          </el-table-column>
-          <el-table-column label="默认值" width="120">
-            <template #default="{ row }">
-              <el-input v-model="row.defaultVal" size="small" placeholder="默认值" />
-            </template>
-          </el-table-column>
-          <el-table-column label="描述">
-            <template #default="{ row }">
-              <el-input v-model="row.desc" size="small" placeholder="描述" />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="80" fixed="right">
-            <template #default="{ $index }">
-              <el-button
-                type="danger"
-                size="small"
-                link
-                @click="formData.inputList?.splice($index, 1)"
-              >
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div style="position: absolute; right: 12px; bottom: 16px">
+          <el-button size="small" @click="formatJson">格式化</el-button>
+        </div>
       </div>
     </el-form-item>
     <el-form-item label="出参配置">
@@ -213,6 +163,6 @@ defineExpose({
 
 <style scoped lang="scss">
 :deep(.el-form) {
-  padding: 0 20px;
+  padding: 16px;
 }
 </style>

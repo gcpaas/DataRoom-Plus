@@ -501,7 +501,7 @@ onMounted(() => {
         <div class="right-header">
           <el-tabs v-model="activeTab" class="dataset-tabs">
             <el-tab-pane label="数据预览" name="preview" />
-            <el-tab-pane label="入参预览" name="inputParams" />
+            <el-tab-pane v-if="selectedNode.datasetType !== 'json'" label="入参预览" name="inputParams" />
             <el-tab-pane label="出参预览" name="outputParams" />
           </el-tabs>
           <div class="right-actions">
@@ -631,6 +631,10 @@ onMounted(() => {
       flex: 1;
       padding: 8px;
 
+      :deep(.el-scrollbar__bar) {
+        z-index: 10;
+      }
+
       :deep(.el-tree) {
         .el-tree-node__content {
           height: 36px;
@@ -730,12 +734,21 @@ onMounted(() => {
         height: 100%;
       }
 
+      :deep(.el-scrollbar__bar) {
+        z-index: 10;
+      }
+
       .preview-container,
       .params-container {
         padding: 16px;
       }
+    }
+  }
 
-
+  // 对话框内的滚动条
+  :deep(.el-dialog) {
+    .el-scrollbar__bar {
+      z-index: 10;
     }
   }
 }

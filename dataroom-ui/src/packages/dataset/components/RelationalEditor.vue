@@ -205,6 +205,6 @@ defineExpose({
 
 <style scoped lang="scss">
 :deep(.el-form) {
-  padding: 0 20px;
+  padding: 16px;
 }
 </style>
