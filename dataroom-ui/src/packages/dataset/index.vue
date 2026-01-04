@@ -704,6 +704,11 @@ onMounted(() => {
 
         :deep(.el-tabs__header) {
           margin-bottom: 0;
+          border-bottom: none;
+        }
+
+        :deep(.el-tabs__nav-wrap)::after {
+          display: none;
         }
       }
 
