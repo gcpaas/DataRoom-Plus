@@ -126,7 +126,7 @@ onMounted(() => {
         position: relative;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.15);
+          background-color: rgba(0, 0, 0, 0.03);
         }
 
         &.active {
