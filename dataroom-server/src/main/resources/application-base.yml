@@ -32,7 +32,6 @@ dataroom:
       state: normal
       roleCodeList: [ sharer ]
 
-
 # 接口文档配置
 knife4j:
   # 开启增强配置

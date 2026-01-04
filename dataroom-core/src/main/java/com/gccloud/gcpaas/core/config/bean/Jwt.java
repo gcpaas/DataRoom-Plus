@@ -20,7 +20,7 @@ public class Jwt {
     /**
      * jwt时效（单位为秒）
      */
-    private Long expiration = 7200L;
+    private Long expiration = 36000L;
     /**
      * tokenKey
      */

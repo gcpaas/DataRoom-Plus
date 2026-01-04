@@ -401,7 +401,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dr-resource {
-  height: calc(100vh - 60px);
   display: flex;
   box-sizing: content-box;
   flex-direction: column;

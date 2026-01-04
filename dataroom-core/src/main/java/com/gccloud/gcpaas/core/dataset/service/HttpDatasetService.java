@@ -1,9 +1,9 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
-import cn.hutool.http.HttpUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gccloud.gcpaas.core.constant.DataRoomConstant;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONPath;
 import com.gccloud.gcpaas.core.bean.KeyVal;
+import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
@@ -11,13 +11,18 @@ import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
 import com.gccloud.gcpaas.core.dataset.bean.HttpDataset;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
-import com.gccloud.gcpaas.core.util.ExecuteUtils;
 import com.gccloud.gcpaas.core.util.ParamUtils;
 import com.gccloud.gcpaas.core.util.TypeUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -25,7 +30,8 @@ import java.util.*;
 @Service(value = DatasetType.HTTP_TYPE + DataRoomConstant.Dataset.SERVICE_NAME)
 public class HttpDatasetService extends AbstractDatasetService {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    @Resource
+    private RestTemplate restTemplate;
 
     @Override
     public DatasetRunResponse run(DatasetRunRequest datasetRunRequest, DatasetEntity datasetEntity) {
@@ -49,11 +55,10 @@ public class HttpDatasetService extends AbstractDatasetService {
                     params.put(entry.getKey(), entry.getValue());
                 }
             });
-
-            Map<String, String> headers = new HashMap<>();
+            HttpHeaders headers = new HttpHeaders();
             List<KeyVal> headerList = httpDataset.getHeaderList();
             for (KeyVal keyVal : headerList) {
-                headers.put(keyVal.getKey(), keyVal.getVal());
+                headers.add(keyVal.getKey(), keyVal.getVal());
             }
             String url = httpDataset.getUrl();
             String body = httpDataset.getBody();
@@ -63,36 +68,57 @@ public class HttpDatasetService extends AbstractDatasetService {
                 // 替换header
                 Set<String> headerKeySet = headers.keySet();
                 for (String headerKey : headerKeySet) {
-                    String headerVal = headers.get(headerKey);
+                    String headerVal = headers.getFirst(headerKey);
                     headerVal = ParamUtils.replace(headerVal, entry.getKey(), entry.getValue().toString());
-                    headers.put(headerKey, headerVal);
+                    headers.set(headerKey, headerVal);
                 }
                 // 替换请求体
                 body = ParamUtils.replace(body, entry.getKey(), entry.getValue().toString());
             }
             Object data = null;
             if (DataRoomConstant.Dataset.HTTP_DATASET.METHOD.GET.equalsIgnoreCase(httpDataset.getMethod())) {
-                String respBody = HttpUtil.createGet(url).addHeaders(headers).execute().body();
-                data = OBJECT_MAPPER.readValue(respBody, Object.class);
+                HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+                ResponseEntity<String> response = restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        requestEntity,
+                        String.class
+                );
+                String respBody = response.getBody();
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    log.error("数据集 {} 请求失败，状态码：{}, 响应: {}", datasetEntity.getName(), response.getStatusCode(), respBody);
+                    throw new RuntimeException("数据集" + datasetEntity.getName() + "执行失败");
+                }
+                data = JSON.parse(respBody);
             } else if (DataRoomConstant.Dataset.HTTP_DATASET.METHOD.POST.equalsIgnoreCase(httpDataset.getMethod())) {
-                String respBody = HttpUtil.createPost(url).addHeaders(headers).body(body).execute().body();
-                data = OBJECT_MAPPER.readValue(respBody, Object.class);
+                HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+                ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+                String respBody = response.getBody();
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    log.error("数据集 {} 请求失败，状态码：{}, 响应: {}", datasetEntity.getName(), response.getStatusCode(), respBody);
+                    throw new RuntimeException("数据集" + datasetEntity.getName() + "执行失败");
+                }
+                data = JSON.parse(respBody);
+            } else {
+                throw new RuntimeException("不支持的请求方法");
             }
-            if (StringUtils.isNotBlank(httpDataset.getRespScript())) {
-                params.put("respData", data);
-                data = ExecuteUtils.run(httpDataset.getRespScript(), params);
+            if (StringUtils.isNotBlank(httpDataset.getRespJsonPath())) {
+                data = JSONPath.eval(data, httpDataset.getRespJsonPath());
             }
             List<DatasetOutputParam> outputParamList = new ArrayList<>();
-            if (data instanceof List) {
-                List list = (List) data;
-                Object o = list.get(0);
-                if (o instanceof Map) {
-                    Map map = (Map) o;
-                    for (Object key : map.keySet()) {
+            if (!(data instanceof List)) {
+                // 自动转为集合类型
+                List list = new ArrayList<Object>();
+                list.add(data);
+            }
+            if (data instanceof List list) {
+                Object firstObj = list.get(0);
+                if (firstObj instanceof Map firstMapObj) {
+                    for (Object key : firstMapObj.keySet()) {
                         DatasetOutputParam outputParam = new DatasetOutputParam();
                         outputParam.setName(key.toString());
                         outputParam.setDesc(key.toString());
-                        Object val = map.get(key);
+                        Object val = firstMapObj.get(key);
                         outputParam.setType(TypeUtils.parseType(val));
                         outputParamList.add(outputParam);
                     }

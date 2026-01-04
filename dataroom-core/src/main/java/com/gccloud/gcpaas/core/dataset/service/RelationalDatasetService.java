@@ -11,7 +11,6 @@ import com.gccloud.gcpaas.core.datasource.bean.MySqlDatasource;
 import com.gccloud.gcpaas.core.datasource.service.DatasourceService;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
-import com.gccloud.gcpaas.core.util.ParamUtils;
 import com.gccloud.gcpaas.core.util.TypeUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +32,7 @@ public class RelationalDatasetService extends AbstractDatasetService {
     @Resource
     private DatasourceService dataSourceDefinitionService;
     @Resource
-    private MybatisSqlParserService mybatisSqlParserService;
+    private MyBatisService myBatisService;
 
     private static final Pattern PARAM_PATTERN = Pattern.compile("\\#\\{(.*?)\\}");
 
@@ -42,7 +44,6 @@ public class RelationalDatasetService extends AbstractDatasetService {
             String datasourceCode = datasetEntity.getDataSourceCode();
             DataSourceEntity dataSourceDefinition = dataSourceDefinitionService.getByCode(datasourceCode);
             MySqlDatasource dataSource = (MySqlDatasource) dataSourceDefinition.getDataSource();
-            Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
             Map<String, Object> params = new HashMap<>();
             List<DatasetInputParam> inputParamList = datasetEntity.getInputList();
             Map<String, DatasetInputParam> inputParamMap = new HashMap<>();
@@ -62,17 +63,18 @@ public class RelationalDatasetService extends AbstractDatasetService {
             });
             // 参数替换
             String sql = relationalDataset.getSql();
-            Set<String> sqlParam = ParamUtils.parse(sql);
-            // 替换参数
-            for (String paramName : sqlParam) {
-                Object val = params.get(paramName);
-                sql = ParamUtils.replace(sql, paramName, val.toString());
+            // 动态替换SQL
+            sql = myBatisService.generateSql(sql, params);
+            // 仅允许执行查询操作
+            if (!sql.toLowerCase().startsWith("select")) {
+                throw new RuntimeException("仅允许执行select操作");
             }
+            Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            List<DatasetOutputParam> structureList = new ArrayList<>();
+            List<DatasetOutputParam> outputParamList = new ArrayList<>();
             for (int i = 0; i < columnCount; i++) {
                 DatasetOutputParam outputParam = new DatasetOutputParam();
                 outputParam.setName(metaData.getColumnName(i + 1));
@@ -87,9 +89,9 @@ public class RelationalDatasetService extends AbstractDatasetService {
                     outputParam.setType("String");
                 }
                 outputParam.setDesc(outputParam.getName());
-                structureList.add(outputParam);
+                outputParamList.add(outputParam);
             }
-            datasetRunResponse.setOutputList(structureList);
+            datasetRunResponse.setOutputList(outputParamList);
             List<Map<String, Object>> resultList = new ArrayList<>();
             while (resultSet.next()) {
                 Map<String, Object> row = new HashMap<>(columnCount);

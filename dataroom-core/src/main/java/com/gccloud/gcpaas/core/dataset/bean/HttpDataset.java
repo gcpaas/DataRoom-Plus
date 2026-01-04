@@ -22,9 +22,6 @@ public class HttpDataset extends BaseDataset {
     @Schema(description = "请求体")
     private String body;
 
-    @Schema(description = "请求脚本")
-    private String reqScript;
-
-    @Schema(description = "响应脚本")
-    private String respScript;
+    @Schema(description = "响应参数路径解析")
+    private String respJsonPath;
 }

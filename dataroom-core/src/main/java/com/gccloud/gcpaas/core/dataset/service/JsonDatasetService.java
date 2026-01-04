@@ -13,6 +13,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service(value = DatasetType.JSON_TYPE + DataRoomConstant.Dataset.SERVICE_NAME)
@@ -26,6 +27,10 @@ public class JsonDatasetService extends AbstractDatasetService {
         JsonDataset dataSet = (JsonDataset) datasetEntity.getDataset();
         try {
             Object data = OBJECT_MAPPER.readValue(dataSet.getJson(), Object.class);
+            if (!(data instanceof List)) {
+                List<Object> list = new ArrayList<>();
+                list.add(data);
+            }
             datasetRunResponse.setData(data);
         } catch (JsonProcessingException e) {
             log.error(ExceptionUtils.getStackTrace(e));

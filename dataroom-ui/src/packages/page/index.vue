@@ -49,7 +49,7 @@ const handleAdd = (pageType: string) => {
   } else if (pageType === PageType.VISUAL_SCREEN) {
     title = '新增大屏'
   }
-  
+
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -84,7 +84,7 @@ const handleEdit = (item: PageEntity) => {
   } else if (item.pageType === PageType.VISUAL_SCREEN) {
     title = '编辑大屏'
   }
-    
+
   ElMessageBox.prompt('请输入名称', title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -397,7 +397,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dr-page {
-  height: calc(100vh - 60px);
   display: flex;
   box-sizing: content-box;
   flex-direction: column;

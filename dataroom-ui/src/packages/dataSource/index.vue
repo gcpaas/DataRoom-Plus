@@ -135,7 +135,7 @@ const handleSave = async () => {
     if (!encryptedData) {
       throw new Error('获取数据失败')
     }
-    
+
     if (currentDataSource.value.code) {
       await dataSourceApi.update(encryptedData)
       ElMessage.success('更新成功')
@@ -276,7 +276,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dr-data-source {
-  height: calc(100vh - 60px);
   display: flex;
   box-sizing: content-box;
   flex-direction: column;

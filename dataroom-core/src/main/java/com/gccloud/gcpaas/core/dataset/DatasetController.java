@@ -120,12 +120,12 @@ public class DatasetController {
     @Operation(summary = "测试执行", description = "测试数据集")
     public Resp<DatasetRunResponse> runTest(@RequestBody DatasetTestRequest datasetTestRequest) {
         log.info("入参 {}", datasetTestRequest.getInputParam());
-        DatasetEntity dataSetDefinition = datasetTestRequest.getDataset();
-        Assert.isTrue(dataSetDefinition != null, "数据集不存在");
-        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(dataSetDefinition.getDatasetType().getType());
-        DatasetRunRequest runDTO = new DatasetRunRequest();
-        runDTO.setInputParam(datasetTestRequest.getInputParam());
-        DatasetRunResponse datasetRunResponse = dataSetService.run(runDTO, dataSetDefinition);
+        DatasetEntity datasetEntity = datasetTestRequest.getDataset();
+        Assert.isTrue(datasetEntity != null, "数据集不存在");
+        AbstractDatasetService dataSetService = datasetServiceFactory.getDatasetService(datasetEntity.getDatasetType().getType());
+        DatasetRunRequest datasetRunRequest = new DatasetRunRequest();
+        datasetRunRequest.setInputParam(datasetTestRequest.getInputParam());
+        DatasetRunResponse datasetRunResponse = dataSetService.run(datasetRunRequest, datasetEntity);
         return Resp.success(datasetRunResponse);
     }
 }

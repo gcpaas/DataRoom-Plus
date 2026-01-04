@@ -32,7 +32,6 @@ const handleLogout = () => {
 
 onMounted(() => {
   request.get<any>(`/dataRoom/user/current`).then((res) => {
-    console.log(res)
     username.value = res.realName || res.username
   })
 })
@@ -54,7 +53,7 @@ onMounted(() => {
           <span class="el-dropdown-link">
             {{ username }}
             <el-icon class="el-icon--right">
-              <arrow-down />
+              <arrow-down/>
             </el-icon>
           </span>
           <template #dropdown>
@@ -65,7 +64,7 @@ onMounted(() => {
         </el-dropdown>
       </div>
     </div>
-    <RouterView style="padding: 16px;box-sizing: border-box"/>
+    <RouterView class="router-view"/>
   </div>
 </template>
 
@@ -73,13 +72,26 @@ onMounted(() => {
 .dr-up-down-layout {
   height: 100vh;
   width: 100%;
+  background-color: var(--dr-bg2);
+
+  & .router-view {
+    padding: 16px;
+    box-sizing: border-box;
+    background-color: white;
+    margin: 16px;
+    height: calc(100vh - 60px - 32px);
+  }
+
 
   & .header {
-    background-color: var(--dr-primary);
+    background-color: white;
     height: 60px;
     width: 100%;
     line-height: 60px;
-    color: white;
+    border-bottom: 1px solid var(--dr-border);
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .03);
+    color: var(--dr-text1);
+    font-weight: 700;
     display: flex;
     align-items: center;
     padding: 0 20px;
@@ -107,7 +119,7 @@ onMounted(() => {
 
       & .item {
         cursor: pointer;
-        font-size: 16px;
+        font-size: 14px;
         padding: 4px 16px;
         border-radius: 4px;
         transition: background-color 0.3s ease;
@@ -118,8 +130,6 @@ onMounted(() => {
         }
 
         &.active {
-          background-color: rgba(255, 255, 255, 0.2);
-
           &::after {
             content: '';
             position: absolute;
@@ -128,7 +138,7 @@ onMounted(() => {
             transform: translateX(-50%);
             width: 60%;
             height: 3px;
-            background-color: white;
+            background-color: var(--dr-primary);
             border-radius: 2px;
           }
         }
@@ -138,13 +148,14 @@ onMounted(() => {
     & .user {
       width: 100px;
       font-size: 14px;
+      font-weight: 700;
+      color: var(--dr-text1);
       display: flex;
       align-items: center;
       justify-content: flex-end;
 
       .el-dropdown-link {
         cursor: pointer;
-        color: white;
         display: flex;
         align-items: center;
         justify-content: flex-end;
