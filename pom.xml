@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>com.gccloud.gcpaas</groupId>
-    <artifactId>dataroom</artifactId>
+    <artifactId>DataRoom-Plus</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <modules>
