@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * 数据集类型
  */
 public enum DatasetType implements IEnum<String> {
+    DIRECTORY("directory"),
     JSON("json"),
     HTTP("http"),
     RELATIONAL("relational");
