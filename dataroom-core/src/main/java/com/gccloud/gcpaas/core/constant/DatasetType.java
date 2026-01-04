@@ -12,6 +12,7 @@ public enum DatasetType implements IEnum<String> {
     HTTP("http"),
     RELATIONAL("relational");
 
+    public static final String DIRECTORY_TYPE = "directory";
     public static final String JSON_TYPE = "json";
     public static final String HTTP_TYPE = "http";
     public static final String RELATIONAL_TYPE = "relational";

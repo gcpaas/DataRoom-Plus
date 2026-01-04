@@ -1,5 +1,6 @@
 package com.gccloud.gcpaas.core.dataset.service;
 
+import com.gccloud.gcpaas.core.config.DataRoomConfig;
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
@@ -11,6 +12,7 @@ import com.gccloud.gcpaas.core.datasource.bean.MySqlDatasource;
 import com.gccloud.gcpaas.core.datasource.service.DatasourceService;
 import com.gccloud.gcpaas.core.entity.DataSourceEntity;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
+import com.gccloud.gcpaas.core.util.RsaUtils;
 import com.gccloud.gcpaas.core.util.TypeUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,8 @@ public class RelationalDatasetService extends AbstractDatasetService {
     private DatasourceService dataSourceDefinitionService;
     @Resource
     private MyBatisService myBatisService;
+    @Resource
+    private DataRoomConfig dataRoomConfig;
 
     private static final Pattern PARAM_PATTERN = Pattern.compile("\\#\\{(.*?)\\}");
 
@@ -69,7 +73,9 @@ public class RelationalDatasetService extends AbstractDatasetService {
             if (!sql.toLowerCase().startsWith("select")) {
                 throw new RuntimeException("仅允许执行select操作");
             }
-            Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+            String privateKey = dataRoomConfig.getPrivateKey();
+            String pwd = RsaUtils.decryptByPrivateKey(dataSource.getPassword(), privateKey);
+            Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), pwd);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
