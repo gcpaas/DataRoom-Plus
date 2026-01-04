@@ -574,13 +574,15 @@ onMounted(() => {
       :close-on-click-modal="false"
       destroy-on-close
     >
-      <component
-        :is="datasetTypeMap[currentDataset.datasetType as keyof typeof datasetTypeMap]?.component"
-        v-if="currentDataset.datasetType !== 'directory'"
-        v-model="currentDataset"
-        :data-source-list="dataSourceList"
-        ref="editorRef"
-      />
+      <el-scrollbar max-height="60vh">
+        <component
+          :is="datasetTypeMap[currentDataset.datasetType as keyof typeof datasetTypeMap]?.component"
+          v-if="currentDataset.datasetType !== 'directory'"
+          v-model="currentDataset"
+          :data-source-list="dataSourceList"
+          ref="editorRef"
+        />
+      </el-scrollbar>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
