@@ -22,6 +22,7 @@ const allDatasetList = ref<DatasetEntity[]>([])
 const searchKeyword = ref('')
 const selectedNode = ref<DatasetEntity | null>(null)
 const activeTab = ref('preview')
+const paramsTab = ref('input')
 
 // 数据预览相关
 const previewLoading = ref(false)
@@ -500,11 +501,12 @@ onMounted(() => {
         <div class="right-header">
           <el-tabs v-model="activeTab" class="dataset-tabs">
             <el-tab-pane label="数据预览" name="preview" />
-            <el-tab-pane label="出入参设置" name="params" />
+            <el-tab-pane label="入参预览" name="inputParams" />
+            <el-tab-pane label="出参预览" name="outputParams" />
           </el-tabs>
           <div class="right-actions">
-            <el-button :icon="Edit" @click="handleEdit">编辑</el-button>
-            <el-button :icon="Refresh" @click="handleRefresh">刷新</el-button>
+            <el-button type="text" :icon="Edit" @click="handleEdit">编辑</el-button>
+            <el-button type="text" :icon="Refresh" @click="handleRefresh">刷新</el-button>
           </div>
         </div>
         <div class="right-content">
@@ -523,43 +525,40 @@ onMounted(() => {
               <el-empty v-if="!previewLoading && previewData.length === 0" description="暂无数据" />
             </div>
 
-            <!-- 出入参设置 -->
-            <div v-show="activeTab === 'params'" class="params-container">
-              <div class="params-section">
-                <div class="section-title">入参列表</div>
-                <el-table :data="selectedNode.inputList || []" border style="width: 100%">
-                  <el-table-column prop="name" label="参数名" min-width="120" />
-                  <el-table-column prop="type" label="类型" min-width="100" />
-                  <el-table-column prop="required" label="必填" width="80">
-                    <template #default="{ row }">
-                      <el-tag :type="row.required ? 'danger' : 'info'" size="small">
-                        {{ row.required ? '是' : '否' }}
-                      </el-tag>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="defaultVal" label="默认值" min-width="120" />
-                  <el-table-column prop="desc" label="描述" min-width="150" />
-                </el-table>
-                <el-empty
-                  v-if="!selectedNode.inputList || selectedNode.inputList.length === 0"
-                  description="暂无入参"
-                  :image-size="100"
-                />
-              </div>
+            <!-- 入参预览 -->
+            <div v-show="activeTab === 'inputParams'" class="params-container">
+              <el-table :data="selectedNode.inputList || []" border style="width: 100%">
+                <el-table-column prop="name" label="参数名" min-width="120" />
+                <el-table-column prop="type" label="类型" min-width="100" />
+                <el-table-column prop="required" label="必填" width="80">
+                  <template #default="{ row }">
+                    <el-tag :type="row.required ? 'danger' : 'info'" size="small">
+                      {{ row.required ? '是' : '否' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="defaultVal" label="默认值" min-width="120" />
+                <el-table-column prop="desc" label="描述" min-width="150" />
+              </el-table>
+              <el-empty
+                v-if="!selectedNode.inputList || selectedNode.inputList.length === 0"
+                description="暂无入参"
+                :image-size="100"
+              />
+            </div>
 
-              <div class="params-section" style="margin-top: 20px">
-                <div class="section-title">出参列表</div>
-                <el-table :data="selectedNode.outputList || []" border style="width: 100%">
-                  <el-table-column prop="name" label="参数名" min-width="120" />
-                  <el-table-column prop="type" label="类型" min-width="100" />
-                  <el-table-column prop="desc" label="描述" min-width="150" />
-                </el-table>
-                <el-empty
-                  v-if="!selectedNode.outputList || selectedNode.outputList.length === 0"
-                  description="暂无出参"
-                  :image-size="100"
-                />
-              </div>
+            <!-- 出参预览 -->
+            <div v-show="activeTab === 'outputParams'" class="params-container">
+              <el-table :data="selectedNode.outputList || []" border style="width: 100%">
+                <el-table-column prop="name" label="参数名" min-width="120" />
+                <el-table-column prop="type" label="类型" min-width="100" />
+                <el-table-column prop="desc" label="描述" min-width="150" />
+              </el-table>
+              <el-empty
+                v-if="!selectedNode.outputList || selectedNode.outputList.length === 0"
+                description="暂无出参"
+                :image-size="100"
+              />
             </div>
           </el-scrollbar>
         </div>
@@ -734,14 +733,7 @@ onMounted(() => {
         padding: 16px;
       }
 
-      .params-section {
-        .section-title {
-          font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 12px;
-          color: var(--el-text-color-primary);
-        }
-      }
+
     }
   }
 }
