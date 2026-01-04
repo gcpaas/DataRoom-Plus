@@ -64,6 +64,9 @@ public class HttpDatasetService extends AbstractDatasetService {
             for (KeyVal keyVal : headerList) {
                 headers.add(keyVal.getKey(), keyVal.getVal());
             }
+            if (headers.getContentType() == null) {
+                headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+            }
             String url = httpDataset.getUrl();
             String body = httpDataset.getBody();
             for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -118,5 +121,11 @@ public class HttpDatasetService extends AbstractDatasetService {
             datasetRunResponse.setData(new ArrayList<>());
         }
         return datasetRunResponse;
+    }
+
+    public static void main(String[] args) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        System.out.println(headers.getContentType());
     }
 }

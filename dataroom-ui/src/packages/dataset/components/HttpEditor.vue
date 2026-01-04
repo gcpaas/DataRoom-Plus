@@ -111,7 +111,7 @@ const test = async () => {
       ElMessage.error('请先输入请求地址')
       return
     }
-    
+
     // 调用测试接口
     const res = await datasetApi.test({ dataset: formData })
     if (res.outputList && res.outputList.length > 0) {
@@ -144,15 +144,15 @@ const parseInputParams = () => {
     ElMessage.warning('请先配置请求信息')
     return
   }
-  
+
   const paramNames = new Set<string>()
-  
+
   // 解析请求地址
   if (formData.dataset.url) {
     const params = parseParams(formData.dataset.url)
     params.forEach(param => paramNames.add(param))
   }
-  
+
   // 解析请求头value
   if (formData.dataset.headerList) {
     formData.dataset.headerList.forEach(header => {
@@ -162,23 +162,23 @@ const parseInputParams = () => {
       }
     })
   }
-  
+
   // 解析请求体
   if (formData.dataset.body) {
     const params = parseParams(formData.dataset.body)
     params.forEach(param => paramNames.add(param))
   }
-  
+
   if (paramNames.size === 0) {
     ElMessage.info('未发现任何参数')
     return
   }
-  
+
   // 保存现有的参数配置
   const existingParams = new Map(
     (formData.inputList || []).map(item => [item.name, item])
   )
-  
+
   // 生成新的参数列表，保留已存在的配置
   formData.inputList = Array.from(paramNames).map(name => {
     const existing = existingParams.get(name)
@@ -190,7 +190,7 @@ const parseInputParams = () => {
       desc: ''
     }
   })
-  
+
   ElMessage.success(`成功解析${paramNames.size}个参数`)
 }
 
@@ -201,10 +201,10 @@ const testAndSave = async () => {
   try {
     // 先验证表单
     await validate()
-    
+
     // 先测试
     await test()
-    
+
     // 然后保存
     if (props.onSave) {
       await props.onSave()
@@ -244,8 +244,6 @@ defineExpose({
       >
         <el-option label="GET" value="GET" />
         <el-option label="POST" value="POST" />
-        <el-option label="PUT" value="PUT" />
-        <el-option label="DELETE" value="DELETE" />
       </el-select>
     </el-form-item>
     <el-form-item label="请求头">
