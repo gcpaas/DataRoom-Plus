@@ -370,17 +370,56 @@ onMounted(() => {
         <div class="card-list">
           <div class="page-card" v-for="item in pageList" :key="item.id">
             <div class="card-thumbnail" @click="handleCardClick(item)">
-              <!-- 缩略图占位 -->
+              <!-- 缩略图 -->
               <el-image
-                :src="item.thumbnail?item.thumbnail:getDefaultPlaceholder(item.pageType)"
+                v-if="item.pageType === PageType.DIRECTORY"
+                :src="getDefaultPlaceholder(item.pageType)"
                 :lazy="true"
-                fit="fill"
-                class="thumbnail-image"
-                :class="item.pageType"
+                fit="contain"
+                class="thumbnail-image directory"
               >
                 <template #error>
                   <div class="image-error">
-                    <img :src="getDefaultPlaceholder(item.pageType)" alt="默认占位图"/>
+                    <img :src="getDefaultPlaceholder(item.pageType)" alt="目录占位图"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else-if="item.pageType === PageType.VISUAL_SCREEN"
+                :src="item.thumbnail ? item.thumbnail : 'placeholder'"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.pageType)" alt="大屏占位图"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else-if="item.pageType === PageType.PAGE"
+                :src="item.thumbnail ? item.thumbnail : 'placeholder'"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.pageType)" alt="页面占位图"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else
+                :src="getDefaultPlaceholder(PageType.PAGE)"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(PageType.PAGE)" alt="默认占位图"/>
                   </div>
                 </template>
               </el-image>
@@ -487,34 +526,14 @@ onMounted(() => {
         }
 
         .card-thumbnail {
+          width: 100%;
           height: 180px;
           background: var(--dr-bg2);
           display: flex;
           align-items: center;
           justify-content: center;
-          overflow: hidden;
           padding: 16px;
-
-          .thumbnail-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--dr-text);
-            font-size: 14px;
-            gap: 12px;
-
-            .type-icon {
-              color: var(--el-color-primary);
-            }
-
-            .item-name {
-              font-size: 16px;
-              font-weight: 500;
-            }
-          }
+          overflow: hidden;
 
           .thumbnail-image {
             width: 100%;
