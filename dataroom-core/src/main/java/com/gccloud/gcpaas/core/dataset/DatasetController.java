@@ -143,6 +143,9 @@ public class DatasetController {
         // 自动解析字段说明
         List<DatasetOutputParam> outputParamList = new ArrayList<>();
         if (data instanceof List list) {
+            if (list.size() == 0) {
+                throw new DataRoomException("数据集执行结果为空");
+            }
             Object firstObj = list.get(0);
             if (firstObj instanceof Map firstMapObj) {
                 for (Object key : firstMapObj.keySet()) {
