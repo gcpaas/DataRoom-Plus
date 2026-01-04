@@ -8,7 +8,6 @@ import com.gccloud.gcpaas.core.constant.DatasetType;
 import com.gccloud.gcpaas.core.dataset.DatasetRunRequest;
 import com.gccloud.gcpaas.core.dataset.DatasetRunResponse;
 import com.gccloud.gcpaas.core.dataset.bean.DatasetInputParam;
-import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
 import com.gccloud.gcpaas.core.dataset.bean.HttpDataset;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
 import com.gccloud.gcpaas.core.util.ParamUtils;
@@ -105,26 +104,6 @@ public class HttpDatasetService extends AbstractDatasetService {
             if (StringUtils.isNotBlank(httpDataset.getRespJsonPath())) {
                 data = JSONPath.eval(data, httpDataset.getRespJsonPath());
             }
-            List<DatasetOutputParam> outputParamList = new ArrayList<>();
-            if (!(data instanceof List)) {
-                // 自动转为集合类型
-                List list = new ArrayList<Object>();
-                list.add(data);
-            }
-            if (data instanceof List list) {
-                Object firstObj = list.get(0);
-                if (firstObj instanceof Map firstMapObj) {
-                    for (Object key : firstMapObj.keySet()) {
-                        DatasetOutputParam outputParam = new DatasetOutputParam();
-                        outputParam.setName(key.toString());
-                        outputParam.setDesc(key.toString());
-                        Object val = firstMapObj.get(key);
-                        outputParam.setType(TypeUtils.parseType(val));
-                        outputParamList.add(outputParam);
-                    }
-                }
-            }
-            datasetRunResponse.setOutputList(outputParamList);
             datasetRunResponse.setData(data);
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));

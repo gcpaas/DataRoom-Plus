@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.constant.DataRoomConstant;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
+import com.gccloud.gcpaas.core.dataset.bean.DatasetOutputParam;
 import com.gccloud.gcpaas.core.dataset.service.AbstractDatasetService;
 import com.gccloud.gcpaas.core.dataset.service.DatasetServiceFactory;
 import com.gccloud.gcpaas.core.entity.DatasetEntity;
 import com.gccloud.gcpaas.core.mapper.DatasetMapper;
 import com.gccloud.gcpaas.core.util.CodeWorker;
+import com.gccloud.gcpaas.core.util.TypeUtils;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,8 +26,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据集
@@ -126,6 +130,29 @@ public class DatasetController {
         DatasetRunRequest datasetRunRequest = new DatasetRunRequest();
         datasetRunRequest.setInputParam(datasetTestRequest.getInputParam());
         DatasetRunResponse datasetRunResponse = dataSetService.run(datasetRunRequest, datasetEntity);
+        Object data = datasetRunResponse.getData();
+        if (!(data instanceof List)) {
+            List<Object> list = new ArrayList<>();
+            list.add(data);
+            data = list;
+        }
+        // 自动解析字段说明
+        List<DatasetOutputParam> outputParamList = new ArrayList<>();
+        if (data instanceof List list) {
+            Object firstObj = list.get(0);
+            if (firstObj instanceof Map firstMapObj) {
+                for (Object key : firstMapObj.keySet()) {
+                    DatasetOutputParam outputParam = new DatasetOutputParam();
+                    outputParam.setName(key.toString());
+                    outputParam.setDesc(key.toString());
+                    Object val = firstMapObj.get(key);
+                    outputParam.setType(TypeUtils.parseType(val));
+                    outputParamList.add(outputParam);
+                }
+            }
+        }
+        datasetRunResponse.setOutputList(outputParamList);
+        datasetRunResponse.setData(data);
         return Resp.success(datasetRunResponse);
     }
 }
