@@ -164,9 +164,14 @@ onMounted(() => {
         font-size: 14px;
         transition: opacity 0.3s ease;
         line-height: 1;
+        outline: none;
 
         &:hover {
           opacity: 0.8;
+        }
+
+        &:focus {
+          outline: none;
         }
 
         .user-avatar {
