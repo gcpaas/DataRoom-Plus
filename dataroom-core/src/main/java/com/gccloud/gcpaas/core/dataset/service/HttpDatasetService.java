@@ -55,6 +55,10 @@ public class HttpDatasetService extends AbstractDatasetService {
                     params.put(entry.getKey(), entry.getValue());
                 }
             });
+            // 注入默认参数
+            Map<String, Object> defaultInputParam = getDefaultInputParam();
+            params.putAll(defaultInputParam);
+
             HttpHeaders headers = new HttpHeaders();
             List<KeyVal> headerList = httpDataset.getHeaderList();
             for (KeyVal keyVal : headerList) {
@@ -63,6 +67,9 @@ public class HttpDatasetService extends AbstractDatasetService {
             String url = httpDataset.getUrl();
             String body = httpDataset.getBody();
             for (Map.Entry<String, Object> entry : params.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
                 // 替换URL
                 url = ParamUtils.replace(url, entry.getKey(), entry.getValue().toString());
                 // 替换header
