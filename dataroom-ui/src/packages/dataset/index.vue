@@ -132,8 +132,10 @@ const buildTree = (list: DatasetEntity[], parentCode: string): DatasetTreeNode[]
 /**
  * 树节点点击
  */
-const handleNodeClick = async (data: DatasetTreeNode) => {
+const handleNodeClick = async (data: DatasetTreeNode, node: any) => {
   if (data.datasetType === 'directory') {
+    // 目录节点：切换展开/折叠状态
+    node.expanded = !node.expanded
     return
   }
   try {
@@ -464,11 +466,11 @@ const handleTestAndSave = async () => {
           node-key="code"
           :props="{ label: 'label', children: 'children' }"
           :expand-on-click-node="false"
-          @node-click="handleNodeClick"
           v-loading="loading"
         >
           <template #default="{ node, data }">
-            <div class="custom-tree-node">
+            <div class="custom-tree-node" @click.stop="handleNodeClick(data, node)">
+
               <div class="node-content">
                 <el-icon v-if="data.datasetType === 'directory'">
                   <Folder />
