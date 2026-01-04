@@ -4,6 +4,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { DatasetEntity } from '../api'
 import { datasetApi } from '../api'
 import { ElMessage } from 'element-plus'
+import { parseParams } from '@/packages/_common/_utils'
 
 const props = defineProps<{
   modelValue: DatasetEntity
@@ -135,6 +136,65 @@ const test = async () => {
 }
 
 /**
+ * 解析HTTP请求中的入参
+ * 匹配请求地址、请求头value、请求体中的 #{paramName} 格式
+ */
+const parseInputParams = () => {
+  if (!formData.dataset || !('url' in formData.dataset)) {
+    ElMessage.warning('请先配置请求信息')
+    return
+  }
+  
+  const paramNames = new Set<string>()
+  
+  // 解析请求地址
+  if (formData.dataset.url) {
+    const params = parseParams(formData.dataset.url)
+    params.forEach(param => paramNames.add(param))
+  }
+  
+  // 解析请求头value
+  if (formData.dataset.headerList) {
+    formData.dataset.headerList.forEach(header => {
+      if (header.val) {
+        const params = parseParams(header.val)
+        params.forEach(param => paramNames.add(param))
+      }
+    })
+  }
+  
+  // 解析请求体
+  if (formData.dataset.body) {
+    const params = parseParams(formData.dataset.body)
+    params.forEach(param => paramNames.add(param))
+  }
+  
+  if (paramNames.size === 0) {
+    ElMessage.info('未发现任何参数')
+    return
+  }
+  
+  // 保存现有的参数配置
+  const existingParams = new Map(
+    (formData.inputList || []).map(item => [item.name, item])
+  )
+  
+  // 生成新的参数列表，保留已存在的配置
+  formData.inputList = Array.from(paramNames).map(name => {
+    const existing = existingParams.get(name)
+    return existing || {
+      name,
+      type: 'String',
+      required: false,
+      defaultVal: '',
+      desc: ''
+    }
+  })
+  
+  ElMessage.success(`成功解析${paramNames.size}个参数`)
+}
+
+/**
  * 测试并保存
  */
 const testAndSave = async () => {
@@ -254,13 +314,13 @@ defineExpose({
     </el-form-item>
     <el-form-item label="入参配置">
       <div style="width: 100%">
-        <el-button size="small" @click="formData.inputList?.push({ name: '', type: 'String', required: false })">
-          添加入参
+        <el-button size="small" @click="parseInputParams">
+          入参解析
         </el-button>
         <el-table :data="formData.inputList" border style="width: 100%; margin-top: 8px">
           <el-table-column label="参数名" width="120">
             <template #default="{ row }">
-              <el-input v-model="row.name" size="small" placeholder="参数名" />
+              <span>{{ row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column label="类型" width="100">

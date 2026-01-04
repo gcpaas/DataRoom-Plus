@@ -95,3 +95,49 @@ export const getParentFolderName = (filePath: string): string => {
   // @ts-expect-error ignore
   return pathParts[pathParts.length - 2]
 }
+
+/**
+ * 解析字符串中的参数
+ * 匹配 #{paramName} 格式的参数，并返回去重后的参数名数组
+ * @param text 需要解析的字符串
+ * @returns 参数名数组，如果没有识别出参数则返回空数组
+ */
+export const parseParams = (text: string): string[] => {
+  if (!text) {
+    return []
+  }
+
+  // 使用正则匹配 #{paramName} 格式的参数
+  const regex = /#\{([^}]+)\}/g
+  const matches = [...text.matchAll(regex)]
+
+  if (matches.length === 0) {
+    return []
+  }
+
+  // @ts-expect-error 提取参数名、去除空格并去重
+  const paramNames = [...new Set(matches.map(match => match[1].trim()))]
+
+  return paramNames
+}
+
+/**
+ * 解析多个字符串中的参数
+ * 匹配 #{paramName} 格式的参数，并返回去重后的参数名数组
+ * @param texts 需要解析的字符串数组
+ * @returns 参数名数组，如果没有识别出参数则返回空数组
+ */
+export const parseParamsFromMultiple = (texts: string[]): string[] => {
+  if (!texts || texts.length === 0) {
+    return []
+  }
+
+  const allParams = new Set<string>()
+
+  texts.forEach(text => {
+    const params = parseParams(text)
+    params.forEach(param => allParams.add(param))
+  })
+
+  return Array.from(allParams)
+}
