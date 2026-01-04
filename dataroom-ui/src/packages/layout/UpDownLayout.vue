@@ -133,7 +133,7 @@ onMounted(() => {
           &::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: 4px;
             left: 50%;
             transform: translateX(-50%);
             width: 60%;
