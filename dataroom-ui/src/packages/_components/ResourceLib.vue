@@ -1,142 +1,85 @@
 <!-- 素材库 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInstInterface, ResourceLibInterface, ResourceLibTagInterface } from '@/packages/_common/_type.ts'
+import type { CanvasInstInterface } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
+import ResourceManage from '@/packages/resource/index.vue'
+import type { ResourceEntity } from '@/packages/resource/api'
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
-import { Search } from '@element-plus/icons-vue'
 
 const resourceLibVisible = ref(true)
-const searchName = ref('')
-const selectedTag = ref<string[]>([])
-const resourceLibList = ref<ResourceLibInterface[]>([])
-const resourceLibTagList = ref<ResourceLibTagInterface[]>([])
+const selectedResources = ref<ResourceEntity[]>([])
 
-for (let i = 0; i < 40; i++) {
-  resourceLibList.value.push({
-    name: '图片' + i,
-    type: 'image',
-    url: 'https://picsum.photos/200/300?random=' + i,
-  })
+/**
+ * 处理选中资源的更新
+ * @param resources
+ */
+const handleSelectedResourcesUpdate = (resources: ResourceEntity[]) => {
+  selectedResources.value = resources
 }
 
 /**
- * 添加组件到画布
- * @param type
+ * 取消
  */
-const addChart = (item: ResourceLibInterface) => {
-  console.log(item)
-  canvasInst.addChart('DrImage')
-}
-
-const onSelected = (item: ResourceLibTagInterface) => {
-  console.log(item)
-}
-
 const onClose = () => {
+  resourceLibVisible.value = false
+}
+
+/**
+ * 确定添加素材到画布
+ */
+const onConfirm = () => {
+  if (selectedResources.value.length === 0) {
+    return
+  }
+  // 遍历选中的素材,添加到画布
+  selectedResources.value.forEach(item => {
+    console.log('添加素材到画布:', item)
+    canvasInst.addChart('DrImage')
+  })
   resourceLibVisible.value = false
 }
 </script>
 <template>
   <el-dialog v-model="resourceLibVisible" title="素材库" width="80%">
     <div class="resource-lib-wrapper">
-      <div class="search">
-        <el-input v-model="searchName" :suffix-icon="Search" size="large" placeholder="搜索"></el-input>
-      </div>
-      <div class="tag-wrapper">
-        <span :class="{ tag: true, active: selectedTag.includes(item.code) }" v-for="item in resourceLibTagList" :key="item.code" @click="onSelected(item)">{{ item.name }}</span>
-      </div>
-      <el-scrollbar>
-        <div class="resource-card">
-          <div class="card" v-for="item in resourceLibList" :key="item.name" @click="addChart(item)">
-            <div class="image">
-              <el-image :src="item.url" lazy />
-            </div>
-            <div class="desc">{{ item.name }}</div>
-          </div>
-        </div>
-      </el-scrollbar>
+      <ResourceManage :selectable="true" @update:selectedResources="handleSelectedResourcesUpdate" />
     </div>
     <template #footer>
       <el-button @click="onClose">取消</el-button>
-      <el-button type="primary" @click="onClose">确定</el-button>
+      <el-button type="primary" @click="onConfirm">确定</el-button>
     </template>
   </el-dialog>
 </template>
 
 <style scoped lang="scss">
 .resource-lib-wrapper {
-  & .search {
-    width: 50%;
-    margin: 0 auto 16px auto;
+  height: 600px;
+  overflow: hidden;
+
+  // 调整资源组件在对话框中的样式
+  :deep(.dr-resource) {
+    height: 100%;
+    overflow: hidden;
   }
 
-  & .tag-wrapper {
-    text-align: center;
-
-    & .tag {
-      margin: 0 8px;
-      padding: 4px 4px;
-      border-radius: 4px;
-      cursor: pointer;
-      height: 20px;
-      line-height: 20px;
-      display: inline-block;
-
-      &:hover {
-        color: var(--dr-primary);
-        background-color: var(--dr-primary1);
-      }
-    }
-
-    & .active {
-      color: var(--dr-primary);
-      background-color: var(--dr-primary1);
-    }
+  :deep(.resource-header) {
+    flex-shrink: 0;
   }
 
-  & .resource-card {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 240px);
-    justify-content: center;
-    gap: 16px;
-    margin: 16px 0;
-    height: 500px;
+  :deep(.resource-content) {
+    flex: 1;
+    height: 0;
+    overflow: hidden;
+  }
 
-    & .card {
-      background-color: var(--dr-bg2);
-      height: 200px;
-      border: 1px solid var(--dr-border);
+  :deep(.el-scrollbar) {
+    height: 100%;
+  }
 
-      &:hover {
-        box-shadow: 0 0 8px var(--dr-border);
-        cursor: pointer;
-        color: var(--dr-primary);
-      }
-
-      & .image {
-        width: 100%;
-        height: 154px;
-        margin: 0 auto;
-        padding: 8px;
-
-        & .el-image {
-          width: 95%;
-          height: 95%;
-          object-fit: contain;
-        }
-      }
-
-
-
-      & .desc {
-        padding-left: 16px;
-        background-color: white;
-        height: 30px;
-        line-height: 30px;
-      }
-    }
+  :deep(.el-scrollbar__view) {
+    height: 100%;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox, ElUpload } from 'element-plus'
-import { Search, Plus, MoreFilled, Folder, Picture, VideoCamera } from '@element-plus/icons-vue'
+import { Search, Plus, MoreFilled, Folder, Picture, VideoCamera, Check } from '@element-plus/icons-vue'
 import { resourceApi, type ResourceEntity } from './api'
 import { ResourceType } from '@/packages/_common/_constant'
 import { getCookie, getCookieName } from '@/packages/_common/_cookie'
@@ -9,9 +9,22 @@ import directoryPlaceholder from '../page/assets/image/目录占位符.png'
 import imagePlaceholder from './assets/image/图片占位符.png'
 import videoPlaceholder from './assets/image/视频占位符.png'
 
+interface Props {
+  selectable?: boolean // 是否可选择模式
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  selectable: false
+})
+
+const emit = defineEmits<{
+  'update:selectedResources': [resources: ResourceEntity[]]
+}>()
+
 const searchName = ref('')
 const resourceList = ref<ResourceEntity[]>([])
 const loading = ref(false)
+const selectedResourceList = ref<ResourceEntity[]>([])
 
 // 面包屑导航
 interface BreadcrumbItem {
@@ -146,19 +159,57 @@ const handleDelete = (resource: ResourceEntity) => {
  * @param item
  */
 const handleCardClick = (item: ResourceEntity) => {
-  if (item.resourceType === ResourceType.DIRECTORY) {
-    // 如果是目录,进入该目录
-    currentParentCode.value = item.id || ''
-    breadcrumbs.value.push({
-      code: item.id || '',
-      name: item.name
-    })
-    getResourceList()
+  if (props.selectable) {
+    // 选择模式：只能选择非目录的资源
+    if (item.resourceType !== ResourceType.DIRECTORY) {
+      toggleResourceSelection(item)
+    } else {
+      // 如果是目录,进入该目录
+      currentParentCode.value = item.id || ''
+      breadcrumbs.value.push({
+        code: item.id || '',
+        name: item.name
+      })
+      getResourceList()
+    }
   } else {
-    // 对于图片或视频，可能需要预览或其他操作
-    // 暂时不做任何操作，或者可以实现预览功能
-    console.log('点击了非目录资源:', item)
+    // 非选择模式：原有逻辑
+    if (item.resourceType === ResourceType.DIRECTORY) {
+      // 如果是目录,进入该目录
+      currentParentCode.value = item.id || ''
+      breadcrumbs.value.push({
+        code: item.id || '',
+        name: item.name
+      })
+      getResourceList()
+    } else {
+      // 对于图片或视频，可能需要预览或其他操作
+      // 暂时不做任何操作，或者可以实现预览功能
+      console.log('点击了非目录资源:', item)
+    }
   }
+}
+
+/**
+ * 切换资源选中状态
+ * @param item
+ */
+const toggleResourceSelection = (item: ResourceEntity) => {
+  const index = selectedResourceList.value.findIndex(r => r.id === item.id)
+  if (index > -1) {
+    selectedResourceList.value.splice(index, 1)
+  } else {
+    selectedResourceList.value.push(item)
+  }
+  emit('update:selectedResources', selectedResourceList.value)
+}
+
+/**
+ * 检查资源是否被选中
+ * @param item
+ */
+const isResourceSelected = (item: ResourceEntity) => {
+  return selectedResourceList.value.some(r => r.id === item.id)
 }
 
 /**
@@ -314,8 +365,14 @@ onMounted(() => {
     <div class="resource-content" v-loading="loading">
       <el-scrollbar>
         <div class="card-list">
-          <div class="resource-card" v-for="item in resourceList" :key="item.id">
+          <div class="resource-card" v-for="item in resourceList" :key="item.id" :class="{ selected: props.selectable && isResourceSelected(item) }">
             <div class="card-thumbnail" @click="handleCardClick(item)">
+              <!-- 选中标记 -->
+              <div class="selection-overlay" v-if="props.selectable && item.resourceType !== ResourceType.DIRECTORY">
+                <el-icon class="selection-icon" v-if="isResourceSelected(item)">
+                  <Check />
+                </el-icon>
+              </div>
               <!-- 缩略图 -->
               <el-image
                 v-if="item.resourceType === ResourceType.DIRECTORY"
@@ -375,7 +432,7 @@ onMounted(() => {
                 <span class="type-label">{{ getTypeName(item.resourceType) }}</span>
                 <span class="card-name" :title="item.name">{{ item.name }}</span>
               </div>
-              <div class="card-actions">
+              <div class="card-actions" v-if="!props.selectable">
                 <el-dropdown trigger="click" @command="(command: string) => {
                   if (command === 'edit') handleEdit(item)
                   else if (command === 'delete') handleDelete(item)
@@ -518,6 +575,11 @@ onMounted(() => {
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
         }
 
+        &.selected {
+          border: 2px solid var(--el-color-primary);
+          box-shadow: 0 2px 12px 0 rgba(64, 158, 255, 0.3);
+        }
+
         .card-thumbnail {
           width: 100%;
           height: 180px;
@@ -527,6 +589,26 @@ onMounted(() => {
           justify-content: center;
           padding: 16px;
           overflow: hidden;
+          position: relative;
+
+          .selection-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+
+            .selection-icon {
+              font-size: 24px;
+              color: var(--el-color-primary);
+            }
+          }
 
           .thumbnail-image {
             width: 100%;
