@@ -3,6 +3,9 @@ import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, MoreFilled, Edit, Delete, Connection } from '@element-plus/icons-vue'
 import { dataSourceApi, type DataSourceEntity } from './api'
+import mysqlImg from './assets/image/MySQL占位符.png'
+import postgresqlImg from './assets/image/PostgreSQL占位符.png'
+import oracleImg from './assets/image/Oracle占位符.png'
 
 const searchName = ref('')
 const dataSourceList = ref<DataSourceEntity[]>([])
@@ -22,20 +25,23 @@ const currentDataSource = ref<DataSourceEntity>({
 const editorRef = ref()
 
 // 数据源类型映射
-const dataSourceTypeMap: Record<string, { name: string; icon: string; component: any }> = {
+const dataSourceTypeMap: Record<string, { name: string; icon: string; image: string; component: any }> = {
   mysql: {
     name: 'MySQL',
     icon: '🐬',
+    image: mysqlImg,
     component: defineAsyncComponent(() => import('./components/MysqlEditor.vue'))
   },
   postgresql: {
     name: 'PostgreSQL',
     icon: '🐘',
+    image: postgresqlImg,
     component: defineAsyncComponent(() => import('./components/PostgresqlEditor.vue'))
   },
   oracle: {
     name: 'Oracle',
     icon: '🔷',
+    image: oracleImg,
     component: defineAsyncComponent(() => import('./components/OracleEditor.vue'))
   }
 }
@@ -164,6 +170,13 @@ const getTypeIcon = (type: string) => {
   return dataSourceTypeMap[type]?.icon || '📦'
 }
 
+/**
+ * 获取数据源类型图片
+ */
+const getTypeImage = (type: string) => {
+  return dataSourceTypeMap[type]?.image || ''
+}
+
 // 页面加载时获取列表
 onMounted(() => {
   getDataSourceList()
@@ -213,10 +226,7 @@ onMounted(() => {
         <div class="card-list">
           <div class="data-source-card" v-for="item in dataSourceList" :key="item.id">
             <div class="card-thumbnail">
-              <div class="thumbnail-placeholder">
-                <span class="type-icon">{{ getTypeIcon(item.dataSourceType) }}</span>
-                <span class="item-name">{{ item.name }}</span>
-              </div>
+              <img :src="getTypeImage(item.dataSourceType)" :alt="getTypeName(item.dataSourceType)" class="thumbnail-image" />
             </div>
             <div class="card-footer">
               <div class="card-info">
@@ -319,32 +329,18 @@ onMounted(() => {
         }
 
         .card-thumbnail {
-          width: 100%;
           height: 180px;
+          padding: 16px;
           background: var(--dr-bg2);
           display: flex;
           align-items: center;
           justify-content: center;
+          overflow: hidden;
 
-          .thumbnail-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--dr-text);
-            font-size: 14px;
-            gap: 12px;
-
-            .type-icon {
-              font-size: 48px;
-            }
-
-            .item-name {
-              font-size: 16px;
-              font-weight: 500;
-            }
+          .thumbnail-image {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
           }
         }
 
