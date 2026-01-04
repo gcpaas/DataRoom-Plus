@@ -8,7 +8,9 @@ import {
   Edit,
   Delete,
   Refresh,
-  Plus
+  Plus,
+  Search,
+  ArrowDown
 } from '@element-plus/icons-vue'
 import { datasetApi, type DatasetEntity, type DatasetTreeNode } from './api'
 import { dataSourceApi } from '../dataSource/api'
@@ -16,6 +18,8 @@ import { dataSourceApi } from '../dataSource/api'
 const loading = ref(false)
 const treeRef = ref()
 const treeData = ref<DatasetTreeNode[]>([])
+const allDatasetList = ref<DatasetEntity[]>([])
+const searchKeyword = ref('')
 const selectedNode = ref<DatasetEntity | null>(null)
 const activeTab = ref('preview')
 
@@ -63,11 +67,45 @@ const loadTree = async () => {
   loading.value = true
   try {
     const res = await datasetApi.list({})
-    treeData.value = buildTree(res || [], 'root')
+    allDatasetList.value = res || []
+    filterTree()
   } catch (error) {
     console.error('加载数据集列表失败:', error)
   } finally {
     loading.value = false
+  }
+}
+
+/**
+ * 过滤树数据
+ */
+const filterTree = () => {
+  if (!searchKeyword.value.trim()) {
+    // 如果没有搜索关键字，显示完整树
+    treeData.value = buildTree(allDatasetList.value, 'root')
+  } else {
+    // 如果有搜索关键字，过滤数据
+    const keyword = searchKeyword.value.trim().toLowerCase()
+    const filteredList = allDatasetList.value.filter(item =>
+      item.name.toLowerCase().includes(keyword)
+    )
+    // 构建过滤后的树，包含匹配项及其所有父级
+    const matchedCodes = new Set(filteredList.map(item => item.code))
+    const needParentCodes = new Set<string>()
+
+    filteredList.forEach(item => {
+      let parentCode = item.parentCode
+      while (parentCode && parentCode !== 'root') {
+        needParentCodes.add(parentCode)
+        const parent = allDatasetList.value.find(p => p.code === parentCode)
+        parentCode = parent?.parentCode
+      }
+    })
+
+    const finalList = allDatasetList.value.filter(item =>
+      matchedCodes.has(item.code) || needParentCodes.has(item.code!)
+    )
+    treeData.value = buildTree(finalList, 'root')
   }
 }
 
@@ -106,6 +144,21 @@ const handleNodeClick = async (data: DatasetTreeNode) => {
   } catch (error) {
     console.error('加载数据集详情失败:', error)
   }
+}
+
+/**
+ * 处理搜索
+ */
+const handleSearch = () => {
+  filterTree()
+}
+
+/**
+ * 清空搜索
+ */
+const handleClearSearch = () => {
+  searchKeyword.value = ''
+  filterTree()
 }
 
 /**
@@ -321,14 +374,48 @@ onMounted(() => {
   <div class="dr-dataset">
     <div class="dataset-left">
       <div class="tree-header">
-        <span class="tree-title">数据集</span>
-        <el-dropdown trigger="click" @command="handleAddFolder">
-          <el-icon class="add-icon"><Plus /></el-icon>
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索数据集"
+          clearable
+          @keyup.enter="handleSearch"
+          @clear="handleClearSearch"
+          class="search-input"
+        >
+          <template #prefix>
+            <el-icon class="search-icon">
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-dropdown trigger="click" @command="
+          (command: string) => {
+            if (command === 'addFolder') handleAddFolder()
+            else if (command === 'addJson') handleAddDataset('json')
+            else if (command === 'addHttp') handleAddDataset('http')
+            else if (command === 'addRelational') handleAddDataset('relational')
+          }
+        ">
+          <el-button type="primary" :icon="Plus">
+            新增<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+          </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :command="undefined">
+              <el-dropdown-item command="addFolder">
                 <el-icon><Folder /></el-icon>
                 <span>新增目录</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="addJson">
+                <span>{{ datasetTypeMap.json.icon }}</span>
+                <span style="margin-left: 8px">新增JSON数据集</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="addHttp">
+                <span>{{ datasetTypeMap.http.icon }}</span>
+                <span style="margin-left: 8px">新增HTTP数据集</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="addRelational">
+                <span>{{ datasetTypeMap.relational.icon }}</span>
+                <span style="margin-left: 8px">新增关系型数据集</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -526,22 +613,16 @@ onMounted(() => {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
       padding: 12px 16px;
       border-bottom: 1px solid var(--dr-border);
+      flex-shrink: 0;
 
-      .tree-title {
-        font-size: 16px;
-        font-weight: 500;
-      }
+      .search-input {
+        flex: 1;
 
-      .add-icon {
-        font-size: 18px;
-        cursor: pointer;
-        color: var(--el-color-primary);
-        transition: color 0.3s;
-
-        &:hover {
-          color: var(--el-color-primary-light-3);
+        .search-icon {
+          color: var(--el-text-color-secondary);
         }
       }
     }
