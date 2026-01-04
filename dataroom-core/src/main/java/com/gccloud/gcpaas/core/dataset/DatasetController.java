@@ -67,7 +67,7 @@ public class DatasetController {
         });
         queryWrapper.eq(StringUtils.isNotBlank(parentCode), DatasetEntity::getParentCode, parentCode);
         queryWrapper.like(StringUtils.isNotBlank(name), DatasetEntity::getName, name);
-        queryWrapper.orderByDesc(DatasetEntity::getUpdateDate);
+        queryWrapper.orderByAsc(DatasetEntity::getName);
         List<DatasetEntity> list = datasetMapper.selectList(queryWrapper);
         return Resp.success(list);
     }
