@@ -5,6 +5,9 @@ import { Search, Plus, MoreFilled, Folder, Picture, VideoCamera } from '@element
 import { resourceApi, type ResourceEntity } from './api'
 import { ResourceType } from '@/packages/_common/_constant'
 import { getCookie, getCookieName } from '@/packages/_common/_cookie'
+import directoryPlaceholder from '../page/assets/image/目录占位符.png'
+import imagePlaceholder from './assets/image/图片占位符.png'
+import videoPlaceholder from './assets/image/视频占位符.png'
 
 const searchName = ref('')
 const resourceList = ref<ResourceEntity[]>([])
@@ -193,6 +196,23 @@ const getTypeIcon = (resourceType: string) => {
 }
 
 /**
+ * 获取默认占位图
+ * @param resourceType
+ */
+const getDefaultPlaceholder = (resourceType: string) => {
+  switch (resourceType) {
+    case ResourceType.DIRECTORY:
+      return directoryPlaceholder
+    case ResourceType.IMAGE:
+      return imagePlaceholder
+    case ResourceType.VIDEO:
+      return videoPlaceholder
+    default:
+      return imagePlaceholder
+  }
+}
+
+/**
  * 面包屑点击
  * @param index
  */
@@ -296,20 +316,59 @@ onMounted(() => {
         <div class="card-list">
           <div class="resource-card" v-for="item in resourceList" :key="item.id">
             <div class="card-thumbnail" @click="handleCardClick(item)">
-              <!-- 缩略图占位 -->
-              <div class="thumbnail-placeholder">
-                <el-icon v-if="item.resourceType === 'directory'" :size="48" class="type-icon">
-                  <Folder />
-                </el-icon>
-                <img v-else-if="item.resourceType === 'image'" :src="getResourceUrl(item.url)" :alt="item.name" class="resource-image" />
-                <el-icon v-else-if="item.resourceType === 'video'" :size="48" class="type-icon">
-                  <VideoCamera />
-                </el-icon>
-                <el-icon v-else :size="48" class="type-icon">
-                  <Picture />
-                </el-icon>
-                <span class="item-name">{{ item.name }}</span>
-              </div>
+              <!-- 缩略图 -->
+              <el-image
+                v-if="item.resourceType === ResourceType.DIRECTORY"
+                :src="getDefaultPlaceholder(item.resourceType)"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image directory"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.resourceType)" alt="目录占位图"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else-if="item.resourceType === ResourceType.IMAGE"
+                :src="item.url ? getResourceUrl(item.url) : getDefaultPlaceholder(item.resourceType)"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.resourceType)" alt="图片占位符"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else-if="item.resourceType === ResourceType.VIDEO"
+                :src="getDefaultPlaceholder(item.resourceType)"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(item.resourceType)" alt="视频占位符"/>
+                  </div>
+                </template>
+              </el-image>
+              <el-image
+                v-else
+                :src="getDefaultPlaceholder(ResourceType.IMAGE)"
+                :lazy="true"
+                fit="contain"
+                class="thumbnail-image"
+              >
+                <template #error>
+                  <div class="image-error">
+                    <img :src="getDefaultPlaceholder(ResourceType.IMAGE)" alt="默认占位图"/>
+                  </div>
+                </template>
+              </el-image>
             </div>
             <div class="card-footer">
               <div class="card-info">
@@ -466,36 +525,31 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 16px;
+          overflow: hidden;
 
-          .thumbnail-placeholder {
+          .thumbnail-image {
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--dr-text);
-            font-size: 14px;
-            gap: 12px;
 
-            .type-icon {
-              color: var(--el-color-primary);
-            }
+            .image-error {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
 
-            .resource-image {
-              max-width: 100%;
-              max-height: 140px;
-              object-fit: contain;
+              img {
+                width: 60%;
+                height: 60%;
+                object-fit: contain;
+              }
             }
+          }
 
-            .item-name {
-              font-size: 16px;
-              font-weight: 500;
-              max-width: 90%;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
+          .directory {
+            width: 100px !important;
+            height: 100px !important;
           }
         }
 
