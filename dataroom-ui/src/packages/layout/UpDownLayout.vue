@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import logo from '@/assets/logo.png';
+import userAvatar from '@/packages/layout/assets/image/user.png';
 import {useRouter, useRoute} from "vue-router";
 import request from "@/packages/_common/_request.ts";
 import {removeCookie} from "@/packages/_common/_cookie";
@@ -51,6 +52,7 @@ onMounted(() => {
       <div class="user">
         <el-dropdown @command="handleLogout">
           <span class="el-dropdown-link">
+            <img :src="userAvatar" class="user-avatar" alt="用户头像">
             {{ username }}
             <el-icon class="el-icon--right">
               <arrow-down/>
@@ -146,7 +148,7 @@ onMounted(() => {
     }
 
     & .user {
-      width: 100px;
+      width: 150px;
       font-size: 14px;
       font-weight: 700;
       color: var(--dr-text1);
@@ -165,6 +167,14 @@ onMounted(() => {
 
         &:hover {
           opacity: 0.8;
+        }
+
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          margin-right: 16px;
+          object-fit: cover;
         }
 
         .el-icon--right {
