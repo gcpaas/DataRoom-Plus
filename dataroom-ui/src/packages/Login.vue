@@ -31,6 +31,28 @@ const rules = {
 const formRef = ref()
 const loading = ref(false)
 
+// 根据时间生成问候语
+const getGreeting = () => {
+  const hour = new Date().getHours()
+  let greeting = ''
+  
+  if (hour >= 5 && hour < 9) {
+    greeting = '早上好'
+  } else if (hour >= 9 && hour < 12) {
+    greeting = '上午好'
+  } else if (hour >= 12 && hour < 14) {
+    greeting = '中午好'
+  } else if (hour >= 14 && hour < 18) {
+    greeting = '下午好'
+  } else if (hour >= 18 && hour < 22) {
+    greeting = '晚上好'
+  } else {
+    greeting = '夜深了'
+  }
+  
+  return `${greeting},欢迎回来!`
+}
+
 // 登录处理
 const handleLogin = async () => {
   if (!formRef.value) return
@@ -56,7 +78,7 @@ const handleLogin = async () => {
         // 保存token到cookie
         setCookie(token)
 
-        ElMessage.success('登录成功')
+        ElMessage.success(getGreeting())
 
         // 跳转到首页
         setTimeout(() => {
