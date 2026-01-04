@@ -348,7 +348,7 @@ onMounted(() => {
                 :src="getDefaultPlaceholder(item.resourceType)"
                 :lazy="true"
                 fit="contain"
-                class="thumbnail-image"
+                class="thumbnail-image video"
               >
                 <template #error>
                   <div class="image-error">
@@ -548,6 +548,11 @@ onMounted(() => {
           }
 
           .directory {
+            width: 100px !important;
+            height: 100px !important;
+          }
+
+          .video {
             width: 100px !important;
             height: 100px !important;
           }
