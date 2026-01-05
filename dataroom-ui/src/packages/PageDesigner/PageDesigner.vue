@@ -363,7 +363,7 @@ const onSave = () => {
       <div class="right-panel" :style="rightControlPanelStyle">
         <el-scrollbar>
           <ControlPanel v-if="rightControlPanelSetting"></ControlPanel>
-          <ControlPanelWrapper v-else>
+          <ControlPanelWrapper v-else :chart="activeChart">
             <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
           </ControlPanelWrapper>
         </el-scrollbar>

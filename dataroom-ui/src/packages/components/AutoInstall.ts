@@ -14,7 +14,7 @@ type ComponentInstanceMap = {
 }
 
 type BehaviorMap = {
-  [key: string]: BehaviorInterface
+  [key: string]: BehaviorInterface[]
 }
 
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
@@ -55,7 +55,7 @@ Object.entries(installModules).forEach(([path, module]) => {
   // 注册交互定义
   const behaviorDefineName = `behaviors`
   if (module[behaviorDefineName]) {
-    behaviors[componentName] = module[behaviorDefineName] as BehaviorInterface
+    behaviors[componentName] = module[behaviorDefineName] as BehaviorInterface[]
   }
 })
 
@@ -80,11 +80,17 @@ const getComponentInstance = (name: string): ChartConfigInterface<unknown> => {
   return {} as ChartConfigInterface<unknown>
 }
 
+
+const getComponentBehaviors = (name: string): BehaviorInterface[] => {
+  const behavior = behaviors[name]
+  return behavior || [] as BehaviorInterface[]
+}
+
 export {
   components,
   panelComponents,
   componentInstances,
-  behaviors,
+  getComponentBehaviors,
   getComponent,
   getPanelComponent,
   getComponentInstance,

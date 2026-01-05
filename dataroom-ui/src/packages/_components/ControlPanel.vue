@@ -1,8 +1,19 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {ref} from 'vue'
+import {computed, ref, watch} from 'vue'
+import type {ChartConfigInterface} from '../components/type/define.ts'
+import {Search} from "@element-plus/icons-vue";
+import {getComponentBehaviors} from "@/packages/components/AutoInstall.ts";
 
+const {chart} = defineProps<{
+  chart: ChartConfigInterface<unknown>
+}>()
 const activeTab = ref('style')
+const chartConfig = computed(() => chart)
+watch(() => chart.id, () => {
+  const behaviors = getComponentBehaviors(chart.type)
+  console.log('behaviors', behaviors)
+})
 </script>
 
 <template>
@@ -10,12 +21,21 @@ const activeTab = ref('style')
     <el-tabs v-model="activeTab" class="control-tabs">
       <el-tab-pane label="样式" name="style">
         <div class="tab-content">
+          <el-form label-width="100px" label-position="left" size="small">
+            <el-form-item label="标题/图层">
+              <el-input v-model="chartConfig.title"></el-input>
+            </el-form-item>
+          </el-form>
           <slot></slot>
         </div>
       </el-tab-pane>
       <el-tab-pane label="数据" name="data">
         <div class="tab-content">
-          <div class="placeholder">数据配置开发中...</div>
+          <el-form label-width="100px" label-position="left" size="small">
+            <el-form-item label="数据集">
+              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
+            </el-form-item>
+          </el-form>
         </div>
       </el-tab-pane>
       <el-tab-pane label="交互" name="interaction">
