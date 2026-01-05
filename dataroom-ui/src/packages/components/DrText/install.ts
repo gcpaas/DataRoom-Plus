@@ -26,17 +26,17 @@ export type DrTextConfig = ChartConfig<DrTextPropsInterface>
  * 定义获取该组件实例的方法，返回本组件新实例对象
  * @constructor
  */
-const getInstance = (): DrTextConfig => {
+const getInstance = (pageType: string | 'page' | 'visualScreen'): DrTextConfig => {
   const config: DrTextConfig = {
     id: Math.random().toString(),
     i: Math.random().toString(),
     type: DrConst.THIS_PLUGIN_TYPE,
     title: '文本',
-    w: 150,
-    h: 100,
-    x: Math.random() * 100 + 100,
-    y: 100,
-    z: 999,
+    w: pageType === 'visualScreen' ? 150 : 5,
+    h: pageType == 'visualScreen' ? 100 : 5,
+    x: pageType === 'visualScreen' ? 100 : 0,
+    y: pageType === 'visualScreen' ? 0 : 0,
+    z: 100,
     rotateX: 0,
     rotateY: 0,
     rotateZ: 0,

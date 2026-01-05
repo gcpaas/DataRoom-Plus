@@ -17,20 +17,13 @@ const router = useRouter()
 const activeChart = ref<ChartConfig<unknown>>()
 const componentLibRef = ref(null)
 const pageStageEntity = ref<PageStageEntity>()
-const chartList = computed(() => {
-  return pageStageEntity.value?.pageConfig?.chartList || []
-})
+const chartList = ref<ChartConfig<unknown>[]>([])
 
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
-  chartInst.w = 3
-  chartInst.h = 3
-  chartInst.x = 0
-  chartInst.y = 0
   chartInst.i = uuidv4()
   chartInst.id = chartInst.i
-  pageStageEntity.value?.pageConfig?.chartList.push(chartInst)
-  console.log(pageStageEntity)
+  chartList.value.push(chartInst)
 }
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
@@ -288,6 +281,8 @@ onMounted(() => {
   // 根据编码获取页面详情
   pageApi.getPageConfig(code, "design").then((res) => {
     pageStageEntity.value = res
+    // 同步 chartList
+    chartList.value = res.pageConfig?.chartList || []
     console.log(res)
   })
 })

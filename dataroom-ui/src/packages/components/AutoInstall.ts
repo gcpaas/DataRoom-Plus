@@ -1,4 +1,4 @@
-import { type Component } from 'vue'
+import {type Component} from 'vue'
 import type {ChartConfig, Behavior, ChartDatasetField} from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
@@ -10,7 +10,7 @@ type PanelComponentMap = {
 }
 
 type ComponentInstanceMap = {
-  [key: string]: () => ChartConfig<unknown>
+  [key: string]: (pageType: string) => ChartConfig<unknown>
 }
 
 type BehaviorMap = {
@@ -22,11 +22,10 @@ type datasetFieldMap = {
 }
 
 
-
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
 const installModules = import.meta.glob<{
   [key: string]: Component | (() => ChartConfig<unknown>)
-}>('./**/install.ts', { eager: true })
+}>('./**/install.ts', {eager: true})
 
 // 存储组件、控制面板组件、实例方法和交互定义
 const components: ComponentMap = {}
@@ -72,8 +71,8 @@ Object.entries(installModules).forEach(([path, module]) => {
   }
 })
 
-const getPanelComponent = (name: string|undefined) => {
-  console.log("获取配置面板",name,panelComponents)
+const getPanelComponent = (name: string | undefined) => {
+  console.log("获取配置面板", name, panelComponents)
   if (name) {
     return panelComponents[name]
   }
@@ -84,10 +83,10 @@ const getComponent = (name: string) => {
   return components[name]
 }
 
-const getComponentInstance = (name: string): ChartConfig<unknown> => {
-  const instanceFn = componentInstances[name]
+const getComponentInstance = (name: string, pageType: string = 'page'): ChartConfig<unknown> => {
+  const instanceFn: (pageType: string) => ChartConfig<unknown> = componentInstances[name]!
   if (instanceFn) {
-    return instanceFn()
+    return instanceFn(pageType)
   }
   console.error(`未找到组件 ${name} 对应的实例化方法`)
   return {} as ChartConfig<unknown>
