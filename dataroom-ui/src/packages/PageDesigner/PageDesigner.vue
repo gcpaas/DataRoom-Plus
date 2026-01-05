@@ -6,7 +6,7 @@ import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
-import type {CanvasInst, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
+import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
@@ -18,7 +18,8 @@ const activeChart = ref<ChartConfig<unknown>>()
 const componentLibRef = ref(null)
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
-const basicConfig = ref<PageBasicConfig>({})
+const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
+const globalVariable = ref<GlobalVariable>({} as GlobalVariable)
 
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
@@ -34,7 +35,7 @@ const ControlPanelWrapper = defineAsyncComponent(() => import('@/packages/_compo
 const ControlPanel = defineAsyncComponent(() => import('@/packages/PageDesigner/ControlPanel.vue'))
 const ComponentLib = defineAsyncComponent(() => import('@/packages/_components/ComponentLib.vue'))
 const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components/ComponentLayer.vue'))
-const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
+const GlobalVariableComponent = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
 const ResourceLib = defineAsyncComponent(() => import('@/packages/_components/ResourceLib.vue'))
 
 const leftToolBarList: Array<LeftToolBar> = reactive([
@@ -59,7 +60,7 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
   {
     name: '变量',
     desc: '全局变量',
-    component: shallowRef<Component>(GlobalVariable),
+    component: shallowRef<Component>(GlobalVariableComponent),
     componentName: 'GlobalVariable',
   },
 ])
@@ -299,6 +300,7 @@ onMounted(() => {
     console.log(res)
     chartList.value = res.pageConfig?.chartList || []
     basicConfig.value = res.pageConfig?.basicConfig || {}
+    globalVariable.value = res.pageConfig?.globalVariableList || []
   })
 })
 </script>
@@ -387,7 +389,7 @@ onMounted(() => {
   </div>
   <ComponentLib v-if="componentLibVisible" ref="componentLibRef"></ComponentLib>
   <ResourceLib v-if="resourceLibVisible" ref="resourceLibRef"></ResourceLib>
-  <GlobalVariable v-if="globalVariableVisible" ref="globalVariableRef"></GlobalVariable>
+  <GlobalVariableComponent v-if="globalVariableVisible" ref="globalVariableRef" :globalVariable="globalVariable"></GlobalVariableComponent>
   <ContextMenu v-if="contextMenuVisible" ref="contextMenuRef" :style="computedContextMenuStyle" :chart="activeChart"></ContextMenu>
 </template>
 

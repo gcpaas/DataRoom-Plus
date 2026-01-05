@@ -1,32 +1,30 @@
 <!-- 全局变量 -->
 <script setup lang="ts">
-import { inject, ref } from 'vue'
-import type { CanvasInst, GlobalVariable } from '@/packages/_common/_type.ts'
-import { DrConst } from '@/packages/_common/_constant.ts'
-import { v4 as uuidv4 } from 'uuid'
-import { Search } from '@element-plus/icons-vue'
-import { ElMessageBox } from 'element-plus'
+import {inject, ref, watch} from 'vue'
+import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
+import {DrConst} from '@/packages/_common/_constant.ts'
+import {v4 as uuidv4} from 'uuid'
+import {Search} from '@element-plus/icons-vue'
+import {ElMessageBox} from 'element-plus'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
+const props = defineProps<{
+  globalVariable: GlobalVariable[]
+}>()
 
 const globalVariableVisible = ref(true)
-const globalVariableList = ref<GlobalVariable[]>([])
 const activeGlobalVariable = ref<GlobalVariable>()
-for (let i = 0; i < 10; i++) {
-  globalVariableList.value.push({
-    id: uuidv4(),
-    from: 'static',
-    name: 'name' + uuidv4(),
-    urlName: '',
-    remark: '变量备注描述' + uuidv4(),
-    defaultValue: '默认值',
-    script: '',
-  })
-}
-// 默认激活第一个
-if (globalVariableList.value.length > 0) {
-  activeGlobalVariable.value = globalVariableList.value[0]
-}
+
+/**
+ * 默认激活第一个
+ */
+watch(
+  () => props.globalVariable,
+  (newVal) => {
+    if (newVal && newVal.length > 0 && !activeGlobalVariable.value) {
+      activeGlobalVariable.value = newVal[0]
+    }
+  }, {immediate: true}
+)
 const onClose = () => {
   globalVariableVisible.value = false
 }
@@ -44,7 +42,7 @@ const onAdd = () => {
     defaultValue: '默认值',
     script: '',
   }
-  globalVariableList.value.push(inst)
+  props.globalVariable.push(inst)
   activeGlobalVariable.value = inst
 }
 /**
@@ -58,14 +56,17 @@ const onDelete = (variable: GlobalVariable) => {
     type: 'warning',
   }).then(() => {
     // 根据id判断用filter过滤
-    globalVariableList.value = globalVariableList.value.filter((item) => item.id !== variable.id)
-    if (globalVariableList.value.length == 0) {
+    const index = props.globalVariable.findIndex((item) => item.id === variable.id)
+    if (index > -1) {
+      props.globalVariable.splice(index, 1)
+    }
+    if (props.globalVariable.length == 0) {
       activeGlobalVariable.value = undefined
       return
     }
     if (activeGlobalVariable.value?.id === variable.id) {
       // 获取第一个
-      activeGlobalVariable.value = globalVariableList.value[0]
+      activeGlobalVariable.value = props.globalVariable[0]
     }
   })
 }
@@ -79,7 +80,7 @@ const onDelete = (variable: GlobalVariable) => {
           <el-button type="primary" @click="onAdd">新增</el-button>
         </div>
         <el-scrollbar>
-          <div :class="{ variable: true, active: item.id === activeGlobalVariable?.id }" v-for="item in globalVariableList" :key="item.id" @click="activeGlobalVariable = item">
+          <div :class="{ variable: true, active: item.id === activeGlobalVariable?.id }" v-for="item in globalVariable" :key="item.id" @click="activeGlobalVariable = item">
             <div class="name">{{ item.name }}</div>
             <div class="remark">{{ item.remark }}</div>
             <span class="delete" @click.stop="onDelete(item)">删除</span>
