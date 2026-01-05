@@ -7,12 +7,15 @@ import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/compo
 import type {DatasetEntity} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
 
-// 懒加载数据集管理页面
+/**
+ * 懒加载数据集管理页面
+ */
 const DatasetManage = defineAsyncComponent(() => import('@/packages/dataset/index.vue'))
 
 const {chart} = defineProps<{
   chart: ChartConfigInterface<unknown>
 }>()
+// 默认激活样式tab
 const activeTab = ref('style')
 const chartConfig = computed(() => chart)
 

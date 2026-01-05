@@ -296,7 +296,7 @@ const onSave = () => {
   <div class="dr-page-designer">
     <div class="header" ref="titleRef">
       <div class="header-left">
-        <img src="@/assets/logo-small.png" alt="logo" class="logo"/>
+        <img src="@/assets/logo-small.png" alt="logo" class="logo" @click="router.push('/dataRoom/page/index')"/>
         <div class="title">标题</div>
       </div>
       <div style="margin-right: 8px">
@@ -408,6 +408,7 @@ const onSave = () => {
       & .logo {
         height: 30px;
         object-fit: contain;
+        cursor: pointer;
       }
 
       & .title {
