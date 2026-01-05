@@ -32,6 +32,13 @@ export class ChartPlugin {
   }
 }
 
+export interface ChartDatasetInterface {
+  /**
+   * 数据集编码
+   */
+  code: string
+  xFields: string[]
+}
 /**
  * 组件配置基础信息
  */
@@ -87,7 +94,7 @@ export interface ChartConfigInterface<T> {
   /**
    * 数据集编码
    */
-  dataset?: string
+  dataset?:string
   /**
    * 自定义配置
    */

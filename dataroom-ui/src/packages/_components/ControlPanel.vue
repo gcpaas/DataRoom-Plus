@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {computed, ref, watch, defineAsyncComponent, onMounted} from 'vue'
 import type {ChartConfigInterface} from '../components/type/define.ts'
-import {Search} from "@element-plus/icons-vue";
+import {Pointer, Search} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
@@ -67,6 +67,7 @@ const handleCancelDataset = () => {
 // 确认选择数据集
 const handleConfirmDataset = () => {
   if (selectedDataset.value) {
+    console.log(selectedDataset.value)
     // 更新数据集名称到输入框
     datasetName.value = selectedDataset.value.name
     // 保存数据集编码到chartConfig
@@ -79,6 +80,7 @@ const handleConfirmDataset = () => {
 onMounted(() => {
   loadDatasetName()
 })
+
 </script>
 
 <template>
@@ -101,14 +103,14 @@ onMounted(() => {
               <el-input
                 v-model="datasetName"
                 placeholder="请选择数据集"
-                :suffix-icon="Search"
+                :suffix-icon="Pointer"
                 readonly
                 @click="openDatasetDialog"
                 style="cursor: pointer;"
               ></el-input>
             </el-form-item>
             <el-form-item v-for="field in datasetFields" :key="field.name" :label="field.desc">
-              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
+              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Pointer"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -182,7 +184,7 @@ onMounted(() => {
 
 // 数据集选择对话框样式
 .dataset-dialog-wrapper {
-  max-height: calc(70vh - 120px);
+  height: calc(70vh - 120px);
   overflow: hidden;
 
   // 调整数据集组件在对话框中的样式
@@ -193,6 +195,16 @@ onMounted(() => {
 
   :deep(.dataset-left) {
     flex-shrink: 0;
+    height: 100%;
+  }
+
+  :deep(.dataset-left .tree-content) {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  :deep(.dataset-left .tree-content .el-scrollbar__wrap) {
+    overflow-x: hidden;
   }
 
   :deep(.dataset-right) {
@@ -210,7 +222,7 @@ onMounted(() => {
   }
 
   :deep(.el-scrollbar__bar) {
-    z-index: 10;
+    z-index: 10 !important;
   }
 }
 </style>

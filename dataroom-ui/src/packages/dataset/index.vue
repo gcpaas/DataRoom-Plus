@@ -685,9 +685,14 @@ const handleTestAndSave = async () => {
     .tree-content {
       flex: 1;
       padding: 8px;
+      overflow: hidden;
+
+      :deep(.el-scrollbar__wrap) {
+        max-height: 100%;
+      }
 
       :deep(.el-scrollbar__bar) {
-        z-index: 10;
+        z-index: 10 !important;
       }
 
       :deep(.el-tree) {
