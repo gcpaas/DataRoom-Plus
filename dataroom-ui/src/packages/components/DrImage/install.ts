@@ -7,10 +7,8 @@ const component = defineAsyncComponent(() => import('./index.vue'))
 const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
 interface DrImagePropsInterface {
-  // 文本
-  text: string
-  // 字体大小
-  fontSize: number
+  // 地址
+  url: string
 }
 
 /**
@@ -37,8 +35,7 @@ const getInstance = (): DrImageConfig => {
     rotateY: 0,
     rotateZ: 0,
     props: {
-      text: '我是文本',
-      fontSize: 14,
+      url: ''
     },
   }
   return config

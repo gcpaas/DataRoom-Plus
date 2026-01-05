@@ -16,7 +16,13 @@ const { chart } = defineProps<{
 
 <template>
   <div class="dr-image">
-    <img src="https://picsum.photos/200/300?random"/>
+    <el-image :src="chart.props.url" lazy>
+      <template #error>
+        <div class="image-error-slot">
+           图片加载失败
+        </div>
+      </template>
+    </el-image>
   </div>
 </template>
 
@@ -24,9 +30,19 @@ const { chart } = defineProps<{
 .dr-image {
   width: 100%;
   height: 100%;
-  & img {
+
+  & .el-image {
     width: 100%;
     height: 100%;
+  }
+
+  & .image-error-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--dr-text);
   }
 }
 </style>
