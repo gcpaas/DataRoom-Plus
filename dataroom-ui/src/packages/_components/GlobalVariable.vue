@@ -123,10 +123,15 @@ const onDelete = (variable: GlobalVariableInterface) => {
 .global-variable-wrapper {
   display: grid;
   grid-template-columns: 400px auto;
-  gap: 16px;
+  background-color: var(--dr-bg2);
+  gap: 0;
 
   & .variable-wrapper {
     height: calc(70vh - 120px);
+    background: white;
+    padding: 16px;
+    margin: 16px;
+    border-radius: 4px 0 0 4px;
 
     & .search {
       display: flex;
@@ -156,6 +161,7 @@ const onDelete = (variable: GlobalVariableInterface) => {
         position: absolute;
         right: 8px;
         top: 8px;
+        font-size: 12px;
         color: var(--el-color-danger);
       }
 
@@ -171,8 +177,10 @@ const onDelete = (variable: GlobalVariableInterface) => {
   }
 
   & .variable-form-wrapper {
-    width: 60%;
-    margin-top: var(--el-component-size);
+    background: #fff;
+    padding: 16px;
+    margin: 16px 16px 16px 0;
+    border-radius: 0 4px 4px 0;
   }
 }
 </style>
