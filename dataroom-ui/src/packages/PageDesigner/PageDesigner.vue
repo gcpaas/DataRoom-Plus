@@ -305,7 +305,7 @@ const onSave = () => {
       <div style="margin-right: 8px">
         <el-button @click="switchPageControlPanel" size="small">设置</el-button>
         <el-button @click="onPreview" size="small">预览</el-button>
-        <el-button @click="onSave" size="small">保存</el-button>
+        <el-button @click="onSave" size="small" type="primary">保存</el-button>
       </div>
     </div>
     <div class="main" :style="mainStyle">
@@ -392,11 +392,14 @@ const onSave = () => {
   grid-template-rows: var(--dr-designer-header-height) auto;
   height: 100vh; // 设置容器高度为视口高度
   & .header {
-    background-color: var(--dr-primary);
-    color: white;
+    background-color: white;
+    color: var(--dr-text1);
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid var(--dr-border);
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .03);
 
     & .title {
       margin-left: 8px;
