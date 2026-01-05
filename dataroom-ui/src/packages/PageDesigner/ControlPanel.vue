@@ -82,7 +82,7 @@ const getResourceUrl = (url?: string) => {
                         <el-image
                           v-if="basicConfig.background.url"
                           :src="getResourceUrl(basicConfig.background.url)"
-                          fit="cover"
+                          fit="contain"
                           class="bg-image"
                           lazy
                         >
@@ -221,6 +221,8 @@ const getResourceUrl = (url?: string) => {
           overflow: hidden;
           position: relative;
           transition: all 0.3s;
+          padding: 16px;
+          box-sizing: border-box;
 
           &:hover {
             border-color: var(--el-color-primary);
@@ -230,12 +232,6 @@ const getResourceUrl = (url?: string) => {
             width: 100%;
             height: 100%;
             display: block;
-
-            :deep(img) {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
           }
 
           .bg-placeholder {
