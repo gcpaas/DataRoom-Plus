@@ -267,7 +267,6 @@ const onPreview = () => {
 }
 
 const onSave = () => {
-  console.log('onSave')
   if (!pageStageEntity.value) {
     ElMessage({
       message: '页面信息未加载',
@@ -282,16 +281,9 @@ const onSave = () => {
       chartList: chartList.value
     }
   }).then((res) => {
-    console.log(res)
     ElMessage({
       message: '保存成功',
       type: 'success',
-    })
-  }).catch((err) => {
-    console.error('保存失败:', err)
-    ElMessage({
-      message: '保存失败',
-      type: 'error',
     })
   })
 }
@@ -302,9 +294,7 @@ onMounted(() => {
   // 根据编码获取页面详情
   pageApi.getPageConfig(code, "design").then((res) => {
     pageStageEntity.value = res
-    // 同步 chartList
     chartList.value = res.pageConfig?.chartList || []
-    console.log(res)
   })
 })
 </script>

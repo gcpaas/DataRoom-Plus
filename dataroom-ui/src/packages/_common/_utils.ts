@@ -89,9 +89,7 @@ export const extractPositionFromTransform = (
  * @param filePath
  */
 export const getParentFolderName = (filePath: string): string => {
-  console.log(filePath)
   const pathParts = new URL(filePath).pathname.split('/')
-  console.log(pathParts)
   // @ts-expect-error ignore
   return pathParts[pathParts.length - 2]
 }
