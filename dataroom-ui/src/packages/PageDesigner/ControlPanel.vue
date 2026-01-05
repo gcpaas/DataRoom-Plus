@@ -25,8 +25,9 @@ const thumbnail = ref('')
 const bgOpacity = ref(100)
 
 // 上传相关
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const resourceBaseUrl = import.meta.env.VITE_RESOURCE_BASE_URL
-const uploadUrl = `${resourceBaseUrl}/dataRoom/resource/upload`
+const uploadUrl = `${apiBaseUrl}/dataRoom/resource/upload`
 const cookieName = getCookieName()
 const cookieValue = getCookie(cookieName)
 const uploadHeaders = reactive({
@@ -56,6 +57,7 @@ const handleUploadError = () => {
 
 // 获取完整的资源URL
 const getResourceUrl = (url?: string) => {
+  console.log('url = '+url)
   if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
@@ -110,8 +112,8 @@ const getResourceUrl = (url?: string) => {
               <!-- 背景填充方式 -->
               <el-form-item label="背景填充">
                 <el-radio-group v-model="pageConfig.bgFill">
-                  <el-radio label="color">颜色</el-radio>
-                  <el-radio label="image">图片</el-radio>
+                  <el-radio value="color">颜色</el-radio>
+                  <el-radio value="image">图片</el-radio>
                 </el-radio-group>
               </el-form-item>
 
