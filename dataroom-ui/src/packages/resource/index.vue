@@ -124,7 +124,7 @@ const handleUploadSuccess = (response: any) => {
       path: res.path,
       url: res.url,
       size: res.size,
-      resourceType: res.resourceType || editingResource.value?.resourceType
+      resourceType: res.resourceType || editingResource.value?.resourceType!
     }
     ElMessage.success('文件上传成功，请点击确定保存')
   }
@@ -268,7 +268,7 @@ const getDefaultPlaceholder = (resourceType: string) => {
  * @param index
  */
 const handleBreadcrumbClick = (index: number) => {
-  const item = breadcrumbs.value[index]
+  const item = breadcrumbs.value[index]!
   currentParentCode.value = item.code
   breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
   getResourceList()
