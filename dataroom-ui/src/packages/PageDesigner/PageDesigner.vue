@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { getComponent, getComponentInstance, getPanelComponent } from '@DrPackage/components/AutoInstall.ts'
-import { type CSSProperties, nextTick, reactive } from 'vue'
-import { type Component, computed, defineAsyncComponent, ref, shallowRef, provide } from 'vue'
-import { GridLayout, GridItem } from 'vue-grid-layout-v3'
-import type { ChartConfigInterface } from '../components/type/define.ts'
-import { getChartById } from '@/packages/_common/_utils.ts'
-import type { CanvasInstInterface, LeftToolBarInterface } from '@/packages/_common/_type.ts'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { DrConst } from '@/packages/_common/_constant.ts'
+import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/components/AutoInstall.ts'
+import {type CSSProperties, nextTick, reactive} from 'vue'
+import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
+import {GridLayout, GridItem} from 'vue-grid-layout-v3'
+import type {ChartConfigInterface} from '../components/type/define.ts'
+import {getChartById} from '@/packages/_common/_utils.ts'
+import type {CanvasInstInterface, LeftToolBarInterface} from '@/packages/_common/_type.ts'
+import {useRouter} from 'vue-router'
+import {ElMessage} from 'element-plus'
+import {DrConst} from '@/packages/_common/_constant.ts'
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
@@ -16,9 +16,9 @@ const activeChart = ref<ChartConfigInterface<unknown>>()
 const chartList = ref<ChartConfigInterface<unknown>[]>([])
 const componentLibRef = ref(null)
 const layout = [
-  { x: 0, y: 0, w: 2, h: 2, i: '0' },
-  { x: 2, y: 0, w: 2, h: 4, i: '1' },
-  { x: 4, y: 0, w: 2, h: 5, i: '2' },
+  {x: 0, y: 0, w: 2, h: 2, i: '0'},
+  {x: 2, y: 0, w: 2, h: 4, i: '1'},
+  {x: 4, y: 0, w: 2, h: 5, i: '2'},
 ]
 const chartIndex = ref(3)
 layout.forEach((item) => {
@@ -45,6 +45,7 @@ const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
 // 记录右侧控制面板是否为页面配置
 const rightControlPanelSetting = ref(true)
+const ControlPanelWrapper = defineAsyncComponent(() => import('@/packages/_components/ControlPanel.vue'))
 const ControlPanel = defineAsyncComponent(() => import('@/packages/PageDesigner/ControlPanel.vue'))
 const ComponentLib = defineAsyncComponent(() => import('@/packages/_components/ComponentLib.vue'))
 const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components/ComponentLayer.vue'))
@@ -175,7 +176,7 @@ const contextMenuVisible = ref(false)
  * @param leftToolBar
  */
 const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
- if (leftToolBar.componentName == 'ResourceLib') {
+  if (leftToolBar.componentName == 'ResourceLib') {
     resourceLibVisible.value = false
     nextTick(() => {
       resourceLibVisible.value = true
@@ -275,7 +276,7 @@ const onPreview = () => {
   // 跳转到 /dataRoom/pagePreviewer 路由
   const routeData = router.resolve({
     path: '/dataRoom/pagePreviewer',
-    query: { code: 'test' },
+    query: {code: 'test'},
   })
   console.log('预览跳转', routeData.href)
   window.open(routeData.href, '_blank')
@@ -295,7 +296,7 @@ const onSave = () => {
   <div class="dr-page-designer">
     <div class="header" ref="titleRef">
       <div class="header-left">
-        <img src="@/assets/logo-small.png" alt="logo" class="logo" />
+        <img src="@/assets/logo-small.png" alt="logo" class="logo"/>
         <div class="title">标题</div>
       </div>
       <div style="margin-right: 8px">
@@ -321,7 +322,7 @@ const onSave = () => {
           <div style="position: relative">
             <span class="title">{{ activeLeftToolBar.desc }}</span>
             <el-icon class="close" @click="switchLeftToolPanel(false)">
-              <Close />
+              <Close/>
             </el-icon>
           </div>
         </div>
@@ -361,13 +362,15 @@ const onSave = () => {
       </div>
       <div class="right-panel" :style="rightControlPanelStyle">
         <el-scrollbar>
-          <component :is="ControlPanel" v-if="rightControlPanelSetting"></component>
-          <component v-else :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
+          <ControlPanel v-if="rightControlPanelSetting"></ControlPanel>
+          <ControlPanelWrapper v-else>
+            <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
+          </ControlPanelWrapper>
         </el-scrollbar>
       </div>
       <el-icon class="right-panel-tool-anchor" @click="switchRightControlPanel(!rightControlPanelShow)" :style="computedToolAnchorStyle">
-        <ArrowRight v-if="rightControlPanelShow" />
-        <ArrowLeft v-else />
+        <ArrowRight v-if="rightControlPanelShow"/>
+        <ArrowLeft v-else/>
       </el-icon>
     </div>
   </div>
