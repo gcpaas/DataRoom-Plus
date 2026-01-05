@@ -9,15 +9,15 @@ public class PageConfig extends BasePageConfig {
     /**
      * 页面基础配置
      */
-    private JSONObject pageConfig;
+    private JSONObject pageConfig = new JSONObject();
     /**
      * 全局变量
      */
-    private JSONArray globalVariableList;
+    private JSONArray globalVariableList = new JSONArray();
     /**
      * 图表列表
      */
-    private JSONArray chartList;
+    private JSONArray chartList = new JSONArray();
 
     @Override
     public void init() {

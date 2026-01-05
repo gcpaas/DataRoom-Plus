@@ -3,6 +3,7 @@ import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/
 import {type CSSProperties, nextTick, onMounted, reactive} from 'vue'
 import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
+import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
@@ -14,34 +15,22 @@ import {pageApi} from "@/packages/page/api.ts";
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
 const activeChart = ref<ChartConfig<unknown>>()
-const chartList = ref<ChartConfig<unknown>[]>([])
 const componentLibRef = ref(null)
-const pageConfig = ref<PageBasicConfig>()
-const layout = [
-  {x: 0, y: 0, w: 2, h: 2, i: '0'},
-  {x: 2, y: 0, w: 2, h: 4, i: '1'},
-  {x: 4, y: 0, w: 2, h: 5, i: '2'},
-]
-const chartIndex = ref(3)
-layout.forEach((item) => {
-  const inst: ChartConfig<unknown> = getComponentInstance('DrText')
-  inst.id = item.i
-  inst.i = item.i
-  inst.x = item.x
-  inst.y = item.y
-  inst.w = item.w
-  inst.h = item.h
-  chartList.value.push(inst)
+const pageStageEntity = ref<PageStageEntity>()
+const chartList = computed(() => {
+  return pageStageEntity.value?.pageConfig?.chartList || []
 })
+
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
   chartInst.w = 3
   chartInst.h = 3
   chartInst.x = 0
   chartInst.y = 0
-  chartInst.i = chartIndex.value++ + ''
+  chartInst.i = uuidv4()
   chartInst.id = chartInst.i
-  chartList.value.push(chartInst)
+  pageStageEntity.value?.pageConfig?.chartList.push(chartInst)
+  console.log(pageStageEntity)
 }
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
@@ -293,15 +282,13 @@ const onSave = () => {
   })
 }
 
-const pageStageEntity = ref<PageStageEntity>()
-
 onMounted(() => {
   // 获取路由中code 参数
   const code: string = router.currentRoute.value.query.code as string
   // 根据编码获取页面详情
   pageApi.getPageConfig(code, "design").then((res) => {
-    console.log('获取页面详情', res)
     pageStageEntity.value = res
+    console.log(res)
   })
 })
 </script>
@@ -311,7 +298,7 @@ onMounted(() => {
     <div class="header" ref="titleRef">
       <div class="header-left">
         <img src="@/assets/logo-small.png" alt="logo" class="logo" @click="router.push('/dataRoom/page/index')"/>
-        <div class="title">{{pageStageEntity.name}}</div>
+        <div class="title">{{ pageStageEntity?.name }}</div>
       </div>
       <div style="margin-right: 8px">
         <el-button @click="switchPageControlPanel" size="small">历史</el-button>
