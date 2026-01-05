@@ -1,5 +1,6 @@
 package com.gccloud.gcpaas.core.page;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -240,14 +241,14 @@ public class PageController {
     @PostMapping("/updatePageConfig")
     @RequiresRoles(value = DataRoomRole.DEVELOPER)
     @Operation(summary = "更新页面配置", description = "更新页面配置")
-    public Resp<Void> updatePageConfig(@RequestBody PageStageEntity pageStage) {
+    public Resp<Boolean> updatePageConfig(@RequestBody PageStageEntity pageStage) {
         LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(PageStageEntity::getPageConfig, pageStage.getPageConfig());
+        updateWrapper.set(PageStageEntity::getPageConfig, JSON.toJSONString(pageStage.getPageConfig()));
         updateWrapper.eq(PageStageEntity::getPageCode, pageStage.getPageCode());
         updateWrapper.eq(PageStageEntity::getPageStatus, PageStatus.DESIGN);
         updateWrapper.set(PageStageEntity::getUpdateDate, new Date());
         pageStageService.update(updateWrapper);
-        return Resp.success(null);
+        return Resp.success(true);
     }
 
     /**

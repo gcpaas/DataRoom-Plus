@@ -268,7 +268,17 @@ const onPreview = () => {
 
 const onSave = () => {
   console.log('onSave')
-  localStorage.setItem('chartList', JSON.stringify(chartList.value))
+  pageApi.updatePageConfig({
+    ...(pageStageEntity.value),
+    pageConfig: {
+      pageType: 'page',
+      basicConfig: undefined,
+      globalVariableList: [],
+      chartList: chartList.value
+    }
+  }).then((res) => {
+    console.log(res)
+  })
   ElMessage({
     message: '已保存到缓存',
     type: 'success',

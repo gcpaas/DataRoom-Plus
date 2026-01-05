@@ -71,6 +71,8 @@ interface PageBasicConfig {
  * 页面配置
  */
 interface PageConfig {
+  // 页面类型
+  pageType: string
   // 页面基础配置
   basicConfig: PageBasicConfig
   // 全局变量
@@ -83,6 +85,8 @@ interface PageConfig {
  * 大屏配置
  */
 interface VisualScreenPageConfig {
+  // 页面类型
+  pageType: string
   //页面基础配置
   basicConfig: VisualScreenPageBasicConfig
   // 全局变量

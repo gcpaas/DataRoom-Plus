@@ -92,5 +92,11 @@ export const pageApi = {
   getPageConfig(code: string, pageStatus: string) {
     return request.get<PageStageEntity>(`/dataRoom/page/getPageConfig/${code}/${pageStatus}`)
   },
-
+  /**
+   * 更新页面配置
+   * @param data
+   */
+  updatePageConfig(data: PageStageEntity) {
+    return request.post<boolean>('/dataRoom/page/updatePageConfig', data)
+  },
 }
