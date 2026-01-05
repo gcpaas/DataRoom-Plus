@@ -59,6 +59,7 @@ service.interceptors.response.use(
   },
   (error) => {
     console.error('响应错误:', error)
+    ElMessage.error('请确定服务是否能够正常连接')
     return Promise.reject(error)
   },
 )

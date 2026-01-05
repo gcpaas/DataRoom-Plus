@@ -35,7 +35,7 @@ const loading = ref(false)
 const getGreeting = () => {
   const hour = new Date().getHours()
   let greeting = ''
-  
+
   if (hour >= 5 && hour < 9) {
     greeting = '早上好'
   } else if (hour >= 9 && hour < 12) {
@@ -49,7 +49,7 @@ const getGreeting = () => {
   } else {
     greeting = '夜深了'
   }
-  
+
   return `${greeting},欢迎回来!`
 }
 
@@ -108,7 +108,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     <div class="login-header">
       <div class="logo-wrapper">
         <img :src="logo" alt="Logo" class="logo"/>
-        <span class="title">DataRoom</span>
+        <span class="title">DataRoom设计器</span>
       </div>
     </div>
 

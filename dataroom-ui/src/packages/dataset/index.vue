@@ -194,6 +194,7 @@ const handleAddFolder = (node?: DatasetTreeNode) => {
  * 新增数据集
  */
 const handleAddDataset = (datasetType: 'json' | 'http' | 'relational', node?: DatasetTreeNode) => {
+  // @ts-expect-error ignore
   dialogTitle.value = `新增${datasetTypeMap[datasetType].name}数据集`
   currentDataset.value = {
     name: '',
