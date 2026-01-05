@@ -15,12 +15,6 @@ import lombok.Data;
 })
 public abstract class BasePageConfig {
     /**
-     * 页面类型
-     */
-    @Schema(description = "页面类型", requiredMode = Schema.RequiredMode.REQUIRED)
-    private PageType pageType;
-
-    /**
      * 初始化默认配置
      */
     public abstract void init();

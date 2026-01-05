@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "中转态页面")
-@TableName("dr_page_stage")
+@TableName(value = "dr_page_stage", autoResultMap = true)
 public class PageStageEntity extends BaseEntity {
     /**
      * 页面编码
