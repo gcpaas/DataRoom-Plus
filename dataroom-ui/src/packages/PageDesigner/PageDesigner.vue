@@ -62,19 +62,19 @@ const leftToolBarList: Array<LeftToolBar> = reactive([
     componentName: 'ComponentLayer',
   },
   {
-    name: '组件库',
+    name: '组件',
     desc: '组件库',
     component: shallowRef<Component>(ComponentLib),
     componentName: 'ComponentLib',
   },
   {
-    name: '素材库',
+    name: '素材',
     desc: '素材库',
     component: shallowRef<Component>(ResourceLib),
     componentName: 'ResourceLib',
   },
   {
-    name: '全局变量',
+    name: '变量',
     desc: '全局变量',
     component: shallowRef<Component>(GlobalVariable),
     componentName: 'GlobalVariable',
