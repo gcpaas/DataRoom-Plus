@@ -61,7 +61,7 @@ const onClose = () => {
     <div class="component-card">
       <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.type)">
         <div class="image">
-          <el-image :src="plugin.thumbnail" lazy />
+          <el-image :src="plugin.thumbnail" lazy fit="contain" />
         </div>
         <div class="desc">{{ plugin.desc }}</div>
       </div>
@@ -71,39 +71,42 @@ const onClose = () => {
 
 <style scoped lang="scss">
 .component-lib-wrapper {
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
   & .search {
-    width: 90%;
-    margin: 0 auto 16px auto;
+    width: 100%;
+    margin-bottom: 16px;
   }
 
   & .component-card {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 240px);
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
-    margin: 16px 0;
 
     & .card {
-      background-color: var(--dr-bg2);
-      height: 200px;
+      background-color: white;
       border: 1px solid var(--dr-border);
+      overflow: hidden;
 
       &:hover {
-        box-shadow: 0 0 8px var(--dr-border);
         cursor: pointer;
-        color: var(--dr-primary);
+        border: 1px solid var(--dr-primary);
       }
 
       & .image {
         width: 100%;
-        height: 154px;
-        margin: 0 auto;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 8px;
+        box-sizing: border-box;
 
         & .el-image {
-          width: 95%;
-          height: 95%;
-          object-fit: contain;
+          width: 100%;
+          height: 100%;
         }
       }
 
@@ -112,6 +115,8 @@ const onClose = () => {
         background-color: white;
         height: 30px;
         line-height: 30px;
+        font-size: 12px;
+        color: var(--dr-text1);
       }
     }
   }
