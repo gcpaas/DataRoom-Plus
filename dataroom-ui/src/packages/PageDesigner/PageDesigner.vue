@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/components/AutoInstall.ts'
-import {type CSSProperties, nextTick, reactive} from 'vue'
+import {type CSSProperties, nextTick, onMounted, reactive} from 'vue'
 import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import type {ChartConfigInterface} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
-import type {CanvasInstInterface, LeftToolBarInterface} from '@/packages/_common/_type.ts'
+import type {CanvasInstInterface, LeftToolBarInterface, PageConfigInterface} from '@/packages/_common/_type.ts'
 import {useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
+import {pageApi} from "@/packages/page/api.ts";
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
 const activeChart = ref<ChartConfigInterface<unknown>>()
 const chartList = ref<ChartConfigInterface<unknown>[]>([])
 const componentLibRef = ref(null)
+const pageConfig = ref<PageConfigInterface>()
 const layout = [
   {x: 0, y: 0, w: 2, h: 2, i: '0'},
   {x: 2, y: 0, w: 2, h: 4, i: '1'},
@@ -290,6 +292,16 @@ const onSave = () => {
     type: 'success',
   })
 }
+
+
+onMounted(() => {
+  // 获取路由中code 参数
+  const code: string = router.currentRoute.value.query.code as string
+  // 根据编码获取页面详情
+  pageApi.detail(code).then((res) => {
+
+  })
+})
 </script>
 
 <template>

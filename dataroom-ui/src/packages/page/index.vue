@@ -123,6 +123,7 @@ const handleDesign = (item: PageEntity) => {
     })
     return
   } else if (item.pageType === PageType.PAGE) {
+    console.log(item)
     router.push({
       path: '/dataRoom/pageDesigner',
       query: {code: item.code}

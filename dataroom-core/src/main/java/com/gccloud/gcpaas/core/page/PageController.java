@@ -20,6 +20,7 @@ import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
 import com.gccloud.gcpaas.core.page.service.PageService;
 import com.gccloud.gcpaas.core.page.service.PageStageService;
+import com.gccloud.gcpaas.core.util.CodeWorker;
 import com.github.xiaoymin.knife4j.annotations.ApiSort;
 import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
@@ -109,6 +110,9 @@ public class PageController {
     @Operation(summary = "新增", description = "新增页面")
     public Resp<String> insert(@RequestBody PageEntity pageEntity) {
         log.info("新增页面 {}", pageEntity);
+        if (StringUtils.isBlank(pageEntity.getCode())) {
+            pageEntity.setCode(CodeWorker.generateCode(null));
+        }
         pageEntity.setPageStatus(PageStatus.DESIGN);
         pageService.save(pageEntity);
         if (PageType.DIRECTORY != pageEntity.getPageType()) {
