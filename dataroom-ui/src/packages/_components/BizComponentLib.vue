@@ -1,4 +1,4 @@
-<!-- 组件库 -->
+<!-- 业务组件库、暂时不用 -->
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
 import type { CanvasInstInterface, ComponentLibTagInterface } from '@/packages/_common/_type.ts'
@@ -54,26 +54,59 @@ const onClose = () => {
 }
 </script>
 <template>
-  <div class="component-lib-wrapper">
-    <div class="search">
-      <el-input v-model="searchName" :suffix-icon="Search" placeholder="搜索"></el-input>
-    </div>
-    <div class="component-card">
-      <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.type)">
-        <div class="image">
-          <el-image :src="plugin.thumbnail" lazy />
+  <el-dialog v-model="componentLibVisible" title="组件库" width="60%">
+    <div class="component-lib-wrapper">
+      <div class="search">
+        <el-input v-model="searchName" :suffix-icon="Search" size="large" placeholder="搜索"></el-input>
+      </div>
+      <div class="tag-wrapper">
+        <span :class="{ tag: true, active: selectedTag.includes(item.tag) }" v-for="item in componentLibTagList" :key="item.tag" @click="onSelected(item)">{{ item.name }}</span>
+      </div>
+      <div class="component-card">
+        <div class="card" v-for="plugin in filterPluginList" :key="plugin.name" @click="addChart(plugin.type)">
+          <div class="image">
+            <el-image :src="plugin.thumbnail" lazy />
+          </div>
+          <div class="desc">{{ plugin.desc }}</div>
         </div>
-        <div class="desc">{{ plugin.desc }}</div>
       </div>
     </div>
-  </div>
+    <template #footer>
+      <el-button @click="onClose">取消</el-button>
+      <el-button type="primary" @click="onClose">确定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped lang="scss">
 .component-lib-wrapper {
   & .search {
-    width: 90%;
+    width: 50%;
     margin: 0 auto 16px auto;
+  }
+
+  & .tag-wrapper {
+    text-align: center;
+
+    & .tag {
+      margin: 0 8px;
+      padding: 4px 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      height: 20px;
+      line-height: 20px;
+      display: inline-block;
+
+      &:hover {
+        color: var(--dr-primary);
+        background-color: var(--dr-primary1);
+      }
+    }
+
+    & .active {
+      color: var(--dr-primary);
+      background-color: var(--dr-primary1);
+    }
   }
 
   & .component-card {

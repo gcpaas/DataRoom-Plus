@@ -78,7 +78,7 @@ const leftToolBarList: Array<LeftToolBarInterface> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBarInterface>(leftToolBarList[0])
+const activeLeftToolBar = ref<LeftToolBarInterface>(leftToolBarList[1])
 /**
  * 激活组件
  * @param id
@@ -175,14 +175,7 @@ const contextMenuVisible = ref(false)
  * @param leftToolBar
  */
 const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
-  if (leftToolBar.componentName == 'ComponentLib') {
-    // 组件库弹框
-    componentLibVisible.value = false
-    nextTick(() => {
-      componentLibVisible.value = true
-    })
-    return
-  } else if (leftToolBar.componentName == 'ResourceLib') {
+ if (leftToolBar.componentName == 'ResourceLib') {
     resourceLibVisible.value = false
     nextTick(() => {
       resourceLibVisible.value = true
@@ -301,8 +294,12 @@ const onSave = () => {
 <template>
   <div class="dr-page-designer">
     <div class="header" ref="titleRef">
-      <div class="title">标题</div>
+      <div class="header-left">
+        <img src="@/assets/logo-small.png" alt="logo" class="logo" />
+        <div class="title">标题</div>
+      </div>
       <div style="margin-right: 8px">
+        <el-button @click="switchPageControlPanel" size="small">历史</el-button>
         <el-button @click="switchPageControlPanel" size="small">设置</el-button>
         <el-button @click="onPreview" size="small">预览</el-button>
         <el-button @click="onSave" size="small" type="primary">保存</el-button>
@@ -399,11 +396,21 @@ const onSave = () => {
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--dr-border);
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .03);
 
-    & .title {
+    & .header-left {
+      display: flex;
+      align-items: center;
       margin-left: 8px;
-      font-size: 14px;
+
+      & .logo {
+        height: 30px;
+        object-fit: contain;
+      }
+
+      & .title {
+        margin-left: 16px;
+        font-size: 14px;
+      }
     }
   }
 
@@ -453,7 +460,7 @@ const onSave = () => {
       border-right: 1px solid var(--dr-border);
 
       & .panel-header {
-        background-color: #fcfcfc;
+        background-color: var(--dr-bg2);
         box-sizing: border-box;
         border-bottom: 1px solid var(--dr-border);
         font-size: 12px;
