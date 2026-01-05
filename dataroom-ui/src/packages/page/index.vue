@@ -287,9 +287,10 @@ const getStatusType = (status?: string) => {
  */
 const handleBreadcrumbClick = (index: number) => {
   const item = breadcrumbs.value[index]
+  if (!item) return
   currentParentCode.value = item.code
   breadcrumbs.value = breadcrumbs.value.slice(0, index + 1)
-  getPageList(item.code)
+  getPageList()
 }
 
 /**

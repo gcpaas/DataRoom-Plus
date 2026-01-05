@@ -161,21 +161,24 @@ const handleSave = async () => {
  * 获取数据源类型名称
  */
 const getTypeName = (type: string) => {
-  return dataSourceTypeMap[type]?.name || type
+  const key = type as keyof typeof dataSourceTypeMap
+  return dataSourceTypeMap[key]?.name || type
 }
 
 /**
  * 获取数据源类型图标
  */
 const getTypeIcon = (type: string) => {
-  return dataSourceTypeMap[type]?.icon || '📦'
+  const key = type as keyof typeof dataSourceTypeMap
+  return dataSourceTypeMap[key]?.icon || '📦'
 }
 
 /**
  * 获取数据源类型图片
  */
 const getTypeImage = (type: string) => {
-  return dataSourceTypeMap[type]?.image || ''
+  const key = type as keyof typeof dataSourceTypeMap
+  return dataSourceTypeMap[key]?.image || ''
 }
 
 // 页面加载时获取列表
@@ -271,7 +274,7 @@ onMounted(() => {
     <!-- 编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" :close-on-click-modal="false">
       <component
-        :is="dataSourceTypeMap[currentDataSource.dataSourceType]?.component"
+        :is="dataSourceTypeMap[currentDataSource.dataSourceType as keyof typeof dataSourceTypeMap].component"
         v-model="currentDataSource"
         ref="editorRef"
       />
