@@ -276,6 +276,8 @@ public class PageController {
         PageStageVo stageVo = new PageStageVo();
         BeanUtils.copyProperties(stageEntity, stageVo);
         stageVo.setName(pageEntity.getName());
+        // 做一些兼容性操作
+        stageVo.compat();
         return Resp.success(stageVo);
     }
 

@@ -57,14 +57,16 @@ interface PageStageEntity {
  * 页面基础配置
  */
 interface PageBasicConfig {
-  // 背景填充方式、可选值 image、color
-  bgFill: 'image' | 'color'
-  // 背景色
-  bgColor: string
-  // 背景图url
-  bgUrl: string
-  // 背景图填充方式
-  bgRepeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
+  background: {
+    // 背景填充方式
+    fill: string | 'image' | 'color'
+    // 背景色
+    color: string
+    // 背景图url
+    url: string
+    // 背景图填充方式
+    repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
+  }
 }
 
 /**
@@ -99,14 +101,16 @@ interface VisualScreenPageConfig {
  * 大屏页面基础配置
  */
 interface VisualScreenPageBasicConfig {
-  // 背景填充方式、可选值 image、color
-  bgFill: 'image' | 'color'
-  // 背景色
-  bgColor: string
-  // 背景图url
-  bgUrl: string
-  // 背景图填充方式
-  bgRepeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
+  background: {
+    // 背景填充方式
+    fill: string | 'image' | 'color'
+    // 背景色
+    color: string
+    // 背景图url
+    url: string
+    // 背景图填充方式
+    repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
+  }
 }
 
 /**
@@ -129,4 +133,4 @@ interface GlobalVariable {
   script?: string
 }
 
-export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageBasicConfig,PageStageEntity}
+export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageBasicConfig, PageStageEntity}

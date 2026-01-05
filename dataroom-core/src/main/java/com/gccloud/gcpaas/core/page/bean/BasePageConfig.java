@@ -32,4 +32,9 @@ public abstract class BasePageConfig {
      * 初始化默认配置
      */
     public abstract void init();
+
+    /**
+     * 兼容操作
+     */
+    public abstract void compat();
 }

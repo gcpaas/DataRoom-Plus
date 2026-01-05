@@ -9,4 +9,9 @@ public class VisualScreenPageConfig extends BasePageConfig {
     public void init() {
 
     }
+
+    @Override
+    public void compat() {
+
+    }
 }

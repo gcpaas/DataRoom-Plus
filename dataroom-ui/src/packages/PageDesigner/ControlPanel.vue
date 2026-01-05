@@ -108,19 +108,19 @@ const getResourceUrl = (url?: string) => {
 
               <!-- 背景填充方式 -->
               <el-form-item label="背景填充">
-                <el-radio-group v-model="basicConfig.bgFill">
+                <el-radio-group v-model="basicConfig.background.fill">
                   <el-radio value="color">颜色</el-radio>
                   <el-radio value="image">图片</el-radio>
                 </el-radio-group>
               </el-form-item>
 
               <!-- 背景颜色 -->
-              <el-form-item label="背景颜色" v-if="basicConfig.bgFill === 'color'">
-                <el-color-picker v-model="basicConfig.bgColor" show-alpha></el-color-picker>
+              <el-form-item label="背景颜色" v-if="basicConfig.background.fill === 'color'">
+                <el-color-picker v-model="basicConfig.background.color" show-alpha></el-color-picker>
               </el-form-item>
 
               <!-- 背景图配置 -->
-              <template v-if="basicConfig.bgFill === 'image'">
+              <template v-if="basicConfig.background.fill === 'image'">
                 <el-form-item label="背景图">
                   <div class="bg-upload-section">
                     <el-upload
@@ -134,8 +134,8 @@ const getResourceUrl = (url?: string) => {
                     >
                       <div class="bg-preview-box">
                         <el-image
-                          v-if="basicConfig.bgUrl"
-                          :src="getResourceUrl(basicConfig.bgUrl)"
+                          v-if="basicConfig.background.url"
+                          :src="getResourceUrl(basicConfig.background.url)"
                           fit="cover"
                           class="bg-image"
                           lazy

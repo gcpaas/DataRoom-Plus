@@ -7,6 +7,11 @@ public class DirectoryPageConfig extends BasePageConfig{
 
     @Override
     public void init() {
+        // 无需操作
+    }
 
+    @Override
+    public void compat() {
+        // 无需操作
     }
 }

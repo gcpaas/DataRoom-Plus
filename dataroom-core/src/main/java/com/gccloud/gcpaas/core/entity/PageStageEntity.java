@@ -42,4 +42,11 @@ public class PageStageEntity extends BaseEntity {
     @Schema(description = "页面配置")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private BasePageConfig pageConfig;
+
+    /**
+     * 做一些兼容
+     */
+    public void compat() {
+        pageConfig.compat();
+    }
 }
