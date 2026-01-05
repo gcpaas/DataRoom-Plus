@@ -5,7 +5,7 @@ import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import type {ChartConfig} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
-import type {CanvasInst, LeftToolBar, PageConfigInterface} from '@/packages/_common/_type.ts'
+import type {CanvasInst, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
@@ -16,7 +16,7 @@ const router = useRouter()
 const activeChart = ref<ChartConfig<unknown>>()
 const chartList = ref<ChartConfig<unknown>[]>([])
 const componentLibRef = ref(null)
-const pageConfig = ref<PageConfigInterface>()
+const pageConfig = ref<PageBasicConfig>()
 const layout = [
   {x: 0, y: 0, w: 2, h: 2, i: '0'},
   {x: 2, y: 0, w: 2, h: 4, i: '1'},
@@ -293,13 +293,15 @@ const onSave = () => {
   })
 }
 
+const pageStageEntity = ref<PageStageEntity>()
 
 onMounted(() => {
   // 获取路由中code 参数
   const code: string = router.currentRoute.value.query.code as string
   // 根据编码获取页面详情
-  pageApi.detail(code).then((res) => {
-
+  pageApi.getPageConfig(code, "design").then((res) => {
+    console.log('获取页面详情', res)
+    pageStageEntity.value = res
   })
 })
 </script>
@@ -309,7 +311,7 @@ onMounted(() => {
     <div class="header" ref="titleRef">
       <div class="header-left">
         <img src="@/assets/logo-small.png" alt="logo" class="logo" @click="router.push('/dataRoom/page/index')"/>
-        <div class="title">标题</div>
+        <div class="title">{{pageStageEntity.name}}</div>
       </div>
       <div style="margin-right: 8px">
         <el-button @click="switchPageControlPanel" size="small">历史</el-button>

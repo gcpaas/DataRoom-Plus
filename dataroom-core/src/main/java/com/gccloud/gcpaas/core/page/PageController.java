@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gccloud.gcpaas.core.bean.PageVo;
 import com.gccloud.gcpaas.core.bean.Resp;
 import com.gccloud.gcpaas.core.constant.DataRoomRole;
@@ -15,6 +14,7 @@ import com.gccloud.gcpaas.core.entity.PageStageEntity;
 import com.gccloud.gcpaas.core.exception.DataRoomException;
 import com.gccloud.gcpaas.core.mapper.PageMapper;
 import com.gccloud.gcpaas.core.page.bean.BasePageConfig;
+import com.gccloud.gcpaas.core.page.bean.PageStageVo;
 import com.gccloud.gcpaas.core.page.dto.PageOfflineDto;
 import com.gccloud.gcpaas.core.page.dto.PagePublishDto;
 import com.gccloud.gcpaas.core.page.dto.PageStageSearchDto;
@@ -57,8 +57,6 @@ public class PageController {
     private PageMapper pageMapper;
     @Resource
     private PageStageService pageStageService;
-    @Resource
-    private ObjectMapper objectMapper;
 
     /**
      * 列表查询
@@ -261,17 +259,23 @@ public class PageController {
      */
     @GetMapping("/getPageConfig/{pageCode}/{pageStatus}")
     @RequiresRoles(value = DataRoomRole.SHARER)
-    @Operation(summary = "更新页面配置", description = "更新页面配置")
-    public Resp<BasePageConfig> getPageConfig(@PathVariable("pageCode") String pageCode, @PathVariable("pageStatus") String pageStatusStr) {
-        PageStatus pageStatus = PageStatus.valueOf(pageStatusStr);
+    @Operation(summary = "获取页面配置", description = "获取页面配置,仅支持获取设计态、预览态、发布态")
+    public Resp<PageStageVo> getPageConfig(@PathVariable("pageCode") String pageCode, @PathVariable("pageStatus") String pageStatusStr) {
+        PageStatus pageStatus = PageStatus.valueOf(pageStatusStr.toUpperCase());
         LambdaQueryWrapper<PageStageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PageStageEntity::getPageCode, pageCode);
         queryWrapper.eq(PageStageEntity::getPageStatus, pageStatus);
         PageStageEntity stageEntity = pageStageService.getOne(queryWrapper);
         if (stageEntity == null) {
-            throw new DataRoomException("该页面不存在" + pageStatusStr + "状态数据");
+            log.error("未找到 pageCode:{} pageStatus:{} 的页面数据", pageCode, pageStatus);
+            throw new DataRoomException("页面对应的数据不存在");
         }
-        return Resp.success(stageEntity.getPageConfig());
+        // 根据编码获取页面数据
+        PageEntity pageEntity = pageMapper.getByCode(pageCode);
+        PageStageVo stageVo = new PageStageVo();
+        BeanUtils.copyProperties(stageEntity, stageVo);
+        stageVo.setName(pageEntity.getName());
+        return Resp.success(stageVo);
     }
 
     /**
@@ -329,7 +333,7 @@ public class PageController {
     @Operation(summary = "历史清空", description = "根据页面编码清空对应历史")
     @Parameters({@Parameter(name = "code", description = "页面编码", in = ParameterIn.PATH)})
     public Resp<Void> stageClear(@PathVariable("code") String code, @PathVariable("state") String state) {
-        PageStatus pageStatus = PageStatus.valueOf(state);
+        PageStatus pageStatus = PageStatus.valueOf(state.toUpperCase());
         if (!(pageStatus == PageStatus.HISTORY || pageStatus == PageStatus.SNAPSHOT)) {
             throw new DataRoomException("状态错误");
         }

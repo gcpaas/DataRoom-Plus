@@ -37,34 +37,64 @@ interface LeftToolBar {
  * 页面实体定义
  */
 interface PageStageEntity {
-  // 页面ID
+  // ID
   id: string
   // 页面名称
   name: string
   // 页面编码
-  code: string
-  // 目录编码
-  parentCode: string
+  pageCode: string
+  // 备注描述
+  remark: string
   // 页面类型
   pageType: string | 'directory' | 'visualScreen' | 'page'
   // 页面状态
   pageStatus: string | 'design' | 'published' | 'history' | 'preview' | 'snapshot'
-  // 封面图片地址
-  thumbnail: string
-  // 备注描述
-  remark: string
   // 基础配置
-  pageConfig: PageConfigInterface
-  // 全局变量
-  globalVariableList: GlobalVariable[]
-  // 图表组件配置
-  chartList: Array<ChartConfig<unknown>>
+  pageConfig: PageConfig | VisualScreenPageConfig
 }
 
 /**
  * 页面基础配置
  */
-interface PageConfigInterface {
+interface PageBasicConfig {
+  // 背景填充方式、可选值 image、color
+  bgFill: 'image' | 'color'
+  // 背景色
+  bgColor: string
+  // 背景图url
+  bgUrl: string
+  // 背景图填充方式
+  bgRepeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
+}
+
+/**
+ * 页面配置
+ */
+interface PageConfig {
+  // 页面基础配置
+  basicConfig: PageBasicConfig
+  // 全局变量
+  globalVariableList: GlobalVariable[]
+  // 图表组件配置
+  chartList: ChartConfig<unknown>[]
+}
+
+/**
+ * 大屏配置
+ */
+interface VisualScreenPageConfig {
+  //页面基础配置
+  basicConfig: VisualScreenPageBasicConfig
+  // 全局变量
+  globalVariableList: GlobalVariable[]
+  // 图表组件配置
+  chartList: ChartConfig<unknown>[]
+}
+
+/**
+ * 大屏页面基础配置
+ */
+interface VisualScreenPageBasicConfig {
   // 背景填充方式、可选值 image、color
   bgFill: 'image' | 'color'
   // 背景色
@@ -95,4 +125,4 @@ interface GlobalVariable {
   script?: string
 }
 
-export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageConfigInterface}
+export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageBasicConfig,PageStageEntity}

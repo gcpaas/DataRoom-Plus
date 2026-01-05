@@ -1,7 +1,7 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type {PageConfigInterface} from "@/packages/_common/_type.ts";
+import type {PageBasicConfig} from "@/packages/_common/_type.ts";
 import { resourceApi } from '@/packages/resource/api'
 import { ElMessage } from 'element-plus'
 import { getCookie, getCookieName } from '@/packages/_common/_cookie'
@@ -11,7 +11,7 @@ import { Picture } from '@element-plus/icons-vue'
 const activeTab = ref('config')
 
 // 页面配置
-const pageConfig = reactive<PageConfigInterface>({
+const pageConfig = reactive<PageBasicConfig>({
   bgFill: 'color',
   bgColor: '#ffffff',
   bgUrl: '',

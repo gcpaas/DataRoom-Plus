@@ -1,4 +1,5 @@
 import request from '@/packages/_common/_request'
+import type {PageStageEntity} from "@/packages/_common/_type.ts";
 
 /**
  * 页面实体接口
@@ -84,4 +85,12 @@ export const pageApi = {
   delete(code: string) {
     return request.post<void>(`/dataRoom/page/delete/${code}`)
   },
+
+  /**
+   * 获取页面详情
+   */
+  getPageConfig(code: string, pageStatus: string) {
+    return request.get<PageStageEntity>(`/dataRoom/page/getPageConfig/${code}/${pageStatus}`)
+  },
+
 }
