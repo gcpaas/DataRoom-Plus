@@ -15,16 +15,13 @@
 功能未开发完成, 请勿用于生产环境
 
 ### 登录页面
-<br>
-<img alt="logo" src="doc/image/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png" height="200">
+![登录页面.png](doc/image/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
 
 ### 页面管理页
-<br>
-<img alt="logo" src="doc/image/%E9%A1%B5%E9%9D%A2%E7%AE%A1%E7%90%86%E9%A1%B5.png" height="200">
+![页面管理页.png](doc/image/%E9%A1%B5%E9%9D%A2%E7%AE%A1%E7%90%86%E9%A1%B5.png)
 
 ### 仪表盘设计页
-<br>
-<img alt="logo" src="doc/image/%E9%A1%B5%E9%9D%A2%E8%AE%BE%E8%AE%A1%E9%A1%B5.png" height="200">
+![页面设计页.png](doc/image/%E9%A1%B5%E9%9D%A2%E8%AE%BE%E8%AE%A1%E9%A1%B5.png)
 
 ## 快速开始
 https://www.yuque.com/gc-starter/dataroom-plus/start
