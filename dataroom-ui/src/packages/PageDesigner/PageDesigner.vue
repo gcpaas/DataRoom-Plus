@@ -19,7 +19,7 @@ const componentLibRef = ref(null)
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
 const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
-const globalVariable = ref<GlobalVariable>({} as GlobalVariable)
+const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
 
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
