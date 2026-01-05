@@ -101,4 +101,4 @@ interface GlobalVariableInterface {
   script: string
 }
 
-export type { CanvasInstInterface, LeftToolBarInterface, ComponentLibTagInterface, ResourceLibInterface, ResourceLibTagInterface, GlobalVariableInterface }
+export type { CanvasInstInterface, LeftToolBarInterface, ComponentLibTagInterface, ResourceLibInterface, ResourceLibTagInterface, GlobalVariableInterface,PageConfigInterface }
