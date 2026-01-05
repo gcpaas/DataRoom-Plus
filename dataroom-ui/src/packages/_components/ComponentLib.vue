@@ -83,7 +83,7 @@ const onClose = () => {
   & .component-card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 
     & .card {
       background-color: white;

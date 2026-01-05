@@ -415,12 +415,12 @@ const onSave = () => {
   }
 
   & .main {
-    background-color: aliceblue;
+    background-color: var(--dr-bg2);
     display: grid;
     grid-template-columns: var(--dr-designer-left-tool-bar-width) var(--dr-designer-left-tool-panel-width) auto var(--dr-designer-right-panel-width);
 
     & .left-tool-bar {
-      background-color: #fcfcfc;
+      background-color: #fff;
       border-right: 1px solid var(--dr-border);
 
       & .bar {
@@ -431,7 +431,7 @@ const onSave = () => {
 
         &:hover {
           cursor: pointer;
-          background-color: #efefef;
+          background-color: var(--dr-bg2);
         }
       }
 
@@ -492,7 +492,7 @@ const onSave = () => {
 
     & .canvas {
       display: grid;
-      background-color: #f5f7fa;
+      background-color: var(--dr-bg2);
       grid-template-rows: auto;
 
       & .canvas-main {
