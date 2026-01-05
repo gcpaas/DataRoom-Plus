@@ -32,7 +32,7 @@ const getInstance = (): DrImageConfig => {
     h: 100,
     x: Math.random() * 100 + 100,
     y: 100,
-    z: 999,
+    z: 100,
     rotateX: 0,
     rotateY: 0,
     rotateZ: 0,

@@ -25,6 +25,10 @@ const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
   chartInst.i = uuidv4()
   chartInst.id = chartInst.i
+  chartInst.x = 0
+  chartInst.y = 0
+  chartInst.w = 5
+  chartInst.h = 5
   chartList.value.push(chartInst)
 }
 const leftToolPanelShow = ref(true)

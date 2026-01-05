@@ -10,7 +10,7 @@ type PanelComponentMap = {
 }
 
 type ComponentInstanceMap = {
-  [key: string]: (pageType: string) => ChartConfig<unknown>
+  [key: string]: () => ChartConfig<unknown>
 }
 
 type BehaviorMap = {
@@ -83,10 +83,10 @@ const getComponent = (name: string) => {
   return components[name]
 }
 
-const getComponentInstance = (name: string, pageType: string = 'page'): ChartConfig<unknown> => {
-  const instanceFn: (pageType: string) => ChartConfig<unknown> = componentInstances[name]!
+const getComponentInstance = (name: string): ChartConfig<unknown> => {
+  const instanceFn = componentInstances[name]!
   if (instanceFn) {
-    return instanceFn(pageType)
+    return instanceFn()
   }
   console.error(`未找到组件 ${name} 对应的实例化方法`)
   return {} as ChartConfig<unknown>
