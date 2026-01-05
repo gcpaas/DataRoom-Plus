@@ -18,6 +18,7 @@ const activeChart = ref<ChartConfig<unknown>>()
 const componentLibRef = ref(null)
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
+const basicConfig = ref<PageBasicConfig>({})
 
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
@@ -278,7 +279,8 @@ const onSave = () => {
     ...pageStageEntity.value,
     pageConfig: {
       ...pageStageEntity.value.pageConfig,
-      chartList: chartList.value
+      chartList: chartList.value,
+      basicConfig: basicConfig.value
     }
   }).then((res) => {
     ElMessage({
@@ -294,7 +296,9 @@ onMounted(() => {
   // 根据编码获取页面详情
   pageApi.getPageConfig(code, "design").then((res) => {
     pageStageEntity.value = res
+    console.log(res)
     chartList.value = res.pageConfig?.chartList || []
+    basicConfig.value = res.pageConfig?.basicConfig || {}
   })
 })
 </script>
@@ -369,7 +373,7 @@ onMounted(() => {
       </div>
       <div class="right-panel" :style="rightControlPanelStyle">
         <el-scrollbar>
-          <ControlPanel v-if="rightControlPanelSetting"></ControlPanel>
+          <ControlPanel v-if="rightControlPanelSetting" :basicConfig="basicConfig"></ControlPanel>
           <ControlPanelWrapper v-else :chart="activeChart!">
             <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
           </ControlPanelWrapper>

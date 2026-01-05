@@ -1,9 +1,10 @@
 package com.gccloud.gcpaas.core.page.bean;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.gccloud.gcpaas.core.constant.PageType;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
@@ -14,6 +15,19 @@ import lombok.Data;
         @JsonSubTypes.Type(value = PageConfig.class, name = PageType.PAGE_TYPE)
 })
 public abstract class BasePageConfig {
+    /**
+     * 页面基础配置
+     */
+    private JSONObject basicConfig = new JSONObject();
+    /**
+     * 全局变量
+     */
+    private JSONArray globalVariableList = new JSONArray();
+    /**
+     * 图表列表
+     */
+    private JSONArray chartList = new JSONArray();
+
     /**
      * 初始化默认配置
      */

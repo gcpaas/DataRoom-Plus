@@ -1,22 +1,19 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import {reactive, ref} from 'vue'
 import type {PageBasicConfig} from "@/packages/_common/_type.ts";
 import { resourceApi } from '@/packages/resource/api'
 import { ElMessage } from 'element-plus'
 import { getCookie, getCookieName } from '@/packages/_common/_cookie'
 import { Picture } from '@element-plus/icons-vue'
 
+// Props
+defineProps<{
+  basicConfig: PageBasicConfig
+}>()
+
 // 默认激活配置tab
 const activeTab = ref('config')
-
-// 页面配置
-const pageConfig = reactive<PageBasicConfig>({
-  bgFill: 'color',
-  bgColor: '#ffffff',
-  bgUrl: '',
-  bgRepeat: 'no-repeat'
-})
 
 // 缩略图
 const thumbnail = ref('')
@@ -43,9 +40,9 @@ const handleThumbnailUploadSuccess = (response: any) => {
 }
 
 // 背景图上传成功
-const handleBgUploadSuccess = (response: any) => {
+const handleBgUploadSuccess = (response: any, props: any) => {
   if (response && response.data) {
-    pageConfig.bgUrl = response.data.url || ''
+    props.basicConfig.bgUrl = response.data.url || ''
     ElMessage.success('背景图上传成功')
   }
 }
@@ -111,19 +108,19 @@ const getResourceUrl = (url?: string) => {
 
               <!-- 背景填充方式 -->
               <el-form-item label="背景填充">
-                <el-radio-group v-model="pageConfig.bgFill">
+                <el-radio-group v-model="basicConfig.bgFill">
                   <el-radio value="color">颜色</el-radio>
                   <el-radio value="image">图片</el-radio>
                 </el-radio-group>
               </el-form-item>
 
               <!-- 背景颜色 -->
-              <el-form-item label="背景颜色" v-if="pageConfig.bgFill === 'color'">
-                <el-color-picker v-model="pageConfig.bgColor" show-alpha></el-color-picker>
+              <el-form-item label="背景颜色" v-if="basicConfig.bgFill === 'color'">
+                <el-color-picker v-model="basicConfig.bgColor" show-alpha></el-color-picker>
               </el-form-item>
 
               <!-- 背景图配置 -->
-              <template v-if="pageConfig.bgFill === 'image'">
+              <template v-if="basicConfig.bgFill === 'image'">
                 <el-form-item label="背景图">
                   <div class="bg-upload-section">
                     <el-upload
@@ -137,8 +134,8 @@ const getResourceUrl = (url?: string) => {
                     >
                       <div class="bg-preview-box">
                         <el-image
-                          v-if="pageConfig.bgUrl"
-                          :src="getResourceUrl(pageConfig.bgUrl)"
+                          v-if="basicConfig.bgUrl"
+                          :src="getResourceUrl(basicConfig.bgUrl)"
                           fit="cover"
                           class="bg-image"
                           lazy
@@ -164,7 +161,7 @@ const getResourceUrl = (url?: string) => {
                 </el-form-item>
 
                 <el-form-item label="填充方式">
-                  <el-select v-model="pageConfig.bgRepeat" placeholder="请选择填充方式">
+                  <el-select v-model="basicConfig.bgRepeat" placeholder="请选择填充方式">
                     <el-option label="不重复" value="no-repeat"></el-option>
                     <el-option label="重复" value="repeat"></el-option>
                     <el-option label="水平重复" value="repeat-x"></el-option>
