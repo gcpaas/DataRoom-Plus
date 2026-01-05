@@ -85,6 +85,10 @@ export interface ChartConfigInterface<T> {
    */
   rotateZ: number
   /**
+   * 数据集编码
+   */
+  dataset?: string
+  /**
    * 自定义配置
    */
   props: T

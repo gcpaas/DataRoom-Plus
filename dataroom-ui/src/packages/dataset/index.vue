@@ -15,6 +15,16 @@ import {
 import { datasetApi, type DatasetEntity, type DatasetTreeNode } from './api'
 import { dataSourceApi } from '../dataSource/api'
 
+// 定义 props
+const props = defineProps<{
+  selectable?: boolean // 是否为选择模式
+}>()
+
+// 定义 emits
+const emit = defineEmits<{
+  'update:selectedDataset': [dataset: DatasetEntity]
+}>()
+
 const loading = ref(false)
 const treeRef = ref()
 const treeData = ref<DatasetTreeNode[]>([])
@@ -142,6 +152,10 @@ const handleNodeClick = async (data: DatasetTreeNode, node: any) => {
     const detail = await datasetApi.detail(data.code!)
     selectedNode.value = detail
     activeTab.value = 'preview'
+    // 如果是选择模式，发送选中事件
+    if (props.selectable) {
+      emit('update:selectedDataset', detail)
+    }
     // 自动执行一次数据预览
     handleRefresh()
   } catch (error) {
