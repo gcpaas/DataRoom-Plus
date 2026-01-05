@@ -262,10 +262,17 @@ const computedContextMenuStyle = computed(() => {
  */
 const onPreview = () => {
   console.log('onPreview')
+  if (!pageStageEntity.value) {
+    ElMessage({
+      message: '页面信息未加载',
+      type: 'error',
+    })
+    return
+  }
   pageApi.updatePageConfig4Preview({
     ...pageStageEntity.value,
     pageConfig: {
-      ...pageStageEntity.value?.pageConfig,
+      ...pageStageEntity.value.pageConfig,
       chartList: chartList.value,
       basicConfig: basicConfig.value
     }
@@ -280,9 +287,8 @@ const onPreview = () => {
   // 跳转到 /dataRoom/pagePreviewer 路由
   const routeData = router.resolve({
     path: '/dataRoom/pagePreviewer',
-    query: {code: pageStageEntity.value?.pageCode},
+    query: {code: pageStageEntity.value.pageCode},
   })
-
 
 
   window.open(routeData.href, '_blank')

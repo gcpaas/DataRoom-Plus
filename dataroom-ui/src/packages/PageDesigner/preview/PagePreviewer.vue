@@ -3,53 +3,29 @@ import { getComponent, getComponentInstance } from '@DrPackage/components/AutoIn
 import { ref, provide, onMounted } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { ChartConfig } from '@DrPackage/components/type/define.ts'
+import {pageApi} from "@/packages/page/api.ts";
+import {useRouter} from "vue-router";
+import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
 
-let chartList = ref<ChartConfig<unknown>[]>([])
+const pageStageEntity = ref<PageStageEntity>()
+const chartList = ref<ChartConfig<unknown>[]>([])
+const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
+const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
+const router = useRouter()
 
-const chartIndex = ref(100)
-
-// 模拟加载
 onMounted(() => {
-  const chartListStr = localStorage.getItem('chartList')
-  if (chartListStr) {
-    const _chartList = JSON.parse(chartListStr)
-    chartList = ref<ChartConfig<unknown>[]>(_chartList)
-  } else {
-    const layout = [
-      { x: 0, y: 0, w: 2, h: 2, i: '0' },
-      { x: 2, y: 0, w: 2, h: 4, i: '1' },
-      { x: 4, y: 0, w: 2, h: 5, i: '2' },
-    ]
-    layout.forEach((item) => {
-      const inst: ChartConfig<unknown> = getComponentInstance('DrText')
-      inst.id = item.i
-      inst.i = item.i
-      inst.x = item.x
-      inst.y = item.y
-      inst.w = item.w
-      inst.h = item.h
-      chartList.value.push(inst)
-    })
-  }
+  // 获取路由中code 参数
+  const code: string = router.currentRoute.value.query.code as string
+  // 根据编码获取页面详情
+  pageApi.getPageConfig(code, "preview").then((res) => {
+    pageStageEntity.value = res
+    console.log(res)
+    chartList.value = res.pageConfig?.chartList || []
+    basicConfig.value = res.pageConfig?.basicConfig || {}
+    globalVariable.value = res.pageConfig?.globalVariableList || []
+  })
 })
 
-const addChart = (type: string) => {
-  const chartInst: ChartConfig<unknown> = getComponentInstance(type)
-  chartInst.w = 3
-  chartInst.h = 3
-  chartInst.x = 0
-  chartInst.y = 0
-  chartInst.i = chartIndex.value++ + ''
-  chartInst.id = chartInst.i
-  console.log('新增组件', chartInst)
-  chartList.value.push(chartInst)
-}
-/**
- * 子组件注入使用
- */
-provide('canvasInst', {
-  addChart: addChart,
-})
 </script>
 
 <template>
