@@ -12,6 +12,17 @@ const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
 const globalVariableVisible = ref(true)
 const globalVariableList = ref<GlobalVariableInterface[]>([])
 const activeGlobalVariable = ref<GlobalVariableInterface>()
+for (let i = 0; i < 10; i++) {
+  globalVariableList.value.push({
+    id: uuidv4(),
+    from: 'static',
+    name: 'name' + uuidv4(),
+    urlName: '',
+    remark: '变量备注描述' + uuidv4(),
+    defaultValue: '默认值',
+    script: '',
+  })
+}
 // 默认激活第一个
 if (globalVariableList.value.length > 0) {
   activeGlobalVariable.value = globalVariableList.value[0]
