@@ -4,6 +4,17 @@ import {computed, ref, watch} from 'vue'
 import type {ChartConfigInterface} from '../components/type/define.ts'
 import {Search} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
+import {useRouter} from 'vue-router'
+
+const router = useRouter()
+
+// 打开数据集管理页面
+const openDatasetPage = () => {
+  const routeData = router.resolve({
+    path: '/dataRoom/dataset/index'
+  })
+  window.open(routeData.href, '_blank')
+}
 
 const {chart} = defineProps<{
   chart: ChartConfigInterface<unknown>
@@ -39,7 +50,10 @@ watch(() => chart.id, () => {
         <div class="tab-content">
           <el-form label-width="100px" label-position="left" size="small">
             <el-form-item label="数据集">
-              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
+                <el-button type="text" @click="openDatasetPage">新增</el-button>
+              </div>
             </el-form-item>
             <el-form-item v-for="field in datasetFields"  :label="field.desc">
               <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
