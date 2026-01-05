@@ -71,7 +71,7 @@ const onClose = () => {
 
 <style scoped lang="scss">
 .component-lib-wrapper {
-  padding: 16px;
+  padding: 8px 8px;
   box-sizing: border-box;
   overflow-x: hidden;
 
