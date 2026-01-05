@@ -3,15 +3,21 @@
 import {computed, ref, watch} from 'vue'
 import type {ChartConfigInterface} from '../components/type/define.ts'
 import {Search} from "@element-plus/icons-vue";
-import {getComponentBehaviors} from "@/packages/components/AutoInstall.ts";
+import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 
 const {chart} = defineProps<{
   chart: ChartConfigInterface<unknown>
 }>()
 const activeTab = ref('style')
 const chartConfig = computed(() => chart)
+
+const datasetFields = getComponentDatasetFields(chart.type);
+console.log('datasetFields',datasetFields)
+
 watch(() => chart.id, () => {
   const behaviors = getComponentBehaviors(chart.type)
+  let datasetFields = getComponentDatasetFields(chart.type);
+  console.log('datasetFields',datasetFields)
   console.log('behaviors', behaviors)
 })
 </script>
@@ -33,6 +39,9 @@ watch(() => chart.id, () => {
         <div class="tab-content">
           <el-form label-width="100px" label-position="left" size="small">
             <el-form-item label="数据集">
+              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
+            </el-form-item>
+            <el-form-item v-for="field in datasetFields"  :label="field.desc">
               <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Search"></el-input>
             </el-form-item>
           </el-form>

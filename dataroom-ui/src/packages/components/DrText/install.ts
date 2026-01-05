@@ -1,6 +1,6 @@
-import { defineAsyncComponent } from 'vue'
-import type { ChartConfigInterface, BehaviorInterface } from '../type/define'
-import { DrConst } from '@/packages/_common/_constant.ts'
+import {defineAsyncComponent} from 'vue'
+import type {ChartConfigInterface, BehaviorInterface, ChartDatasetFieldInterface} from '../type/define'
+import {DrConst} from '@/packages/_common/_constant.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -58,5 +58,15 @@ const behaviors: BehaviorInterface[] = [
     paramsList: [],
   },
 ]
+/**
+ * 定义维度、指标字段信息
+ */
+const datasetFields: ChartDatasetFieldInterface[] = [
+  {
+    name: 'xField',
+    desc: '文本值',
+    required: true
+  }
+]
 
-export { component, controlPanel, getInstance, behaviors }
+export {component, controlPanel, getInstance, behaviors, datasetFields}

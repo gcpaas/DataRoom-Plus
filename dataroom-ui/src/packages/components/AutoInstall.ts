@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type { ChartConfigInterface, BehaviorInterface } from '@DrPackage/components/type/define.ts'
+import type {ChartConfigInterface, BehaviorInterface, ChartDatasetFieldInterface} from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -17,6 +17,12 @@ type BehaviorMap = {
   [key: string]: BehaviorInterface[]
 }
 
+type datasetFieldMap = {
+  [key: string]: ChartDatasetFieldInterface[]
+}
+
+
+
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
 const installModules = import.meta.glob<{
   [key: string]: Component | (() => ChartConfigInterface<unknown>)
@@ -27,6 +33,7 @@ const components: ComponentMap = {}
 const panelComponents: PanelComponentMap = {}
 const componentInstances: ComponentInstanceMap = {}
 const behaviors: BehaviorMap = {}
+const datasetFields: datasetFieldMap = {}
 
 // 组件自动注册
 Object.entries(installModules).forEach(([path, module]) => {
@@ -57,6 +64,12 @@ Object.entries(installModules).forEach(([path, module]) => {
   if (module[behaviorDefineName]) {
     behaviors[componentName] = module[behaviorDefineName] as BehaviorInterface[]
   }
+
+  // 注册图表数据集字段定义
+  const datasetFieldDefineName = `datasetFields`
+  if (module[datasetFieldDefineName]) {
+    datasetFields[componentName] = module[datasetFieldDefineName] as ChartDatasetFieldInterface[]
+  }
 })
 
 const getPanelComponent = (name: string|undefined) => {
@@ -86,6 +99,12 @@ const getComponentBehaviors = (name: string): BehaviorInterface[] => {
   return behavior || [] as BehaviorInterface[]
 }
 
+
+const getComponentDatasetFields = (name: string): ChartDatasetFieldInterface[] => {
+  const fields = datasetFields[name]
+  return fields || [] as ChartDatasetFieldInterface[]
+}
+
 export {
   components,
   panelComponents,
@@ -94,4 +113,5 @@ export {
   getComponent,
   getPanelComponent,
   getComponentInstance,
+  getComponentDatasetFields
 }
