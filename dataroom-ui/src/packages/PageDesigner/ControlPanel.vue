@@ -2,24 +2,18 @@
 <script setup lang="ts">
 import {reactive, ref} from 'vue'
 import type {PageBasicConfig} from "@/packages/_common/_type.ts";
-import { resourceApi } from '@/packages/resource/api'
-import { ElMessage } from 'element-plus'
-import { getCookie, getCookieName } from '@/packages/_common/_cookie'
-import { Picture } from '@element-plus/icons-vue'
+import {resourceApi} from '@/packages/resource/api'
+import {ElMessage} from 'element-plus'
+import {getCookie, getCookieName} from '@/packages/_common/_cookie'
+import {Picture} from '@element-plus/icons-vue'
 
 // Props
-defineProps<{
+const { basicConfig }  = defineProps<{
   basicConfig: PageBasicConfig
 }>()
 
 // 默认激活配置tab
 const activeTab = ref('config')
-
-// 缩略图
-const thumbnail = ref('')
-
-// 背景图透明度（0-100）
-const bgOpacity = ref(100)
 
 // 上传相关
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -31,18 +25,10 @@ const uploadHeaders = reactive({
   [cookieName]: cookieValue
 })
 
-// 缩略图上传成功
-const handleThumbnailUploadSuccess = (response: any) => {
-  if (response && response.data) {
-    thumbnail.value = response.data.url || ''
-    ElMessage.success('缩略图上传成功')
-  }
-}
-
 // 背景图上传成功
-const handleBgUploadSuccess = (response: any, props: any) => {
+const handleBgUploadSuccess = (response: any) => {
   if (response && response.data) {
-    props.basicConfig.bgUrl = response.data.url || ''
+    basicConfig.background.url = response.data.url || ''
     ElMessage.success('背景图上传成功')
   }
 }
@@ -54,7 +40,7 @@ const handleUploadError = () => {
 
 // 获取完整的资源URL
 const getResourceUrl = (url?: string) => {
-  console.log('url = '+url)
+  console.log('url = ' + url)
   if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
@@ -69,43 +55,7 @@ const getResourceUrl = (url?: string) => {
       <el-tab-pane label="配置" name="config">
         <el-scrollbar class="tab-scrollbar">
           <div class="tab-content">
-            <el-form label-width="100px" label-position="left" size="small">
-              <!-- 页面缩略图 -->
-              <el-form-item label="页面缩略图">
-                <div class="thumbnail-upload-section">
-                  <el-upload
-                    :action="uploadUrl"
-                    :headers="uploadHeaders"
-                    :on-success="handleThumbnailUploadSuccess"
-                    :on-error="handleUploadError"
-                    :show-file-list="false"
-                    accept="image/*"
-                    class="thumbnail-uploader"
-                  >
-                    <div class="thumbnail-preview-box">
-                      <el-image
-                        v-if="thumbnail"
-                        :src="getResourceUrl(thumbnail)"
-                        fit="cover"
-                        class="thumbnail-image"
-                        lazy
-                      >
-                        <template #error>
-                          <div class="thumbnail-placeholder">
-                            <el-icon><Picture /></el-icon>
-                            <span>加载失败</span>
-                          </div>
-                        </template>
-                      </el-image>
-                      <div v-else class="thumbnail-placeholder">
-                        <el-icon><Picture /></el-icon>
-                        <span>点击上传缩略图</span>
-                      </div>
-                    </div>
-                  </el-upload>
-                </div>
-              </el-form-item>
-
+            <el-form label-width="80px" label-position="left" size="small" v-if="basicConfig.background">
               <!-- 背景填充方式 -->
               <el-form-item label="背景填充">
                 <el-radio-group v-model="basicConfig.background.fill">
@@ -113,15 +63,11 @@ const getResourceUrl = (url?: string) => {
                   <el-radio value="image">图片</el-radio>
                 </el-radio-group>
               </el-form-item>
-
-              <!-- 背景颜色 -->
               <el-form-item label="背景颜色" v-if="basicConfig.background.fill === 'color'">
                 <el-color-picker v-model="basicConfig.background.color" show-alpha></el-color-picker>
               </el-form-item>
-
-              <!-- 背景图配置 -->
               <template v-if="basicConfig.background.fill === 'image'">
-                <el-form-item label="背景图">
+                <el-form-item label="背景图片">
                   <div class="bg-upload-section">
                     <el-upload
                       :action="uploadUrl"
@@ -142,13 +88,17 @@ const getResourceUrl = (url?: string) => {
                         >
                           <template #error>
                             <div class="bg-placeholder">
-                              <el-icon><Picture /></el-icon>
+                              <el-icon>
+                                <Picture/>
+                              </el-icon>
                               <span>加载失败</span>
                             </div>
                           </template>
                         </el-image>
                         <div v-else class="bg-placeholder">
-                          <el-icon><Picture /></el-icon>
+                          <el-icon>
+                            <Picture/>
+                          </el-icon>
                           <span>点击上传背景图</span>
                         </div>
                       </div>
@@ -157,11 +107,11 @@ const getResourceUrl = (url?: string) => {
                 </el-form-item>
 
                 <el-form-item label="透明度">
-                  <el-input-number v-model="bgOpacity" :min="0" :max="100" :step="1" controls-position="right" />
+                  <el-input-number v-model="basicConfig.background.opacity" :min="0" :max="100" :step="1" controls-position="right"/>
                 </el-form-item>
 
                 <el-form-item label="填充方式">
-                  <el-select v-model="basicConfig.bgRepeat" placeholder="请选择填充方式">
+                  <el-select v-model="basicConfig.background.repeat" placeholder="请选择填充方式">
                     <el-option label="不重复" value="no-repeat"></el-option>
                     <el-option label="重复" value="repeat"></el-option>
                     <el-option label="水平重复" value="repeat-x"></el-option>
@@ -252,63 +202,6 @@ const getResourceUrl = (url?: string) => {
           }
         }
       }
-
-      .thumbnail-upload-section {
-        width: 100%;
-
-        .thumbnail-uploader {
-          :deep(.el-upload) {
-            width: 100%;
-            display: block;
-            cursor: pointer;
-          }
-        }
-
-        .thumbnail-preview-box {
-          width: 100%;
-          height: 160px;
-          border: 1px dashed var(--el-border-color);
-          border-radius: 4px;
-          overflow: hidden;
-          position: relative;
-          transition: all 0.3s;
-
-          &:hover {
-            border-color: var(--el-color-primary);
-          }
-
-          .thumbnail-image {
-            width: 100%;
-            height: 100%;
-            display: block;
-
-            :deep(img) {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
-          }
-
-          .thumbnail-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--el-fill-color-light);
-            color: var(--el-text-color-secondary);
-            font-size: 14px;
-
-            .el-icon {
-              font-size: 48px;
-              margin-bottom: 8px;
-              color: var(--el-text-color-placeholder);
-            }
-          }
-        }
-      }
-
       .bg-upload-section {
         width: 100%;
 

@@ -64,6 +64,8 @@ interface PageBasicConfig {
     color: string
     // 背景图url
     url: string
+    // 背景图透明度
+    opacity: number
     // 背景图填充方式
     repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
   }
@@ -108,6 +110,8 @@ interface VisualScreenPageBasicConfig {
     color: string
     // 背景图url
     url: string
+    // 背景图透明度
+    opacity: number
     // 背景图填充方式
     repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
   }

@@ -25,6 +25,7 @@ public class PageConfig extends BasePageConfig {
                             "fill": 'color',
                             "color": '#fff',
                             "url": '',
+                            "opacity": 1,
                             "repeat": 'no-repeat'
                          }
                     }
