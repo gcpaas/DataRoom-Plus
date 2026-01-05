@@ -27,13 +27,13 @@ import {
   shallowRef,
   provide,
 } from 'vue'
-import type { ChartConfigInterface } from '../components/type/define.ts'
+import type { ChartConfig } from '../components/type/define.ts'
 import { extractPositionFromTransform, getChartByElement } from '@/packages/_common/_utils.ts'
 import VanillaSelecto from 'selecto'
 
 const canvasContainer = document.getElementById('canvas-main')
-const activeChart = ref<ChartConfigInterface<unknown>>()
-const chartList: ChartConfigInterface<unknown>[] = reactive([])
+const activeChart = ref<ChartConfig<unknown>>()
+const chartList: ChartConfig<unknown>[] = reactive([])
 /**
  * 被框选中的组件、可以进行拖拽、旋转、缩放
  */
@@ -46,7 +46,7 @@ const moveableTargets: ComputedRef<(HTMLElement | null)[]> = computed(() => {
 })
 
 const addChart = (type: string) => {
-  const chartInst: ChartConfigInterface<unknown> = getComponentInstance(type)
+  const chartInst: ChartConfig<unknown> = getComponentInstance(type)
   chartList.push(chartInst)
 }
 /**
@@ -165,7 +165,7 @@ const onDragEnd = (e: OnDragEnd) => {
 
 const _updateTransform = (e: OnEvent, transform: string, width: number, height: number) => {
   console.log('updateTransform', width)
-  const chart: ChartConfigInterface<unknown> = getChartByElement(e.target, chartList)
+  const chart: ChartConfig<unknown> = getChartByElement(e.target, chartList)
   const { x, y, rotateX, rotateY, rotateZ } = extractPositionFromTransform(transform)
   chart.x = x
   chart.y = y
@@ -242,7 +242,7 @@ const onSelectEnd = (e: import('selecto').OnSelectEnd<VanillaSelecto>) => {
  * 计算组件坐标样式
  * @param chart
  */
-const computedChartStyle = (chart: ChartConfigInterface<unknown>): CSSProperties => {
+const computedChartStyle = (chart: ChartConfig<unknown>): CSSProperties => {
   let transform = `translate(${chart.x}px,${chart.y}px)`
   if (chart.rotateX) {
     transform += ` rotateX(${chart.rotateX}deg)`

@@ -1,10 +1,10 @@
 <!-- 组件库 -->
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import type { CanvasInstInterface, ComponentLibTagInterface } from '@/packages/_common/_type.ts'
+import type { CanvasInst, ComponentLibTagInterface } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 import { pluginList, componentLibTagList } from './PluginRegister.ts'
 import { Search } from '@element-plus/icons-vue'
 

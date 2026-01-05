@@ -1,17 +1,17 @@
 <!-- 图层 -->
 <script setup lang="ts">
 import { computed, type ComputedRef, inject, type Ref, ref, watch } from 'vue'
-import type { CanvasInstInterface } from '@/packages/_common/_type.ts'
+import type { CanvasInst } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
-import type { ChartConfigInterface } from '@/packages/components/type/define.ts'
+import type { ChartConfig } from '@/packages/components/type/define.ts'
 import type { TreeInstance } from 'element-plus'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 const layerTreeProps = {
   label: 'title',
   children: 'children',
 }
-const chartList: ComputedRef<Ref<Array<ChartConfigInterface<unknown>>>> = computed(() => {
+const chartList: ComputedRef<Ref<Array<ChartConfig<unknown>>>> = computed(() => {
   return canvasInst.chartList
 })
 
@@ -36,7 +36,7 @@ watch(layerName, (val) => {
   layerTreeRef.value!.filter(val)
 })
 
-const onLayerClick = (data: ChartConfigInterface<unknown>) => {
+const onLayerClick = (data: ChartConfig<unknown>) => {
   console.log('点击图层', data.id)
   canvasInst.activeChartById(data.id)
 }

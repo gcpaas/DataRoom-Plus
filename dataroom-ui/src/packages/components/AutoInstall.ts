@@ -1,5 +1,5 @@
 import { type Component } from 'vue'
-import type {ChartConfigInterface, BehaviorInterface, ChartDatasetFieldInterface} from '@DrPackage/components/type/define.ts'
+import type {ChartConfig, Behavior, ChartDatasetField} from '@DrPackage/components/type/define.ts'
 
 type ComponentMap = {
   [key: string]: Component
@@ -10,22 +10,22 @@ type PanelComponentMap = {
 }
 
 type ComponentInstanceMap = {
-  [key: string]: () => ChartConfigInterface<unknown>
+  [key: string]: () => ChartConfig<unknown>
 }
 
 type BehaviorMap = {
-  [key: string]: BehaviorInterface[]
+  [key: string]: Behavior[]
 }
 
 type datasetFieldMap = {
-  [key: string]: ChartDatasetFieldInterface[]
+  [key: string]: ChartDatasetField[]
 }
 
 
 
 // 使用 Vite 的 import.meta.glob 自动导入所有组件目录下的 install.ts
 const installModules = import.meta.glob<{
-  [key: string]: Component | (() => ChartConfigInterface<unknown>)
+  [key: string]: Component | (() => ChartConfig<unknown>)
 }>('./**/install.ts', { eager: true })
 
 // 存储组件、控制面板组件、实例方法和交互定义
@@ -56,19 +56,19 @@ Object.entries(installModules).forEach(([path, module]) => {
   // 注册实例方法
   const instanceMethodName = `getInstance`
   if (module[instanceMethodName]) {
-    componentInstances[componentName] = module[instanceMethodName] as () => ChartConfigInterface<unknown>
+    componentInstances[componentName] = module[instanceMethodName] as () => ChartConfig<unknown>
   }
 
   // 注册交互定义
   const behaviorDefineName = `behaviors`
   if (module[behaviorDefineName]) {
-    behaviors[componentName] = module[behaviorDefineName] as BehaviorInterface[]
+    behaviors[componentName] = module[behaviorDefineName] as Behavior[]
   }
 
   // 注册图表数据集字段定义
   const datasetFieldDefineName = `datasetFields`
   if (module[datasetFieldDefineName]) {
-    datasetFields[componentName] = module[datasetFieldDefineName] as ChartDatasetFieldInterface[]
+    datasetFields[componentName] = module[datasetFieldDefineName] as ChartDatasetField[]
   }
 })
 
@@ -84,25 +84,25 @@ const getComponent = (name: string) => {
   return components[name]
 }
 
-const getComponentInstance = (name: string): ChartConfigInterface<unknown> => {
+const getComponentInstance = (name: string): ChartConfig<unknown> => {
   const instanceFn = componentInstances[name]
   if (instanceFn) {
     return instanceFn()
   }
   console.error(`未找到组件 ${name} 对应的实例化方法`)
-  return {} as ChartConfigInterface<unknown>
+  return {} as ChartConfig<unknown>
 }
 
 
-const getComponentBehaviors = (name: string): BehaviorInterface[] => {
+const getComponentBehaviors = (name: string): Behavior[] => {
   const behavior = behaviors[name]
-  return behavior || [] as BehaviorInterface[]
+  return behavior || [] as Behavior[]
 }
 
 
-const getComponentDatasetFields = (name: string): ChartDatasetFieldInterface[] => {
+const getComponentDatasetFields = (name: string): ChartDatasetField[] => {
   const fields = datasetFields[name]
-  return fields || [] as ChartDatasetFieldInterface[]
+  return fields || [] as ChartDatasetField[]
 }
 
 export {

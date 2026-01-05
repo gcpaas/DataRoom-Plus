@@ -3,9 +3,9 @@ import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/
 import {type CSSProperties, nextTick, onMounted, reactive} from 'vue'
 import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
-import type {ChartConfigInterface} from '../components/type/define.ts'
+import type {ChartConfig} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
-import type {CanvasInstInterface, LeftToolBarInterface, PageConfigInterface} from '@/packages/_common/_type.ts'
+import type {CanvasInst, LeftToolBar, PageConfigInterface} from '@/packages/_common/_type.ts'
 import {useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
@@ -13,8 +13,8 @@ import {pageApi} from "@/packages/page/api.ts";
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
-const activeChart = ref<ChartConfigInterface<unknown>>()
-const chartList = ref<ChartConfigInterface<unknown>[]>([])
+const activeChart = ref<ChartConfig<unknown>>()
+const chartList = ref<ChartConfig<unknown>[]>([])
 const componentLibRef = ref(null)
 const pageConfig = ref<PageConfigInterface>()
 const layout = [
@@ -24,7 +24,7 @@ const layout = [
 ]
 const chartIndex = ref(3)
 layout.forEach((item) => {
-  const inst: ChartConfigInterface<unknown> = getComponentInstance('DrText')
+  const inst: ChartConfig<unknown> = getComponentInstance('DrText')
   inst.id = item.i
   inst.i = item.i
   inst.x = item.x
@@ -34,7 +34,7 @@ layout.forEach((item) => {
   chartList.value.push(inst)
 })
 const addChart = (type: string) => {
-  const chartInst: ChartConfigInterface<unknown> = getComponentInstance(type)
+  const chartInst: ChartConfig<unknown> = getComponentInstance(type)
   chartInst.w = 3
   chartInst.h = 3
   chartInst.x = 0
@@ -54,7 +54,7 @@ const ComponentLayer = defineAsyncComponent(() => import('@/packages/_components
 const GlobalVariable = defineAsyncComponent(() => import('@/packages/_components/GlobalVariable.vue'))
 const ResourceLib = defineAsyncComponent(() => import('@/packages/_components/ResourceLib.vue'))
 
-const leftToolBarList: Array<LeftToolBarInterface> = reactive([
+const leftToolBarList: Array<LeftToolBar> = reactive([
   {
     name: '图层',
     desc: '图层',
@@ -81,13 +81,13 @@ const leftToolBarList: Array<LeftToolBarInterface> = reactive([
   },
 ])
 // @ts-expect-error ignore
-const activeLeftToolBar = ref<LeftToolBarInterface>(leftToolBarList[1])
+const activeLeftToolBar = ref<LeftToolBar>(leftToolBarList[1])
 /**
  * 激活组件
  * @param id
  */
 const activeChartById = (id: string) => {
-  const chart: ChartConfigInterface<unknown> = getChartById(id, chartList.value)
+  const chart: ChartConfig<unknown> = getChartById(id, chartList.value)
   activeChart.value = chart
   rightControlPanelSetting.value = false
 }
@@ -107,7 +107,7 @@ const switchPageControlPanel = () => {
 /**
  * 子组件注入使用
  */
-const canvasInst = reactive<CanvasInstInterface>({
+const canvasInst = reactive<CanvasInst>({
   addChart: addChart,
   chartList: chartList,
   activeChartById: activeChartById,
@@ -177,7 +177,7 @@ const contextMenuVisible = ref(false)
  * 左侧工具面版激活
  * @param leftToolBar
  */
-const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
+const onActiveLeftToolBar = (leftToolBar: LeftToolBar) => {
   if (leftToolBar.componentName == 'ResourceLib') {
     resourceLibVisible.value = false
     nextTick(() => {
@@ -198,7 +198,7 @@ const onActiveLeftToolBar = (leftToolBar: LeftToolBarInterface) => {
  * 计算组件坐标样式
  * @param chart
  */
-const computedChartStyle = (chart: ChartConfigInterface<unknown>): CSSProperties => {
+const computedChartStyle = (chart: ChartConfig<unknown>): CSSProperties => {
   // 暂时无用
   if (chart) {
     return {}
@@ -223,7 +223,7 @@ const onResize = (i: string, newH: string, newW: string, newHPx: string, newWPx:
 }
 const onResized = (i: string, newH: number, newW: number, newHPx: string, newWPx: string) => {
   console.log('onResized i=' + i + ', H=' + newH + ', W=' + newW + ', H(px)=' + newHPx + ', W(px)=' + newWPx)
-  const chart: ChartConfigInterface<unknown> = getChartById(i, chartList.value)
+  const chart: ChartConfig<unknown> = getChartById(i, chartList.value)
   chart.w = newW
   chart.h = newH
 }
@@ -234,7 +234,7 @@ const onMove = (i: string, newX: number, newY: number) => {
 
 const onMoved = (i: string, newX: number, newY: number) => {
   console.log('onMoved i=' + i + ', X=' + newX + ', Y=' + newY)
-  const chart: ChartConfigInterface<unknown> = getChartById(i, chartList.value)
+  const chart: ChartConfig<unknown> = getChartById(i, chartList.value)
   chart.x = newX
   chart.y = newY
 }
@@ -243,13 +243,13 @@ const onMoved = (i: string, newX: number, newY: number) => {
  * 图表点击
  * @param chart
  */
-const onChartClick = (chart: ChartConfigInterface<unknown>) => {
+const onChartClick = (chart: ChartConfig<unknown>) => {
   console.log('onChartClick', chart)
   activeChartById(chart.id)
 }
 
 const contextMenuEvent = ref<MouseEvent>()
-const onRightClick = (e: MouseEvent, chart: ChartConfigInterface<unknown>) => {
+const onRightClick = (e: MouseEvent, chart: ChartConfig<unknown>) => {
   e.preventDefault()
   contextMenuVisible.value = false
   contextMenuEvent.value = e

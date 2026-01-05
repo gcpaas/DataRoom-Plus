@@ -1,7 +1,7 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
 import {computed, ref, watch, defineAsyncComponent, onMounted} from 'vue'
-import type {ChartConfigInterface} from '../components/type/define.ts'
+import type {ChartConfig} from '../components/type/define.ts'
 import {Pointer, Search} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity} from '@/packages/dataset/api'
@@ -13,7 +13,7 @@ import {datasetApi} from '@/packages/dataset/api'
 const DatasetManage = defineAsyncComponent(() => import('@/packages/dataset/index.vue'))
 
 const {chart} = defineProps<{
-  chart: ChartConfigInterface<unknown>
+  chart: ChartConfig<unknown>
 }>()
 // 默认激活样式tab
 const activeTab = ref('style')

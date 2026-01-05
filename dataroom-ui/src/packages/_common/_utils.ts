@@ -1,11 +1,11 @@
-import type { ChartConfigInterface } from '@/packages/components/type/define.ts'
+import type { ChartConfig } from '@/packages/components/type/define.ts'
 
 /**
  * 根据图表HTML对象获取对应的图表配置
  * @param e
  * @param chartList
  */
-export const getChartByElement = (e: HTMLElement | SVGElement, chartList: ChartConfigInterface<unknown>[]): ChartConfigInterface<unknown> => {
+export const getChartByElement = (e: HTMLElement | SVGElement, chartList: ChartConfig<unknown>[]): ChartConfig<unknown> => {
   const dataDrId: string | null = e.getAttribute('data-dr-id')
   const chart = chartList.find((item) => item.id === dataDrId)
   if (!chart) {
@@ -19,7 +19,7 @@ export const getChartByElement = (e: HTMLElement | SVGElement, chartList: ChartC
  * @param id
  * @param chartList
  */
-export const getChartById = (id: string, chartList: ChartConfigInterface<unknown>[]): ChartConfigInterface<unknown> => {
+export const getChartById = (id: string, chartList: ChartConfig<unknown>[]): ChartConfig<unknown> => {
   const chart = chartList.find((item) => item.id === id)
   if (!chart) {
     console.error(`未找到id = ${id} 组件`)

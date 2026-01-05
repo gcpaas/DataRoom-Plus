@@ -1,5 +1,5 @@
-import { type Component, type Ref } from 'vue'
-import type { ChartConfigInterface } from '@DrPackage/components/type/define.ts'
+import {type Component, type Ref} from 'vue'
+import type {ChartConfig} from '@DrPackage/components/type/define.ts'
 
 interface ComponentLibTagInterface {
   // 类型名称
@@ -11,9 +11,9 @@ interface ComponentLibTagInterface {
 /**
  * 画布实例
  */
-interface CanvasInstInterface {
+interface CanvasInst {
   addChart: (type: string) => void
-  chartList: Ref<Array<ChartConfigInterface<unknown>>>
+  chartList: Ref<Array<ChartConfig<unknown>>>
   activeChartById: (id: string) => void
   switchRightControlPanel: (open: boolean) => void
   onChartDeleteClick: (chartId: string) => void
@@ -22,7 +22,7 @@ interface CanvasInstInterface {
 /**
  * 左侧工具bar定义
  */
-interface LeftToolBarInterface {
+interface LeftToolBar {
   // tab显示名称
   name: string
   // 激活工具面板显示名称
@@ -33,29 +33,22 @@ interface LeftToolBarInterface {
   componentName: string
 }
 
-interface ResourceLibInterface {
-  name: string
-  type: string
-  url: string
-}
-
-interface ResourceLibTagInterface {
-  // 类型名称
-  name: string
-  // 类型编码
-  code: string
-}
-
 /**
  * 页面实体定义
  */
-interface PageEntityInterface {
+interface PageStageEntity {
+  // 页面ID
   id: string
   // 页面名称
   name: string
+  // 页面编码
   code: string
+  // 目录编码
   parentCode: string
-  pageType: string
+  // 页面类型
+  pageType: string | 'directory' | 'visualScreen' | 'page'
+  // 页面状态
+  pageStatus: string | 'design' | 'published' | 'history' | 'preview' | 'snapshot'
   // 封面图片地址
   thumbnail: string
   // 备注描述
@@ -63,9 +56,9 @@ interface PageEntityInterface {
   // 基础配置
   pageConfig: PageConfigInterface
   // 全局变量
-  globalVariableList: GlobalVariableInterface[]
+  globalVariableList: GlobalVariable[]
   // 图表组件配置
-  chartList: Array<ChartConfigInterface<unknown>>
+  chartList: Array<ChartConfig<unknown>>
 }
 
 /**
@@ -85,7 +78,8 @@ interface PageConfigInterface {
 /**
  * 全局变量
  */
-interface GlobalVariableInterface {
+interface GlobalVariable {
+  // 唯一标识
   id: string
   // 来源
   from: 'static' | 'url'
@@ -97,8 +91,8 @@ interface GlobalVariableInterface {
   remark: string
   // 默认值
   defaultValue: string
-  // 脚本
-  script: string
+  // JS脚本
+  script?: string
 }
 
-export type { CanvasInstInterface, LeftToolBarInterface, ComponentLibTagInterface, ResourceLibInterface, ResourceLibTagInterface, GlobalVariableInterface,PageConfigInterface }
+export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageConfigInterface}

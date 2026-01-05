@@ -1,5 +1,5 @@
 import {defineAsyncComponent} from 'vue'
-import type {ChartConfigInterface, BehaviorInterface, ChartDatasetFieldInterface} from '../type/define'
+import type {ChartConfig, Behavior, ChartDatasetField} from '../type/define'
 import {DrConst} from '@/packages/_common/_constant.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
@@ -20,7 +20,7 @@ interface DrTextPropsInterface {
 /**
  * 定义组件配置类型
  */
-export type DrTextConfig = ChartConfigInterface<DrTextPropsInterface>
+export type DrTextConfig = ChartConfig<DrTextPropsInterface>
 
 /**
  * 定义获取该组件实例的方法，返回本组件新实例对象
@@ -50,7 +50,7 @@ const getInstance = (): DrTextConfig => {
 /**
  * 定义组件交互定义
  */
-const behaviors: BehaviorInterface[] = [
+const behaviors: Behavior[] = [
   {
     name: '点击',
     desc: '鼠标点击文本时触发',
@@ -61,7 +61,7 @@ const behaviors: BehaviorInterface[] = [
 /**
  * 定义维度、指标字段信息
  */
-const datasetFields: ChartDatasetFieldInterface[] = [
+const datasetFields: ChartDatasetField[] = [
   {
     name: 'xField',
     desc: '文本值',

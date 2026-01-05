@@ -1,12 +1,12 @@
 <!-- 素材库 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInstInterface } from '@/packages/_common/_type.ts'
+import type { CanvasInst } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 import ResourceManage from '@/packages/resource/index.vue'
 import type { ResourceEntity } from '@/packages/resource/api'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
 const resourceLibVisible = ref(true)
 const selectedResources = ref<ResourceEntity[]>([])

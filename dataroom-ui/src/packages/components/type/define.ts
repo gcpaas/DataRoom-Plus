@@ -39,130 +39,79 @@ export interface ChartDatasetInterface {
   code: string
   xFields: string[]
 }
+
 /**
  * 组件配置基础信息
  */
-export interface ChartConfigInterface<T> {
-  /**
-   * 唯一标识
-   */
+export interface ChartConfig<T> {
+  // 唯一标识
   id: string
-  /**
-   * 唯一标识，仅仪表盘类型使用
-   */
+  // 唯一标识，仅仪表盘类型使用
   i: string
-  /**
-   * 组件类型
-   */
+  // 组件类型
   type: string
-  /**
-   * 组件显示的图层名称
-   */
+  // 组件显示的图层名称 或 卡片名称
   title: string
-  /**
-   * 宽度或占用的份数
-   */
+  // 宽度或占用的份数
   w: number
-  /**
-   * 高度或占用的份数
-   */
+  // 高度或占用的份数
   h: number
-  /**
-   * x坐标或x轴份数
-   */
+  // x坐标或x轴份数
   x: number
-  /**
-   * y坐标或y轴份数
-   */
+  // y坐标或y轴份数
   y: number
-  /**
-   * 组件层级、层级越大、越靠前显示
-   */
+  // 组件层级、层级越大、越靠前显示
   z: number
-  /**
-   * X轴旋转角度
-   */
+  // X轴旋转角度
   rotateX: number
-  /**
-   * Y轴旋转角度
-   */
+  // Y轴旋转角度
   rotateY: number
-  /**
-   * Z轴旋转角度
-   */
+  // Z轴旋转角度
   rotateZ: number
-  /**
-   * 数据集编码
-   */
-  dataset?:string
-  /**
-   * 自定义配置
-   */
+  // 数据集编码
+  dataset?: string
+  // 图表组件个性化配置
   props: T
 }
 
 /**
  * 图表行为交互参数定义
  */
-export interface BehaviorParamInterface {
-  /**
-   * 参数名称
-   */
+export interface BehaviorEventParam {
+  // 参数名称
   name: string
-  /**
-   * 参数描述
-   */
+  // 参数描述
   desc: string
-  /**
-   * 参数类型
-   */
+  // 参数类型
   type: string
-  /**
-   * 是否必填
-   */
+  // 是否必填
   required: boolean
-  /**
-   * 默认值
-   */
+  // 默认值
   defaultValue: string
 }
 
 /**
  * 行为交互定义
  */
-export interface BehaviorInterface {
-  /**
-   * 事件名称、用于显示
-   */
+export interface Behavior {
+  // 事件名称、用于显示
   name: string
-  /**
-   * 事件描述、用于说明
-   */
+  // 事件描述、用于说明
   desc: string
-  /**
-   * 事件触发时指定的方法名称、用于调用
-   */
+  // 事件触发时指定的方法名称、用于调用
   method: string
-  /**
-   * 参数列表
-   */
-  paramsList: Array<BehaviorParamInterface>
+  // 参数列表
+  paramsList: Array<BehaviorEventParam>
 }
 
 /**
  * 图表数据集字段定义
  */
-export interface ChartDatasetFieldInterface {
-  /**
-   * 字段名称
-   */
+export interface ChartDatasetField {
+  // 字段名称
   name: string
-  /**
-   * 字段说明
-   */
+  // 字段说明
   desc: string
-  /**
-   * 是否必填
-   */
+  // 是否必填
   required: boolean
 }

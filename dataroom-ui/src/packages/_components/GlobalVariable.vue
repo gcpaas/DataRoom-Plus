@@ -1,17 +1,17 @@
 <!-- 全局变量 -->
 <script setup lang="ts">
 import { inject, ref } from 'vue'
-import type { CanvasInstInterface, GlobalVariableInterface } from '@/packages/_common/_type.ts'
+import type { CanvasInst, GlobalVariable } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInstInterface
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
 const globalVariableVisible = ref(true)
-const globalVariableList = ref<GlobalVariableInterface[]>([])
-const activeGlobalVariable = ref<GlobalVariableInterface>()
+const globalVariableList = ref<GlobalVariable[]>([])
+const activeGlobalVariable = ref<GlobalVariable>()
 for (let i = 0; i < 10; i++) {
   globalVariableList.value.push({
     id: uuidv4(),
@@ -35,7 +35,7 @@ const searchName = ref('')
  * 新增变量
  */
 const onAdd = () => {
-  const inst: GlobalVariableInterface = {
+  const inst: GlobalVariable = {
     id: uuidv4(),
     from: 'static',
     name: 'name' + uuidv4(),
@@ -51,7 +51,7 @@ const onAdd = () => {
  * 删除变量
  * @param variable
  */
-const onDelete = (variable: GlobalVariableInterface) => {
+const onDelete = (variable: GlobalVariable) => {
   ElMessageBox.confirm(`确定删除${variable.name}变量吗?`, '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
