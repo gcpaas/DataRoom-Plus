@@ -16,6 +16,7 @@ const currentDataSource = ref<DataSourceEntity>({
   name: '',
   dataSourceType: 'mysql',
   dataSource: {
+    dataSourceType: 'mysql',
     driverName: 'com.mysql.cj.jdbc.Driver',
     username: '',
     password: '',
@@ -25,7 +26,7 @@ const currentDataSource = ref<DataSourceEntity>({
 const editorRef = ref()
 
 // 数据源类型映射
-const dataSourceTypeMap: Record<string, { name: string; icon: string; image: string; component: any }> = {
+const dataSourceTypeMap = {
   mysql: {
     name: 'MySQL',
     icon: '🐬',
@@ -44,7 +45,7 @@ const dataSourceTypeMap: Record<string, { name: string; icon: string; image: str
     image: oracleImg,
     component: defineAsyncComponent(() => import('./components/OracleEditor.vue'))
   }
-}
+} as const
 
 /**
  * 查询数据源列表

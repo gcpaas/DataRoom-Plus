@@ -43,7 +43,7 @@ const editorRef = ref()
 const dataSourceList = ref<any[]>([])
 
 // 数据集类型映射
-const datasetTypeMap: Record<string, { name: string; icon: string; component: any }> = {
+const datasetTypeMap = {
   json: {
     name: 'JSON',
     icon: '📄',
@@ -59,7 +59,7 @@ const datasetTypeMap: Record<string, { name: string; icon: string; component: an
     icon: '🗄️',
     component: defineAsyncComponent(() => import('./components/RelationalEditor.vue'))
   }
-}
+} as const
 
 /**
  * 加载树数据
@@ -194,7 +194,6 @@ const handleAddFolder = (node?: DatasetTreeNode) => {
  * 新增数据集
  */
 const handleAddDataset = (datasetType: 'json' | 'http' | 'relational', node?: DatasetTreeNode) => {
-  // @ts-expect-error ignore
   dialogTitle.value = `新增${datasetTypeMap[datasetType].name}数据集`
   currentDataset.value = {
     name: '',
@@ -278,7 +277,8 @@ const handleEdit = async () => {
   }
   try {
     const detail = await datasetApi.detail(selectedNode.value.code!)
-    dialogTitle.value = `编辑${datasetTypeMap[detail.datasetType as keyof typeof datasetTypeMap]?.name || ''}数据集`
+    const typeKey = detail.datasetType as keyof typeof datasetTypeMap
+    dialogTitle.value = `编辑${datasetTypeMap[typeKey].name}数据集`
     currentDataset.value = detail
     dialogVisible.value = true
   } catch (error) {
@@ -614,7 +614,7 @@ const handleTestAndSave = async () => {
     >
       <el-scrollbar max-height="60vh">
         <component
-          :is="datasetTypeMap[currentDataset.datasetType as keyof typeof datasetTypeMap]?.component"
+          :is="datasetTypeMap[currentDataset.datasetType as keyof typeof datasetTypeMap].component"
           v-if="currentDataset.datasetType !== 'directory'"
           v-model="currentDataset"
           :data-source-list="dataSourceList"
