@@ -262,13 +262,29 @@ const computedContextMenuStyle = computed(() => {
  */
 const onPreview = () => {
   console.log('onPreview')
-  localStorage.setItem('chartList', JSON.stringify(chartList.value))
+  pageApi.updatePageConfig4Preview({
+    ...pageStageEntity.value,
+    pageConfig: {
+      ...pageStageEntity.value?.pageConfig,
+      chartList: chartList.value,
+      basicConfig: basicConfig.value
+    }
+  }).then((res) => {
+    ElMessage({
+      message: '保存成功',
+      type: 'success',
+    })
+  })
+
+
   // 跳转到 /dataRoom/pagePreviewer 路由
   const routeData = router.resolve({
     path: '/dataRoom/pagePreviewer',
-    query: {code: 'test'},
+    query: {code: pageStageEntity.value?.pageCode},
   })
-  console.log('预览跳转', routeData.href)
+
+
+
   window.open(routeData.href, '_blank')
 }
 

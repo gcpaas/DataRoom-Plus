@@ -99,4 +99,11 @@ export const pageApi = {
   updatePageConfig(data: PageStageEntity) {
     return request.post<boolean>('/dataRoom/page/updatePageConfig', data)
   },
+  /**
+   * 更新页面配置，用于预览
+   * @param data
+   */
+  updatePageConfig4Preview(data: PageStageEntity) {
+    return request.post<boolean>('/dataRoom/page/updatePageConfig4Preview', data)
+  },
 }

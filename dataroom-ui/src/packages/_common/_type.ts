@@ -38,9 +38,9 @@ interface LeftToolBar {
  */
 interface PageStageEntity {
   // ID
-  id: string
+  id?: string
   // 页面名称
-  name: string
+  name?: string
   // 页面编码
   pageCode: string
   // 备注描述

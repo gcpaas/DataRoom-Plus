@@ -252,6 +252,40 @@ public class PageController {
     }
 
     /**
+     * 更新页面配置、仅能更新预览态
+     *
+     * @param pageStage
+     * @return
+     */
+    @PostMapping("/updatePageConfig4Preview")
+    @RequiresRoles(value = DataRoomRole.DEVELOPER)
+    @Operation(summary = "更新页面配置", description = "更新页面配置")
+    public Resp<Boolean> updatePageConfig4Preview(@RequestBody PageStageEntity pageStage) {
+        // 查看是否有预览态
+        PageStageEntity pageStageEntity = pageStageService.getByCode(pageStage.getPageCode(), PageStatus.PREVIEW);
+        if (pageStageEntity == null) {
+            // 新增一个预览态
+            PageStageEntity newPageStage = new PageStageEntity();
+            newPageStage.setPageCode(pageStage.getPageCode());
+            newPageStage.setRemark("初始化预览");
+            newPageStage.setPageStatus(PageStatus.PREVIEW);
+            newPageStage.setPageType(pageStage.getPageType());
+            BasePageConfig basePageConfig = pageStageService.getDefaultPageConfig(pageStage.getPageType().getType());
+            newPageStage.setPageConfig(basePageConfig);
+            pageStageService.save(newPageStage);
+        } else {
+            // 更新
+            LambdaUpdateWrapper<PageStageEntity> updateWrapper = new LambdaUpdateWrapper<>();
+            updateWrapper.set(PageStageEntity::getPageConfig, JSON.toJSONString(pageStage.getPageConfig()));
+            updateWrapper.eq(PageStageEntity::getPageCode, pageStage.getPageCode());
+            updateWrapper.eq(PageStageEntity::getPageStatus, PageStatus.PREVIEW);
+            updateWrapper.set(PageStageEntity::getUpdateDate, new Date());
+            pageStageService.update(updateWrapper);
+        }
+        return Resp.success(true);
+    }
+
+    /**
      * 获取指定页面指定状态数据
      *
      * @param pageCode
