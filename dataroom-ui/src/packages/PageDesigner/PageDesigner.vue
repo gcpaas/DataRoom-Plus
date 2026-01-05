@@ -268,20 +268,31 @@ const onPreview = () => {
 
 const onSave = () => {
   console.log('onSave')
+  if (!pageStageEntity.value) {
+    ElMessage({
+      message: '页面信息未加载',
+      type: 'error',
+    })
+    return
+  }
   pageApi.updatePageConfig({
-    ...(pageStageEntity.value),
+    ...pageStageEntity.value,
     pageConfig: {
-      pageType: 'page',
-      basicConfig: undefined,
-      globalVariableList: [],
+      ...pageStageEntity.value.pageConfig,
       chartList: chartList.value
     }
   }).then((res) => {
     console.log(res)
-  })
-  ElMessage({
-    message: '已保存到缓存',
-    type: 'success',
+    ElMessage({
+      message: '保存成功',
+      type: 'success',
+    })
+  }).catch((err) => {
+    console.error('保存失败:', err)
+    ElMessage({
+      message: '保存失败',
+      type: 'error',
+    })
   })
 }
 
