@@ -32,8 +32,8 @@ onMounted(() => {
   <div class="dr-page-preview">
     <GridLayout
       v-model:layout="chartList"
-      :col-num="12"
-      :row-height="30"
+      :col-num="48"
+      :row-height="16"
       :is-draggable="false"
       :is-resizable="false"
       :vertical-compact="true"

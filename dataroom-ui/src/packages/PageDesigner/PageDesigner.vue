@@ -27,7 +27,7 @@ const addChart = (type: string) => {
   chartInst.id = chartInst.i
   chartInst.x = 0
   chartInst.y = 0
-  chartInst.w = 5
+  chartInst.w = 16
   chartInst.h = 5
   chartList.value.push(chartInst)
 }
@@ -374,7 +374,13 @@ onMounted(() => {
       <div class="canvas">
         <div class="canvas-main" id="canvas-main">
           <el-scrollbar>
-            <GridLayout v-model:layout="chartList" :col-num="12" :row-height="30" :is-draggable="true" :is-resizable="true" :vertical-compact="true" :use-css-transforms="true">
+            <GridLayout v-model:layout="chartList"
+                        :col-num="48"
+                        :row-height="16"
+                        :is-draggable="true"
+                        :is-resizable="true"
+                        :vertical-compact="true"
+                        :use-css-transforms="true">
               <GridItem
                 v-for="item in chartList"
                 :key="item.id"

@@ -346,7 +346,7 @@ onMounted(() => {
                 </el-icon>
                 <span>目录</span>
               </el-dropdown-item>
-              <el-dropdown-item command="visualScreen">
+              <el-dropdown-item command="visualScreen" disabled>
                 <el-icon>
                   <Monitor/>
                 </el-icon>

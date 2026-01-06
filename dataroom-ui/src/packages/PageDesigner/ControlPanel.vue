@@ -107,7 +107,7 @@ const getResourceUrl = (url?: string) => {
                 </el-form-item>
 
                 <el-form-item label="透明度">
-                  <el-input-number v-model="basicConfig.background.opacity" :min="0" :max="100" :step="1" controls-position="right"/>
+                  <el-input-number v-model="basicConfig.background.opacity" :min="0" :max="100" :step="1" controls-position="right" style="width: 100%"/>
                 </el-form-item>
 
                 <el-form-item label="填充方式">

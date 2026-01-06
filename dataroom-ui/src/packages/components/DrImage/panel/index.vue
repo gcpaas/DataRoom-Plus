@@ -17,7 +17,7 @@ const chartConfig = computed(() => chart)
 </script>
 <template>
   <div>
-    <el-form :model="chartConfig" label-width="auto">
+    <el-form :model="chartConfig" label-width="100px" label-position="left" size="small">
       <el-form-item label="URL">
         <el-input v-model="chartConfig.props.url" />
       </el-form-item>
