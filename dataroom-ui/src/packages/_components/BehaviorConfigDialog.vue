@@ -3,7 +3,7 @@
 import {computed, ref, watch} from 'vue'
 import type {Behavior, ChartConfig, ChartAction} from '../components/type/define.ts'
 import {ElMessage} from 'element-plus'
-import {Delete, Plus} from '@element-plus/icons-vue'
+import {Delete, Plus, Rank} from '@element-plus/icons-vue'
 
 const props = defineProps<{
   modelValue: boolean
@@ -141,6 +141,9 @@ const onClose = () => {
             @drop="(e: DragEvent) => handleDrop(e, index)"
             @click="activeActionIndex = index"
           >
+            <el-icon class="drag-icon">
+              <Rank />
+            </el-icon>
             <div class="action-info">
               <div class="action-name">{{ action.name || `动作${index + 1}` }}</div>
               <div class="action-type">{{ action.type === 'code' ? '代码' : action.type }}</div>
@@ -235,6 +238,15 @@ const onClose = () => {
       border-radius: 4px;
       border: 1px solid var(--dr-border);
       transition: all 0.3s;
+      gap: 8px;
+
+      .drag-icon {
+        font-size: 18px;
+        color: #999;
+        cursor: move;
+        flex-shrink: 0;
+        transition: color 0.3s;
+      }
 
       .action-info {
         flex: 1;
@@ -267,6 +279,10 @@ const onClose = () => {
       &:hover {
         background: var(--dr-primary1);
         cursor: pointer;
+
+        .drag-icon {
+          color: var(--dr-primary);
+        }
       }
 
       &.active {

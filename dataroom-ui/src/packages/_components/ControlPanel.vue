@@ -189,6 +189,7 @@ watch(
               <div class="behavior-controls">
                 <el-switch
                   :model-value="isBehaviorEnabled(behavior)"
+                  size="small"
                   @change="(val: boolean) => toggleBehavior(behavior, val)"
                 />
                 <el-icon class="setting-icon" @click="openBehaviorConfig(behavior)">
