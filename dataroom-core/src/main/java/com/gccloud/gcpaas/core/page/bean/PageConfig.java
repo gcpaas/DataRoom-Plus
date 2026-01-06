@@ -23,7 +23,7 @@ public class PageConfig extends BasePageConfig {
                 {
                     "background": {
                         "fill": "color",
-                        "color": "#fff",
+                        "color": "",
                         "url": "",
                         "opacity": 1,
                         "repeat": "no-repeat"

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/AutoInstall.ts'
-import { ref, provide, onMounted } from 'vue'
+import {ref, provide, onMounted, computed, type CSSProperties} from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { ChartConfig } from '@DrPackage/components/type/define.ts'
 import {pageApi} from "@/packages/page/api.ts";
 import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
 import {useRoute} from "vue-router";
+import {getResourceUrl} from "@/packages/_common/_utils.ts";
 
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
@@ -26,10 +27,41 @@ onMounted(() => {
   })
 })
 
+
+const computedCanvasMainContainerStyle  = computed(() => {
+  const background = basicConfig.value.background
+  if (!background) {
+    return {}
+  }
+
+  const styles: CSSProperties = {}
+  console.log(background)
+  if (background.fill === 'color' && background.color) {
+    // 纯色背景
+    styles.backgroundColor = background.color
+  } else if (background.fill === 'image' && background.url) {
+    // 图片背景
+    styles.backgroundImage = `url(${getResourceUrl(background.url)})`
+    styles.backgroundRepeat = background.repeat || 'no-repeat'
+    styles.backgroundSize = 'cover'
+    styles.backgroundPosition = 'center'
+    // 设置透明度
+    if (background.opacity !== undefined && background.opacity !== 1) {
+      styles.opacity = background.opacity
+    }
+    // 如果有背景色，作为图片的底色
+    if (background.color) {
+      styles.backgroundColor = background.color
+    }
+  }
+
+  return styles
+})
+
 </script>
 
 <template>
-  <div class="dr-page-preview">
+  <div class="dr-page-preview" :style="computedCanvasMainContainerStyle">
     <GridLayout
       v-model:layout="chartList"
       :col-num="48"

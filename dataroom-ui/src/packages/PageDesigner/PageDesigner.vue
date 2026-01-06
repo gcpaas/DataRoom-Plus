@@ -5,7 +5,7 @@ import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
-import {getChartById} from '@/packages/_common/_utils.ts'
+import {getChartById, getResourceUrl} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -316,7 +316,35 @@ const onSave = () => {
     })
   })
 }
+const computedCanvasMainContainerStyle  = computed(() => {
+  const background = basicConfig.value.background
+  if (!background) {
+    return {}
+  }
 
+  const styles: CSSProperties = {}
+  console.log(background)
+  if (background.fill === 'color' && background.color) {
+    // 纯色背景
+    styles.backgroundColor = background.color
+  } else if (background.fill === 'image' && background.url) {
+    // 图片背景
+    styles.backgroundImage = `url(${getResourceUrl(background.url)})`
+    styles.backgroundRepeat = background.repeat || 'no-repeat'
+    styles.backgroundSize = 'cover'
+    styles.backgroundPosition = 'center'
+    // 设置透明度
+    if (background.opacity !== undefined && background.opacity !== 1) {
+      styles.opacity = background.opacity
+    }
+    // 如果有背景色，作为图片的底色
+    if (background.color) {
+      styles.backgroundColor = background.color
+    }
+  }
+
+  return styles
+})
 onMounted(() => {
   // 获取路由中code 参数
   const code: string = route.params.pageCode as string
@@ -375,7 +403,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="canvas">
-        <div class="canvas-main" id="canvas-main">
+        <div class="canvas-main" id="canvas-main" :style="computedCanvasMainContainerStyle">
           <el-scrollbar>
             <GridLayout v-model:layout="chartList"
                         :col-num="48"
