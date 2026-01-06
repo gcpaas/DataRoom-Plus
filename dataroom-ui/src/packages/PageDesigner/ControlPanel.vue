@@ -13,7 +13,7 @@ import {Delete, Picture, Plus, Setting} from '@element-plus/icons-vue'
 const TimerConfigDialog = defineAsyncComponent(() => import('./TimerConfigDialog.vue'))
 
 // Props
-const { basicConfig }  = defineProps<{
+const {basicConfig} = defineProps<{
   basicConfig: PageBasicConfig
 }>()
 
@@ -209,7 +209,9 @@ const deleteTimer = (index: number) => {
             <div class="timer-header">
               <span class="timer-title">定时器列表</span>
               <el-button type="primary" size="small" @click="addTimer">
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                  <Plus/>
+                </el-icon>
                 添加定时器
               </el-button>
             </div>
@@ -217,7 +219,7 @@ const deleteTimer = (index: number) => {
               <div class="timer-item" v-for="(timer, index) in timers" :key="timer.id">
                 <div class="timer-info">
                   <div class="timer-name">{{ timer.name }}</div>
-                  <div class="timer-desc">间隔：{{ timer.interval }}ms</div>
+                  <div class="timer-desc">{{ timer.interval }} 毫秒1次</div>
                 </div>
                 <div class="timer-controls">
                   <el-switch
@@ -226,15 +228,15 @@ const deleteTimer = (index: number) => {
                     @change="(val: boolean) => toggleTimer(timer, val)"
                   />
                   <el-icon class="setting-icon" @click="openTimerConfig(timer, index)">
-                    <Setting />
+                    <Setting/>
                   </el-icon>
                   <el-icon class="delete-icon" @click="deleteTimer(index)">
-                    <Delete />
+                    <Delete/>
                   </el-icon>
                 </div>
               </div>
               <div v-if="timers.length === 0" class="empty-timer">
-                <el-empty description="暂无定时器，请点击上方按钮添加" :image-size="80" />
+                <el-empty description="暂无定时器，请点击上方按钮添加" :image-size="80"/>
               </div>
             </div>
           </div>
@@ -385,13 +387,13 @@ const deleteTimer = (index: number) => {
             .timer-name {
               font-size: 14px;
               font-weight: 500;
-              color: var(--el-text-color-primary);
+              color: var(--dr-text);
               margin-bottom: 4px;
             }
 
             .timer-desc {
               font-size: 12px;
-              color: var(--el-text-color-secondary);
+              color: var(--dr-text);
             }
           }
 
@@ -449,6 +451,7 @@ const deleteTimer = (index: number) => {
           }
         }
       }
+
       .bg-upload-section {
         width: 100%;
 

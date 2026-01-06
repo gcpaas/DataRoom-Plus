@@ -129,10 +129,10 @@ const onConfirm = () => {
 </script>
 
 <template>
-  <el-dialog 
-    v-model="dialogVisible" 
-    :title="`定时器配置 - ${timer.name}`" 
-    width="80%" 
+  <el-dialog
+    v-model="dialogVisible"
+    :title="`定时器配置 - ${timer.name}`"
+    width="80%"
     :close-on-click-modal="false"
   >
     <el-scrollbar class="dialog-scrollbar">
@@ -140,7 +140,7 @@ const onConfirm = () => {
         <!-- 基本配置区域 -->
         <div class="basic-config-section">
           <el-form label-position="left" size="default" inline class="inline-form">
-            <el-form-item label="定时器名称">
+            <el-form-item label="名称">
               <el-input
                 v-model="timer.name"
                 placeholder="请输入定时器名称"
@@ -161,9 +161,6 @@ const onConfirm = () => {
             </el-form-item>
             <el-form-item label="启用状态">
               <el-switch v-model="timer.enabled" />
-              <span class="status-text" :class="{ enabled: timer.enabled }">
-                {{ timer.enabled ? '已启用' : '已禁用' }}
-              </span>
             </el-form-item>
           </el-form>
         </div>
@@ -324,7 +321,7 @@ const onConfirm = () => {
     .action-list-wrapper {
       background: white;
       padding: 16px;
-      border-right: 1px solid var(--el-border-color-lighter);
+      border-right: 1px solid var(--dr-border);
       display: flex;
       flex-direction: column;
 
@@ -334,13 +331,13 @@ const onConfirm = () => {
         justify-content: space-between;
         margin-bottom: 16px;
         padding-bottom: 12px;
-        border-bottom: 1px solid var(--el-border-color-lighter);
+        border-bottom: 1px solid var(--dr-border);
         flex-shrink: 0;
 
         .title {
           font-size: 15px;
           font-weight: 500;
-          color: var(--el-text-color-primary);
+          color: var(--dr-text);
         }
       }
 
@@ -352,22 +349,26 @@ const onConfirm = () => {
       }
 
       .action-item {
-        margin: 8px 0;
+        margin-bottom: 16px;
         padding: 12px;
         position: relative;
         cursor: move;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-radius: 6px;
-        border: 1px solid var(--el-border-color-lighter);
+        border-radius: 4px;
+        border: 1px solid var(--dr-border);
         transition: all 0.3s;
         gap: 8px;
-        background: var(--el-fill-color-blank);
+        background: var(--dr-bg2);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
 
         .drag-icon {
           font-size: 18px;
-          color: var(--el-text-color-placeholder);
+          color: var(--el-text-color-regular);
           cursor: move;
           flex-shrink: 0;
           transition: color 0.3s;
@@ -379,7 +380,7 @@ const onConfirm = () => {
 
           .action-name {
             font-size: 14px;
-            color: var(--el-text-color-primary);
+            color: var(--dr-text);
             font-weight: 500;
             margin-bottom: 4px;
             overflow: hidden;
@@ -409,13 +410,13 @@ const onConfirm = () => {
           cursor: pointer;
 
           .drag-icon {
-            color: var(--el-color-primary);
+            color: var(--dr-primary);
           }
         }
 
         &.active {
           background: var(--el-color-primary-light-9);
-          border-color: var(--el-color-primary);
+          border-color: var(--dr-primary);
           box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
         }
       }
