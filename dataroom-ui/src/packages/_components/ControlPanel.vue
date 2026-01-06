@@ -1,8 +1,8 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {computed, ref, watch, defineAsyncComponent, onMounted} from 'vue'
-import type {ChartConfig} from '../components/type/define.ts'
-import {Pointer, Search} from "@element-plus/icons-vue";
+import {computed, ref, watch, defineAsyncComponent} from 'vue'
+import type {Behavior, ChartConfig} from '../components/type/define.ts'
+import {Pointer} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
@@ -15,26 +15,32 @@ const DatasetManage = defineAsyncComponent(() => import('@/packages/dataset/inde
 const {chart} = defineProps<{
   chart: ChartConfig<unknown>
 }>()
+
 // 默认激活样式tab
 const activeTab = ref('style')
 const chartConfig = computed(() => chart)
-
-const datasetFields = getComponentDatasetFields(chart.type);
-console.log('datasetFields',datasetFields)
-
-watch(() => chart.id, () => {
-  const behaviors = getComponentBehaviors(chart.type)
-  let datasetFields = getComponentDatasetFields(chart.type);
-  console.log('datasetFields',datasetFields)
-  console.log('behaviors', behaviors)
-  // 加载数据集名称
-  loadDatasetName()
-})
 
 // 数据集选择对话框
 const datasetDialogVisible = ref(false)
 const selectedDataset = ref<DatasetEntity | null>(null)
 const datasetName = ref('')
+const datasetFields = ref<any[]>([])
+const behaviors = ref<Behavior[]>([])
+
+/**
+ * 初始化组件相关数据
+ * 根据组件类型获取对应的数据集字段、行为等属性
+ */
+const initComponentData = () => {
+  datasetFields.value = getComponentDatasetFields(chart.type)
+  behaviors.value = getComponentBehaviors(chart.type)
+
+  console.log('datasetFields', datasetFields.value)
+  console.log('behaviors', behaviors)
+
+  // 加载数据集名称
+  loadDatasetName()
+}
 
 // 加载数据集名称
 const loadDatasetName = async () => {
@@ -79,10 +85,18 @@ const handleConfirmDataset = () => {
   }
 }
 
-// 组件挂载时加载数据集名称
-onMounted(() => {
-  loadDatasetName()
-})
+/**
+ * 监听组件实例变化
+ * 当chart.id改变时，说明切换了不同的组件实例，需要重新初始化
+ * immediate: true 确保首次进入时也会执行
+ */
+watch(
+  () => chart.id,
+  () => {
+    initComponentData()
+  },
+  {immediate: true}
+)
 
 </script>
 
@@ -120,7 +134,7 @@ onMounted(() => {
       </el-tab-pane>
       <el-tab-pane label="交互" name="interaction">
         <div class="tab-content">
-          <div class="placeholder">交互配置开发中...</div>
+          <div class="placeholder">{{ behaviors }}</div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -134,7 +148,7 @@ onMounted(() => {
       destroy-on-close
     >
       <div class="dataset-dialog-wrapper">
-        <DatasetManage :selectable="true" @update:selectedDataset="handleDatasetSelect" />
+        <DatasetManage :selectable="true" @update:selectedDataset="handleDatasetSelect"/>
       </div>
       <template #footer>
         <el-button @click="handleCancelDataset">取消</el-button>

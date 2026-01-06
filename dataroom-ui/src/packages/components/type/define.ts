@@ -53,7 +53,11 @@ export interface ChartConfig<T> {
   // 数据集编码
   dataset?: string
   // 图表组件个性化配置
-  props: T
+  props: T,
+  // 图表交互
+  behaviors?: {
+    [key: string]: string
+  }
 }
 
 /**

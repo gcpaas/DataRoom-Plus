@@ -45,8 +45,8 @@ const getInstance = (): DrImageConfig => {
  */
 const behaviors: Behavior[] = [
   {
-    name: '点击',
-    desc: '鼠标点击文本时触发',
+    name: '单击',
+    desc: '鼠标点击图片时触发',
     method: 'triggerClickEvent',
     paramsList: [],
   },
