@@ -118,15 +118,12 @@ const handleEdit = (item: PageEntity) => {
 const handleDesign = (item: PageEntity) => {
   if (item.pageType === PageType.VISUAL_SCREEN) {
     router.push({
-      path: '/dataRoom/visualScreenDesigner',
-      query: {code: item.code}
+      path: `/dataRoom/visualScreenDesigner/${item.code}`
     })
     return
   } else if (item.pageType === PageType.PAGE) {
-    console.log(item)
     router.push({
-      path: '/dataRoom/pageDesigner',
-      query: {code: item.code}
+      path: `/dataRoom/pageDesigner/${item.code}`
     })
     return
   }

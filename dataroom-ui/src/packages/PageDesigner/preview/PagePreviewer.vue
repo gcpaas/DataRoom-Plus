@@ -4,20 +4,20 @@ import { ref, provide, onMounted } from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { ChartConfig } from '@DrPackage/components/type/define.ts'
 import {pageApi} from "@/packages/page/api.ts";
-import {useRouter} from "vue-router";
 import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
+import {useRoute} from "vue-router";
 
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
 const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
 const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
-const router = useRouter()
-
+const route = useRoute()
 onMounted(() => {
   // 获取路由中code 参数
-  const code: string = router.currentRoute.value.query.code as string
+  const code: string = route.params.pageCode as string
+  const pageStatus: string = route.params.pageStatus as string
   // 根据编码获取页面详情
-  pageApi.getPageConfig(code, "preview").then((res) => {
+  pageApi.getPageConfig(code, pageStatus).then((res) => {
     pageStageEntity.value = res
     console.log(res)
     chartList.value = res.pageConfig?.chartList || []

@@ -37,22 +37,22 @@ const router = createRouter({
       }]
     },
     {
-      path: '/dataRoom/visualScreenDesigner',
+      path: '/dataRoom/visualScreenDesigner/:pageCode',
       name: 'visualScreenDesigner',
       component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
     },
     {
-      path: '/dataRoom/visualScreenPreview',
+      path: '/dataRoom/visualScreenPreview/:pageStatus/:pageCode',
       name: 'visualScreenPreview',
       component: () => import('@/packages/VisualScreenDesigner/VisualScreenDesigner.vue'),
     },
     {
-      path: '/dataRoom/pageDesigner',
+      path: '/dataRoom/pageDesigner/:pageCode',
       name: 'pageDesigner',
       component: () => import('@/packages/PageDesigner/PageDesigner.vue'),
     },
     {
-      path: '/dataRoom/pagePreviewer',
+      path: '/dataRoom/pagePreviewer/:pageStatus/:pageCode',
       name: 'pagePreviewer',
       component: () => import('@/packages/PageDesigner/preview/PagePreviewer.vue'),
     },

@@ -7,13 +7,14 @@ import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
 import {getChartById} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
-import {useRouter} from 'vue-router'
+import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
 import {pageApi} from "@/packages/page/api.ts";
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
+const route = useRoute()
 const activeChart = ref<ChartConfig<unknown>>()
 const componentLibRef = ref(null)
 const pageStageEntity = ref<PageStageEntity>()
@@ -283,11 +284,9 @@ const onPreview = () => {
     })
   })
 
-
   // 跳转到 /dataRoom/pagePreviewer 路由
   const routeData = router.resolve({
-    path: '/dataRoom/pagePreviewer',
-    query: {code: pageStageEntity.value.pageCode},
+    path: `/dataRoom/pagePreviewer/preview/${pageStageEntity.value.pageCode}`
   })
 
 
@@ -319,11 +318,10 @@ const onSave = () => {
 
 onMounted(() => {
   // 获取路由中code 参数
-  const code: string = router.currentRoute.value.query.code as string
+  const code: string = route.params.pageCode as string
   // 根据编码获取页面详情
   pageApi.getPageConfig(code, "design").then((res) => {
     pageStageEntity.value = res
-    console.log(res)
     chartList.value = res.pageConfig?.chartList || []
     basicConfig.value = res.pageConfig?.basicConfig || {}
     // 初始化 timers 字段，如果不存在则设置为空数组
