@@ -95,7 +95,7 @@ const handleDrop = (e: DragEvent, dropIndex: number) => {
     const dragItem = config.actions[dragStartIndex.value]
     config.actions.splice(dragStartIndex.value, 1)
     config.actions.splice(dropIndex, 0, dragItem)
-    
+
     // 更新选中索引
     if (activeActionIndex.value === dragStartIndex.value) {
       activeActionIndex.value = dropIndex
@@ -120,7 +120,7 @@ const onClose = () => {
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" :title="`交互配置 - ${behavior.name}`" width="80%" :close-on-click-modal="false">
+  <el-dialog v-model="dialogVisible" :title="`${behavior.name}动作`" width="80%" :close-on-click-modal="false">
     <div class="behavior-config-wrapper">
       <div class="action-list-wrapper">
         <div class="list-header">
