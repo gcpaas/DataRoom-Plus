@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   selectable: false
 })
 
+
 const emit = defineEmits<{
   'update:selectedResources': [resources: ResourceEntity[]]
 }>()
@@ -24,7 +25,7 @@ const emit = defineEmits<{
 const searchName = ref('')
 const resourceList = ref<ResourceEntity[]>([])
 const loading = ref(false)
-const selectedResourceList = ref<ResourceEntity[]>([])
+const selectedResource = ref<ResourceEntity | null>(null)
 
 // 面包屑导航
 interface BreadcrumbItem {
@@ -191,17 +192,21 @@ const handleCardClick = (item: ResourceEntity) => {
 }
 
 /**
- * 切换资源选中状态
+ * 切换资源选中状态（单选模式）
  * @param item
  */
 const toggleResourceSelection = (item: ResourceEntity) => {
-  const index = selectedResourceList.value.findIndex(r => r.id === item.id)
-  if (index > -1) {
-    selectedResourceList.value.splice(index, 1)
+  // 单选模式：直接替换为当前选中项
+  const isSameItem = selectedResource.value?.id === item.id
+  if (isSameItem) {
+    // 如果点击的是已选中的项，则取消选中
+    selectedResource.value = null
   } else {
-    selectedResourceList.value.push(item)
+    // 否则替换为当前项
+    selectedResource.value = item
   }
-  emit('update:selectedResources', selectedResourceList.value)
+  // 发送数组格式以保持接口兼容
+  emit('update:selectedResources', selectedResource.value ? [selectedResource.value] : [])
 }
 
 /**
@@ -209,7 +214,7 @@ const toggleResourceSelection = (item: ResourceEntity) => {
  * @param item
  */
 const isResourceSelected = (item: ResourceEntity) => {
-  return selectedResourceList.value.some(r => r.id === item.id)
+  return selectedResource.value?.id === item.id
 }
 
 /**

@@ -70,7 +70,7 @@ const onCopyUrl = async () => {
 <template>
   <el-dialog v-model="resourceLibVisible" title="素材库" width="80%">
     <div class="resource-lib-wrapper">
-      <ResourceManage :selectable="true" :single-select="true" @update:selectedResources="handleSelectedResourcesUpdate" />
+      <ResourceManage :selectable="true" @update:selectedResources="handleSelectedResourcesUpdate" />
     </div>
     <template #footer>
       <el-button @click="onClose">取消</el-button>
