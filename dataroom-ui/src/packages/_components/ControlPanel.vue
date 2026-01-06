@@ -381,13 +381,13 @@ watch(
           gap: 12px;
 
           .setting-icon {
-            font-size: 18px;
-            color: var(--el-text-color-regular);
+            color: var(--dr-text);
             cursor: pointer;
-            transition: color 0.3s;
+            transition: all 0.3s;
 
             &:hover {
               color: var(--dr-primary);
+              transform: rotate(90deg);
             }
           }
         }

@@ -344,13 +344,12 @@ const deleteTimer = (index: number) => {
 
             .setting-icon,
             .delete-icon {
-              font-size: 18px;
               cursor: pointer;
               transition: all 0.3s;
             }
 
             .setting-icon {
-              color: var(--el-text-color-regular);
+              color: var(--dr-text);
 
               &:hover {
                 color: var(--el-color-primary);
