@@ -71,6 +71,17 @@ export interface ChartConfig<T> {
     },
     // 数据处理脚本
     script: string
+    // 数据集入参、如果数据集需要入参的话
+    params: {
+      [key: string]: {
+        // 来源,暂时仅支持全局变量
+        from: string | 'globalVar'
+        // 变量名称
+        variableName: string
+        // 默认值
+        defaultValue: string
+      }
+    }
   }
 }
 
@@ -158,7 +169,8 @@ export function createChartConfig<T>(
     dataset: {
       code: '',
       fields: {},
-      script: ''
+      script: '',
+      params: {}
     },
     ...overrides,
   }
