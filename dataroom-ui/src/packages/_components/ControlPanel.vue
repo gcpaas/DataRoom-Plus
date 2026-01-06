@@ -22,6 +22,8 @@ const {chart} = defineProps<{
 
 // 默认激活样式tab
 const activeTab = ref('style')
+// 默认展开所有数据折叠面板
+const activeDataCollapse = ref(['dataset', 'fields', 'script'])
 const chartConfig = computed(() => chart)
 
 // 数据集选择对话框
@@ -179,62 +181,74 @@ watch(
       </el-tab-pane>
       <el-tab-pane label="数据" name="data">
         <div class="tab-content">
-          <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
-            <el-form-item label="数据集">
-              <el-input
-                v-model="datasetName"
-                placeholder="请选择数据集"
-                :suffix-icon="Pointer"
-                readonly
-                @click="openDatasetDialog"
-                style="cursor: pointer;"
-              ></el-input>
-            </el-form-item>
-            <el-form-item
-              label="字段绑定"
-            ></el-form-item>
-            <el-form-item
-              v-for="field in datasetFields"
-              :key="field.name"
-              :label="field.desc"
-              :prop="'fields.' + field.name"
-              :required="field.required"
-            >
-              <el-select
-                v-model="chartConfig.dataset.fields[field.name]"
-                :placeholder="`请选择${field.desc}`"
-                :multiple="field.multiple"
-                filterable
-                allow-create
-                default-first-option
-                clearable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="output in datasetOutputList"
-                  :key="output.name"
-                  :label="output.name"
-                  :value="output.name"
+          <el-collapse v-model="activeDataCollapse" class="data-collapse">
+            <!-- 数据集选择 -->
+            <el-collapse-item name="dataset" title="数据集选择">
+              <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
+                <el-form-item label="数据集">
+                  <el-input
+                    v-model="datasetName"
+                    placeholder="请选择数据集"
+                    :suffix-icon="Pointer"
+                    readonly
+                    @click="openDatasetDialog"
+                    style="cursor: pointer;"
+                  ></el-input>
+                </el-form-item>
+              </el-form>
+            </el-collapse-item>
+
+            <!-- 字段绑定 -->
+            <el-collapse-item name="fields" title="字段绑定">
+              <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
+                <el-form-item
+                  v-for="field in datasetFields"
+                  :key="field.name"
+                  :label="field.desc"
+                  :prop="'fields.' + field.name"
+                  :required="field.required"
                 >
-                  <div class="custom-option">
-                    <span class="option-name">{{ output.name }}</span>
-                    <span class="option-desc">{{ output.desc }}</span>
-                  </div>
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item
-              label="数据处理"
-            >
-              <el-input
-                v-model="chartConfig.dataset.script"
-                type="textarea"
-                :rows="8"
-                placeholder="请输入数据处理JS脚本"
-                style="width: 100%"
-              ></el-input>
-            </el-form-item>
-          </el-form>
+                  <el-select
+                    v-model="chartConfig.dataset.fields[field.name]"
+                    :placeholder="`请选择${field.desc}`"
+                    :multiple="field.multiple"
+                    filterable
+                    allow-create
+                    default-first-option
+                    clearable
+                    style="width: 100%"
+                  >
+                    <el-option
+                      v-for="output in datasetOutputList"
+                      :key="output.name"
+                      :label="output.name"
+                      :value="output.name"
+                    >
+                      <div class="custom-option">
+                        <span class="option-name">{{ output.name }}</span>
+                        <span class="option-desc">{{ output.desc }}</span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+            </el-collapse-item>
+
+            <!-- 数据处理 -->
+            <el-collapse-item name="script" title="数据处理">
+              <el-form :model="chartConfig.dataset" label-width="100px" label-position="left" size="small">
+                <el-form-item label="处理脚本">
+                  <el-input
+                    v-model="chartConfig.dataset.script"
+                    type="textarea"
+                    :rows="8"
+                    placeholder="请输入数据处理JS脚本"
+                    style="width: 100%"
+                  ></el-input>
+                </el-form-item>
+              </el-form>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </el-tab-pane>
       <el-tab-pane label="交互" name="interaction">
@@ -400,6 +414,49 @@ watch(
     color: var(--el-text-color-secondary);
     font-size: 12px;
     text-align: right;
+  }
+}
+
+// 数据折叠面板样式
+.data-collapse {
+  border: none;
+
+  :deep(.el-collapse-item) {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(.el-collapse-item__header) {
+    background: transparent;
+    border: none;
+    font-weight: 700;
+    color: var(--dr-text1);
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+  }
+
+  :deep(.el-collapse-item__wrap) {
+    border: none;
+    background: transparent;
+  }
+
+  :deep(.el-collapse-item__content) {
+    padding: 12px 4px 0;
+    background: transparent;
+  }
+
+  :deep(.el-form) {
+    .el-form-item {
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 
