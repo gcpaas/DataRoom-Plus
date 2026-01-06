@@ -86,7 +86,7 @@ const onClose = () => {
     gap: 8px;
 
     & .card {
-      background-color: white;
+      background-color: var(--dr-bg2);
       border: 1px solid var(--dr-border);
       overflow: hidden;
 
