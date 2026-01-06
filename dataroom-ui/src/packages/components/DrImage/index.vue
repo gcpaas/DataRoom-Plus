@@ -8,15 +8,17 @@ export default defineComponent({
 </script>
 <script setup lang="ts">
 import type { DrImageConfig } from './install.ts'
+import {getResourceUrl} from "@/packages/_common/_utils.ts";
 
 const { chart } = defineProps<{
   chart: DrImageConfig
 }>()
+
 </script>
 
 <template>
   <div class="dr-image">
-    <el-image :src="chart.props.url" lazy>
+    <el-image :src="getResourceUrl(chart.props.url)" lazy>
       <template #error>
         <div class="image-error-slot">
            图片加载失败

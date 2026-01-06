@@ -25,7 +25,7 @@ const getInstance = (): DrImageConfig => {
   return createChartConfig<DrImagePropsInterface>(
     DrConst.THIS_PLUGIN_TYPE,
     {
-      url: ''
+      url: '/dataRoom/resource/image/placeholder.png'
     },
     {
       title: '图片',

@@ -50,9 +50,9 @@ const initComponentData = () => {
 
 // 加载数据集名称
 const loadDatasetName = async () => {
-  if (chartConfig.value.dataset) {
+  if (chartConfig.value.dataset?.code) {
     try {
-      const detail = await datasetApi.detail(chartConfig.value.dataset)
+      const detail = await datasetApi.detail(chartConfig.value.dataset?.code)
       datasetName.value = detail.name
     } catch (error) {
       console.error('加载数据集名称失败:', error)

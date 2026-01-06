@@ -1,4 +1,4 @@
-import type { ChartConfig } from '@/packages/components/type/define.ts'
+import type {ChartConfig} from '@/packages/components/type/define.ts'
 
 /**
  * 根据图表HTML对象获取对应的图表配置
@@ -138,4 +138,19 @@ export const parseParamsFromMultiple = (texts: string[]): string[] => {
   })
 
   return Array.from(allParams)
+}
+
+
+/**
+ *  拼接素材地址
+ */
+export const getResourceUrl = (url: string): string => {
+  if (!url) {
+    return ''
+  }
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  const resourceBaseUrl = import.meta.env.VITE_RESOURCE_BASE_URL
+  return resourceBaseUrl + (resourceBaseUrl.endsWith('/') ? '' : '/') + (url.startsWith('/') ? url.substring(1) : url)
 }
