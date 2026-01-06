@@ -1,3 +1,5 @@
+import {datasetFields} from "@/packages/components/DrText/install.ts";
+
 /**
  * 图表插件、所有图表都需要继承该类并手动注册
  */
@@ -50,8 +52,6 @@ export interface ChartConfig<T> {
   rotateY: number
   // Z轴旋转角度
   rotateZ: number
-  // 数据集编码
-  dataset?: string
   // 图表组件个性化配置
   props: T,
   // 图表交互
@@ -60,6 +60,16 @@ export interface ChartConfig<T> {
     [key: string]: {
       disabled?: boolean
       actions: ChartAction[]
+    }
+  }
+  // 数据集与字段绑定
+  dataset: {
+    // 数据集编码
+    code: string
+    // 字段绑定
+    fields: {
+      // key为图表对应的指标、维度、属性值等字段，value 为数据集字段名
+      [key: string]: string
     }
   }
 }
