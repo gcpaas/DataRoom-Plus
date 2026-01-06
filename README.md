@@ -25,6 +25,17 @@
 ### 仪表盘设计页
 ![页面设计页.png](doc/image/%E9%A1%B5%E9%9D%A2%E8%AE%BE%E8%AE%A1%E9%A1%B5.png)
 
+### 素材库页面
+![素材库页面.png](doc/image/%E7%B4%A0%E6%9D%90%E5%BA%93%E9%A1%B5%E9%9D%A2.png)
+
+### 数据源页面
+![数据源页面.png](doc/image/%E6%95%B0%E6%8D%AE%E6%BA%90%E9%A1%B5%E9%9D%A2.png)
+
+### 数据集页面
+![数据集页面.png](doc/image/%E6%95%B0%E6%8D%AE%E9%9B%86%E9%A1%B5%E9%9D%A2.png)
+
+
+
 ## 快速开始
 https://www.yuque.com/gc-starter/dataroom-plus/start
 
