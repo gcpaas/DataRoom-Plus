@@ -68,7 +68,9 @@ export interface ChartConfig<T> {
     fields: {
       // key为图表对应的指标、维度、属性值等字段，value 为数据集字段名
       [key: string]: string
-    }
+    },
+    // 数据处理脚本
+    script: string
   }
 }
 
@@ -156,6 +158,7 @@ export function createChartConfig<T>(
     dataset: {
       code: '',
       fields: {},
+      script: ''
     },
     ...overrides,
   }
