@@ -199,7 +199,7 @@ watch(
             </el-collapse-item>
 
             <!-- 字段绑定 -->
-            <el-collapse-item name="fields" title="字段绑定">
+            <el-collapse-item name="fields" title="组件字段绑定">
               <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
                 <el-form-item
                   v-for="field in datasetFields"
