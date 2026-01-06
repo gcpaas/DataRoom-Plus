@@ -1,16 +1,49 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import {computed, defineAsyncComponent, reactive, ref} from 'vue'
 import type {PageBasicConfig} from "@/packages/_common/_type.ts";
 import {resourceApi} from '@/packages/resource/api'
-import {ElMessage} from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import {getCookie, getCookieName} from '@/packages/_common/_cookie'
-import {Picture} from '@element-plus/icons-vue'
+import {Delete, Picture, Plus, Setting} from '@element-plus/icons-vue'
+
+/**
+ * 懒加载定时器配置对话框
+ */
+const TimerConfigDialog = defineAsyncComponent(() => import('./TimerConfigDialog.vue'))
 
 // Props
 const { basicConfig }  = defineProps<{
   basicConfig: PageBasicConfig
 }>()
+
+// 定时器接口定义
+interface Timer {
+  id: string
+  name: string
+  enabled: boolean
+  interval: number // 间隔时间（毫秒）
+  actions: TimerAction[]
+}
+
+interface TimerAction {
+  name: string
+  type: 'code'
+  code: string
+}
+
+// 定时器列表
+const timers = computed(() => {
+  if (!basicConfig.timers) {
+    basicConfig.timers = []
+  }
+  return basicConfig.timers
+})
+
+// 定时器配置对话框
+const timerConfigDialogVisible = ref(false)
+const currentTimer = ref<Timer | null>(null)
+const currentTimerIndex = ref<number>(-1)
 
 // 默认激活配置tab
 const activeTab = ref('config')
@@ -46,6 +79,53 @@ const getResourceUrl = (url?: string) => {
     return url
   }
   return `${resourceBaseUrl}${url}`
+}
+
+// 添加新定时器
+const addTimer = () => {
+  const timerCount = timers.value.length + 1
+  const newTimer: Timer = {
+    id: `timer_${Date.now()}`,
+    name: `定时器${timerCount}`,
+    enabled: false,
+    interval: 5000,
+    actions: []
+  }
+  timers.value.push(newTimer)
+  ElMessage.success('已添加新的定时器')
+}
+
+// 切换定时器启用状态
+const toggleTimer = (timer: Timer, enabled: boolean) => {
+  timer.enabled = enabled
+  ElMessage.success(enabled ? '定时器已启用' : '定时器已禁用')
+}
+
+// 打开定时器配置对话框
+const openTimerConfig = (timer: Timer, index: number) => {
+  currentTimer.value = timer
+  currentTimerIndex.value = index
+  timerConfigDialogVisible.value = true
+}
+
+// 删除定时器
+const deleteTimer = (index: number) => {
+  ElMessageBox.confirm(
+    '确定要删除这个定时器吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      timers.value.splice(index, 1)
+      ElMessage.success('定时器已删除')
+    })
+    .catch(() => {
+      // 用户取消删除
+    })
 }
 </script>
 
@@ -126,13 +206,49 @@ const getResourceUrl = (url?: string) => {
       <el-tab-pane label="交互" name="interaction">
         <el-scrollbar class="tab-scrollbar">
           <div class="tab-content">
-            <div class="placeholder">交互配置开发中...</div>
-            <!-- 这里放置交互相关的配置项 -->
-            <slot name="interaction"></slot>
+            <div class="timer-header">
+              <span class="timer-title">定时器列表</span>
+              <el-button type="primary" size="small" @click="addTimer">
+                <el-icon><Plus /></el-icon>
+                添加定时器
+              </el-button>
+            </div>
+            <div class="timer-list">
+              <div class="timer-item" v-for="(timer, index) in timers" :key="timer.id">
+                <div class="timer-info">
+                  <div class="timer-name">{{ timer.name }}</div>
+                  <div class="timer-desc">间隔：{{ timer.interval }}ms</div>
+                </div>
+                <div class="timer-controls">
+                  <el-switch
+                    v-model="timer.enabled"
+                    size="small"
+                    @change="(val: boolean) => toggleTimer(timer, val)"
+                  />
+                  <el-icon class="setting-icon" @click="openTimerConfig(timer, index)">
+                    <Setting />
+                  </el-icon>
+                  <el-icon class="delete-icon" @click="deleteTimer(index)">
+                    <Delete />
+                  </el-icon>
+                </div>
+              </div>
+              <div v-if="timers.length === 0" class="empty-timer">
+                <el-empty description="暂无定时器，请点击上方按钮添加" :image-size="80" />
+              </div>
+            </div>
           </div>
         </el-scrollbar>
       </el-tab-pane>
     </el-tabs>
+
+    <!-- 定时器配置对话框 -->
+    <TimerConfigDialog
+      v-if="timerConfigDialogVisible && currentTimer"
+      v-model="timerConfigDialogVisible"
+      :timer="currentTimer"
+      :timer-index="currentTimerIndex"
+    />
   </div>
 </template>
 
@@ -227,6 +343,92 @@ const getResourceUrl = (url?: string) => {
         color: var(--el-text-color-secondary);
         text-align: center;
         padding: 40px 0;
+      }
+
+      .timer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--el-border-color-lighter);
+
+        .timer-title {
+          font-size: 16px;
+          font-weight: 500;
+          color: var(--el-text-color-primary);
+        }
+      }
+
+      .timer-list {
+        .timer-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px;
+          margin-bottom: 12px;
+          background: var(--el-fill-color-light);
+          border-radius: 6px;
+          border: 1px solid var(--el-border-color-lighter);
+          transition: all 0.3s;
+
+          &:hover {
+            background: var(--el-fill-color);
+            border-color: var(--el-color-primary-light-7);
+          }
+
+          .timer-info {
+            flex: 1;
+            min-width: 0;
+            margin-right: 12px;
+
+            .timer-name {
+              font-size: 14px;
+              font-weight: 500;
+              color: var(--el-text-color-primary);
+              margin-bottom: 4px;
+            }
+
+            .timer-desc {
+              font-size: 12px;
+              color: var(--el-text-color-secondary);
+            }
+          }
+
+          .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .setting-icon,
+            .delete-icon {
+              font-size: 18px;
+              cursor: pointer;
+              transition: all 0.3s;
+            }
+
+            .setting-icon {
+              color: var(--el-text-color-regular);
+
+              &:hover {
+                color: var(--el-color-primary);
+                transform: rotate(90deg);
+              }
+            }
+
+            .delete-icon {
+              color: var(--el-color-danger);
+
+              &:hover {
+                transform: scale(1.2);
+              }
+            }
+          }
+        }
+
+        .empty-timer {
+          padding: 40px 0;
+        }
       }
 
       .upload-section {

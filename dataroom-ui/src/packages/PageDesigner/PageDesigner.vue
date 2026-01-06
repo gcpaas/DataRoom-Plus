@@ -326,6 +326,10 @@ onMounted(() => {
     console.log(res)
     chartList.value = res.pageConfig?.chartList || []
     basicConfig.value = res.pageConfig?.basicConfig || {}
+    // 初始化 timers 字段，如果不存在则设置为空数组
+    if (!basicConfig.value.timers) {
+      basicConfig.value.timers = []
+    }
     globalVariable.value = res.pageConfig?.globalVariableList || []
   })
 })

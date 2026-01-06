@@ -1,5 +1,5 @@
 import {type Component, type Ref} from 'vue'
-import type {ChartConfig} from '@DrPackage/components/type/define.ts'
+import type {ChartAction, ChartConfig} from '@DrPackage/components/type/define.ts'
 
 interface ComponentLibTagInterface {
   // 类型名称
@@ -57,6 +57,7 @@ interface PageStageEntity {
  * 页面基础配置
  */
 interface PageBasicConfig {
+  // 页面背景设置
   background: {
     // 背景填充方式
     fill: string | 'image' | 'color'
@@ -69,6 +70,19 @@ interface PageBasicConfig {
     // 背景图填充方式
     repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
   }
+  // 定时器配置列表
+  timers?: {
+    // 定时器ID
+    id: string
+    // 定时器名称
+    name: string
+    // 是否启用
+    enabled: boolean
+    // 定时器间隔，单位毫秒
+    interval: number
+    // 执行的动作
+    actions: ChartAction[]
+  }[]
 }
 
 /**
