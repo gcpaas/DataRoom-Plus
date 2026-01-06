@@ -1,11 +1,12 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {computed, ref, watch, defineAsyncComponent} from 'vue'
+import {computed, ref, watch, defineAsyncComponent, inject} from 'vue'
 import type {Behavior, ChartConfig, ChartDatasetField} from '../components/type/define.ts'
 import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
-import type {DatasetEntity, DatasetOutputParam} from '@/packages/dataset/api'
+import type {DatasetEntity, DatasetInputParam, DatasetOutputParam} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
+import type {GlobalVariable} from '@/packages/_common/_type.ts'
 
 /**
  * 懒加载数据集管理页面
@@ -16,14 +17,15 @@ const DatasetManage = defineAsyncComponent(() => import('@/packages/dataset/inde
  */
 const BehaviorConfigDialog = defineAsyncComponent(() => import('./BehaviorConfigDialog.vue'))
 
-const {chart} = defineProps<{
+const {chart, globalVariableList = []} = defineProps<{
   chart: ChartConfig<unknown>
+  globalVariableList?: GlobalVariable[]
 }>()
 
 // 默认激活样式tab
 const activeTab = ref('style')
 // 默认展开所有数据折叠面板
-const activeDataCollapse = ref(['dataset', 'fields', 'script'])
+const activeDataCollapse = ref(['dataset', 'fields', 'params', 'script'])
 const chartConfig = computed(() => chart)
 
 // 数据集选择对话框
@@ -36,6 +38,8 @@ const behaviorConfigDialogVisible = ref(false)
 const currentBehavior = ref<Behavior | null>(null)
 // 数据集输出字段列表
 const datasetOutputList = ref<DatasetOutputParam[]>([])
+// 数据集输入参数列表
+const datasetInputList = ref<DatasetInputParam[]>([])
 // 表单引用
 const dataFormRef = ref()
 // 表单校验规则
@@ -66,15 +70,36 @@ const initComponentData = () => {
   loadDatasetName()
 }
 
-// 加载数据集名称和输出字段
+// 加载数据集名称、输出字段和输入参数
 const loadDatasetName = async () => {
   datasetName.value = ''
   datasetOutputList.value = []
+  datasetInputList.value = []
   if (chartConfig.value.dataset?.code) {
     const detail = await datasetApi.detail(chartConfig.value.dataset?.code)
     datasetName.value = detail.name
     datasetOutputList.value = detail.outputList || []
+    datasetInputList.value = detail.inputList || []
+    // 初始化 params 结构
+    initDatasetParams()
   }
+}
+
+// 初始化数据集参数
+const initDatasetParams = () => {
+  if (!chartConfig.value.dataset.params) {
+    chartConfig.value.dataset.params = {}
+  }
+  // 为每个入参初始化配置（如果不存在）
+  datasetInputList.value.forEach(input => {
+    if (!chartConfig.value.dataset.params[input.name]) {
+      chartConfig.value.dataset.params[input.name] = {
+        from: 'globalVar',
+        variableName: '',
+        defaultValue: input.defaultVal || ''
+      }
+    }
+  })
 }
 
 // 打开数据集选择对话框
@@ -103,6 +128,10 @@ const handleConfirmDataset = () => {
     chartConfig.value.dataset.code = selectedDataset.value.code
     // 更新输出字段列表
     datasetOutputList.value = selectedDataset.value.outputList || []
+    // 更新输入参数列表
+    datasetInputList.value = selectedDataset.value.inputList || []
+    // 初始化参数配置
+    initDatasetParams()
     datasetDialogVisible.value = false
   }
 }
@@ -231,6 +260,65 @@ watch(
                     </el-option>
                   </el-select>
                 </el-form-item>
+              </el-form>
+            </el-collapse-item>
+
+            <!-- 数据集参数绑定 -->
+            <el-collapse-item name="params" title="数据集参数绑定" v-if="datasetInputList.length > 0">
+              <el-form :model="chartConfig.dataset" label-width="100px" label-position="left" size="small">
+                <div v-for="inputParam in datasetInputList" :key="inputParam.name" class="param-item">
+                  <div class="param-header">
+                    <span class="param-name">{{ inputParam.name }}</span>
+                    <span class="param-desc" v-if="inputParam.desc">（{{ inputParam.desc }}）</span>
+                  </div>
+                  
+                  <el-form-item label="参数来源">
+                    <el-select
+                      v-model="chartConfig.dataset.params[inputParam.name].from"
+                      placeholder="请选择参数来源"
+                      style="width: 100%"
+                    >
+                      <el-option label="全局变量" value="globalVar"></el-option>
+                    </el-select>
+                  </el-form-item>
+
+                  <el-form-item label="变量名称">
+                    <el-select
+                      v-if="chartConfig.dataset.params[inputParam.name].from === 'globalVar'"
+                      v-model="chartConfig.dataset.params[inputParam.name].variableName"
+                      placeholder="请选择全局变量"
+                      filterable
+                      clearable
+                      style="width: 100%"
+                    >
+                      <el-option
+                        v-for="gVar in globalVariableList"
+                        :key="gVar.id"
+                        :label="gVar.name"
+                        :value="gVar.name"
+                      >
+                        <div class="custom-option">
+                          <span class="option-name">{{ gVar.name }}</span>
+                          <span class="option-desc">{{ gVar.remark }}</span>
+                        </div>
+                      </el-option>
+                    </el-select>
+                    <el-input
+                      v-else
+                      v-model="chartConfig.dataset.params[inputParam.name].variableName"
+                      placeholder="请输入变量名称"
+                      style="width: 100%"
+                    ></el-input>
+                  </el-form-item>
+
+                  <el-form-item label="默认值">
+                    <el-input
+                      v-model="chartConfig.dataset.params[inputParam.name].defaultValue"
+                      placeholder="请输入默认值"
+                      style="width: 100%"
+                    ></el-input>
+                  </el-form-item>
+                </div>
               </el-form>
             </el-collapse-item>
 
@@ -460,6 +548,39 @@ watch(
 
   :deep(.el-scrollbar__bar) {
     z-index: 10 !important;
+  }
+}
+
+// 参数项样式
+.param-item {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: var(--dr-bg2);
+  border-radius: 4px;
+  border: 1px solid var(--dr-border);
+
+  .param-header {
+    margin-bottom: 12px;
+    font-weight: 500;
+    
+    .param-name {
+      color: var(--dr-text);
+      font-size: 14px;
+    }
+    
+    .param-desc {
+      color: var(--el-text-color-secondary);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+  }
+
+  .el-form-item {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

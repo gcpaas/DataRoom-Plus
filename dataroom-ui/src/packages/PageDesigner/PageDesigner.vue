@@ -439,7 +439,7 @@ onMounted(() => {
       <div class="right-panel" :style="rightControlPanelStyle">
         <el-scrollbar>
           <ControlPanel v-if="rightControlPanelSetting" :basicConfig="basicConfig"></ControlPanel>
-          <ControlPanelWrapper v-else :chart="activeChart!">
+          <ControlPanelWrapper v-else :chart="activeChart!" :global-variable-list="globalVariable">
             <component :is="getPanelComponent(activeChart?.type)" :chart="activeChart"></component>
           </ControlPanelWrapper>
         </el-scrollbar>
