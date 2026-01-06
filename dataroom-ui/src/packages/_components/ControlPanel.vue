@@ -4,7 +4,7 @@ import {computed, ref, watch, defineAsyncComponent} from 'vue'
 import type {Behavior, ChartConfig, ChartDatasetField} from '../components/type/define.ts'
 import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
-import type {DatasetEntity} from '@/packages/dataset/api'
+import type {DatasetEntity, DatasetOutputParam} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
 
 /**
@@ -32,6 +32,22 @@ const datasetFields = ref<ChartDatasetField[]>([])
 const behaviors = ref<Behavior[]>([])
 const behaviorConfigDialogVisible = ref(false)
 const currentBehavior = ref<Behavior | null>(null)
+// 数据集输出字段列表
+const datasetOutputList = ref<DatasetOutputParam[]>([])
+// 表单引用
+const dataFormRef = ref()
+// 表单校验规则
+const dataFormRules = computed(() => {
+  const rules: Record<string, any[]> = {}
+  datasetFields.value.forEach(field => {
+    if (field.required) {
+      rules[`fields.${field.name}`] = [
+        {required: true, message: `请选择${field.desc}`, trigger: 'change'}
+      ]
+    }
+  })
+  return rules
+})
 
 /**
  * 初始化组件相关数据
@@ -48,12 +64,14 @@ const initComponentData = () => {
   loadDatasetName()
 }
 
-// 加载数据集名称
+// 加载数据集名称和输出字段
 const loadDatasetName = async () => {
   datasetName.value = ''
+  datasetOutputList.value = []
   if (chartConfig.value.dataset?.code) {
     const detail = await datasetApi.detail(chartConfig.value.dataset?.code)
     datasetName.value = detail.name
+    datasetOutputList.value = detail.outputList || []
   }
 }
 
@@ -81,6 +99,8 @@ const handleConfirmDataset = () => {
     datasetName.value = selectedDataset.value.name
     // 保存数据集编码到chartConfig
     chartConfig.value.dataset.code = selectedDataset.value.code
+    // 更新输出字段列表
+    datasetOutputList.value = selectedDataset.value.outputList || []
     datasetDialogVisible.value = false
   }
 }
@@ -159,7 +179,7 @@ watch(
       </el-tab-pane>
       <el-tab-pane label="数据" name="data">
         <div class="tab-content">
-          <el-form label-width="100px" label-position="left" size="small">
+          <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
             <el-form-item label="数据集">
               <el-input
                 v-model="datasetName"
@@ -170,8 +190,35 @@ watch(
                 style="cursor: pointer;"
               ></el-input>
             </el-form-item>
-            <el-form-item v-for="field in datasetFields" :key="field.name" :label="field.desc">
-              <el-input v-model="chartConfig.title" placeholder="请选择数据集" :suffix-icon="Pointer"></el-input>
+            <el-form-item 
+              v-for="field in datasetFields" 
+              :key="field.name" 
+              :label="field.desc"
+              :prop="'fields.' + field.name"
+              :required="field.required"
+            >
+              <el-select
+                v-model="chartConfig.dataset.fields[field.name]"
+                :placeholder="`请选择${field.desc}`"
+                :multiple="field.multiple"
+                filterable
+                allow-create
+                default-first-option
+                clearable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="output in datasetOutputList"
+                  :key="output.name"
+                  :label="output.name"
+                  :value="output.name"
+                >
+                  <div class="custom-option">
+                    <span class="option-name">{{ output.name }}</span>
+                    <span class="option-desc">{{ output.desc }}</span>
+                  </div>
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-form>
         </div>
@@ -316,6 +363,29 @@ watch(
         }
       }
     }
+  }
+}
+
+// 自定义下拉选项样式
+.custom-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  .option-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .option-desc {
+    flex-shrink: 0;
+    margin-left: 12px;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    text-align: right;
   }
 }
 
