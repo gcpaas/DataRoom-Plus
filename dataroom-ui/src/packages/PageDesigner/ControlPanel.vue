@@ -151,10 +151,55 @@ const getResourceUrl = (url?: string) => {
     :deep(.el-tabs__header) {
       margin-bottom: 0;
       border-bottom: none;
-      padding: 0 16px;
+      background-color: var(--el-bg-color);
     }
 
-    :deep(.el-tabs__nav-wrap)::after {
+    :deep(.el-tabs__nav-wrap) {
+      &::after {
+        display: none;
+      }
+
+      .el-tabs__nav-prev,
+      .el-tabs__nav-next {
+        display: none !important;
+      }
+    }
+
+    :deep(.el-tabs__nav) {
+      position: relative;
+      width: 100%;
+      background-color: var(--el-fill-color-lighter);
+      border-radius: 8px;
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+    }
+
+    :deep(.el-tabs__item) {
+      flex: 1;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border-radius: 6px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 13px;
+      color: var(--el-text-color-regular);
+      padding: 0 12px;
+      z-index: 1;
+
+      &:hover {
+        color: var(--el-color-primary);
+      }
+
+      &.is-active {
+        color: var(--el-color-primary);
+        background-color: var(--el-bg-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+      }
+    }
+
+    :deep(.el-tabs__active-bar) {
       display: none;
     }
 
