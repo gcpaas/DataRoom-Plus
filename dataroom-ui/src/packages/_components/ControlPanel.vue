@@ -181,7 +181,7 @@ watch(
       </el-tab-pane>
       <el-tab-pane label="数据" name="data">
         <div class="tab-content">
-          <el-collapse v-model="activeDataCollapse" class="data-collapse">
+          <el-collapse v-model="activeDataCollapse" class="dr-collapse">
             <!-- 数据集选择 -->
             <el-collapse-item name="dataset" title="数据集选择">
               <el-form ref="dataFormRef" :model="chartConfig.dataset" :rules="dataFormRules" label-width="100px" label-position="left" size="small">
@@ -303,6 +303,8 @@ watch(
 </template>
 
 <style scoped lang="scss">
+@import "./assets/index.scss";
+
 .control-panel {
   width: 100%;
   height: 100%;
@@ -414,49 +416,6 @@ watch(
     color: var(--el-text-color-secondary);
     font-size: 12px;
     text-align: right;
-  }
-}
-
-// 数据折叠面板样式
-.data-collapse {
-  border: none;
-
-  :deep(.el-collapse-item) {
-    margin-bottom: 16px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :deep(.el-collapse-item__header) {
-    background: transparent;
-    border: none;
-    font-weight: 700;
-    color: var(--dr-text1);
-    height: 20px;
-    line-height: 20px;
-    font-size: 12px;
-  }
-
-  :deep(.el-collapse-item__wrap) {
-    border: none;
-    background: transparent;
-  }
-
-  :deep(.el-collapse-item__content) {
-    padding: 12px 4px 0;
-    background: transparent;
-  }
-
-  :deep(.el-form) {
-    .el-form-item {
-      margin-bottom: 16px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
   }
 }
 
