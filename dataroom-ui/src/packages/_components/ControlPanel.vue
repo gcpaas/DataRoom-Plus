@@ -223,6 +223,17 @@ watch(
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item
+              label="数据处理"
+            >
+              <el-input
+                v-model="chartConfig.dataset.script"
+                type="textarea"
+                :rows="8"
+                placeholder="请输入数据处理JS脚本"
+                style="width: 100%"
+              ></el-input>
+            </el-form-item>
           </el-form>
         </div>
       </el-tab-pane>
