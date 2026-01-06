@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {computed, ref, watch, defineAsyncComponent} from 'vue'
 import type {Behavior, ChartConfig} from '../components/type/define.ts'
-import {Pointer} from "@element-plus/icons-vue";
+import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
@@ -11,6 +11,10 @@ import {datasetApi} from '@/packages/dataset/api'
  * 懒加载数据集管理页面
  */
 const DatasetManage = defineAsyncComponent(() => import('@/packages/dataset/index.vue'))
+/**
+ * 懒加载交互配置对话框
+ */
+const BehaviorConfigDialog = defineAsyncComponent(() => import('./BehaviorConfigDialog.vue'))
 
 const {chart} = defineProps<{
   chart: ChartConfig<unknown>
@@ -26,6 +30,8 @@ const selectedDataset = ref<DatasetEntity | null>(null)
 const datasetName = ref('')
 const datasetFields = ref<any[]>([])
 const behaviors = ref<Behavior[]>([])
+const behaviorConfigDialogVisible = ref(false)
+const currentBehavior = ref<Behavior | null>(null)
 
 /**
  * 初始化组件相关数据
@@ -86,6 +92,46 @@ const handleConfirmDataset = () => {
 }
 
 /**
+ * 检查交互行为是否启用
+ * @param behavior
+ */
+const isBehaviorEnabled = (behavior: Behavior): boolean => {
+  if (!chartConfig.value.behaviors) {
+    return false
+  }
+  const behaviorConfig = chartConfig.value.behaviors[behavior.method]
+  return behaviorConfig && !behaviorConfig.disabled
+}
+
+/**
+ * 切换交互行为开关
+ * @param behavior
+ * @param enabled
+ */
+const toggleBehavior = (behavior: Behavior, enabled: boolean) => {
+  if (!chartConfig.value.behaviors) {
+    chartConfig.value.behaviors = {}
+  }
+  if (!chartConfig.value.behaviors[behavior.method]) {
+    chartConfig.value.behaviors[behavior.method] = {
+      disabled: !enabled,
+      actions: []
+    }
+  } else {
+    chartConfig.value.behaviors[behavior.method].disabled = !enabled
+  }
+}
+
+/**
+ * 打开交互行为配置对话框
+ * @param behavior
+ */
+const openBehaviorConfig = (behavior: Behavior) => {
+  currentBehavior.value = behavior
+  behaviorConfigDialogVisible.value = true
+}
+
+/**
  * 监听组件实例变化
  * 当chart.id改变时，说明切换了不同的组件实例，需要重新初始化
  * immediate: true 确保首次进入时也会执行
@@ -134,7 +180,23 @@ watch(
       </el-tab-pane>
       <el-tab-pane label="交互" name="interaction">
         <div class="tab-content">
-          <div class="placeholder">{{ behaviors }}</div>
+          <div class="behavior-list">
+            <div class="behavior-item" v-for="behavior in behaviors" :key="behavior.name">
+              <div class="behavior-info">
+                <div class="behavior-name">{{ behavior.name }}</div>
+                <div class="behavior-desc">{{ behavior.desc }}</div>
+              </div>
+              <div class="behavior-controls">
+                <el-switch
+                  :model-value="isBehaviorEnabled(behavior)"
+                  @change="(val: boolean) => toggleBehavior(behavior, val)"
+                />
+                <el-icon class="setting-icon" @click="openBehaviorConfig(behavior)">
+                  <Setting />
+                </el-icon>
+              </div>
+            </div>
+          </div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -155,6 +217,14 @@ watch(
         <el-button type="primary" @click="handleConfirmDataset">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 交互配置对话框 -->
+    <BehaviorConfigDialog
+      v-if="behaviorConfigDialogVisible && currentBehavior"
+      v-model="behaviorConfigDialogVisible"
+      :behavior="currentBehavior"
+      :chart="chartConfig"
+    />
   </div>
 </template>
 
@@ -194,6 +264,57 @@ watch(
         color: var(--el-text-color-secondary);
         text-align: center;
         padding: 40px 0;
+      }
+    }
+
+    .behavior-list {
+      .behavior-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        margin-bottom: 16px;
+        background: var(--dr-bg2);
+        border-radius: 4px;
+        border: 1px solid var(--dr-border);
+
+        .behavior-info {
+          flex: 1;
+          min-width: 0;
+          margin-right: 12px;
+
+          .behavior-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dr-text);
+            margin-bottom: 4px;
+          }
+
+          .behavior-desc {
+            font-size: 12px;
+            color: var(--el-text-color-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .behavior-controls {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .setting-icon {
+            font-size: 18px;
+            color: var(--el-text-color-regular);
+            cursor: pointer;
+            transition: color 0.3s;
+
+            &:hover {
+              color: var(--dr-primary);
+            }
+          }
+        }
       }
     }
   }

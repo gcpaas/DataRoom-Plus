@@ -54,8 +54,14 @@ const behaviors: Behavior[] = [
   {
     name: '单击',
     desc: '鼠标点击文本时触发',
-    method: 'triggerClickEvent',
-    paramsList: [],
+    method: 'click',
+    paramsList: [{
+      name: 'text',
+      desc: '点击的文本值',
+      type: 'string',
+      required: false,
+      defaultValue: ''
+    }],
   },
 ]
 /**

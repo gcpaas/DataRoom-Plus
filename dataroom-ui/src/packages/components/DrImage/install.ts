@@ -47,7 +47,7 @@ const behaviors: Behavior[] = [
   {
     name: '单击',
     desc: '鼠标点击图片时触发',
-    method: 'triggerClickEvent',
+    method: 'click',
     paramsList: [],
   },
 ]
