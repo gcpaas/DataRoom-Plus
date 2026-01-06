@@ -73,6 +73,7 @@ export interface ChartConfig<T> {
     script: string
     // 数据集入参、如果数据集需要入参的话
     params: {
+      // key 为数据集入参名称，value 为当前入参是通过何种方式获取
       [key: string]: {
         // 来源,暂时仅支持全局变量
         from: string | 'globalVar'
