@@ -1,5 +1,6 @@
 import {defineAsyncComponent} from 'vue'
 import type {ChartConfig, Behavior, ChartDatasetField} from '../type/define'
+import {createChartConfig} from '../type/define'
 import {DrConst} from '@/packages/_common/_constant.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
@@ -7,13 +8,9 @@ const component = defineAsyncComponent(() => import('./index.vue'))
 const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
 interface DrTextPropsInterface {
-  /**
-   * 文本
-   */
+  // 文本
   text: string
-  /**
-   * 字体大小
-   */
+  // 字体大小
   fontSize: number
 }
 
@@ -27,25 +24,16 @@ export type DrTextConfig = ChartConfig<DrTextPropsInterface>
  * @constructor
  */
 const getInstance = (): DrTextConfig => {
-  const config: DrTextConfig = {
-    id: Math.random().toString(),
-    i: Math.random().toString(),
-    type: DrConst.THIS_PLUGIN_TYPE,
-    title: '文本',
-    w: 150,
-    h: 100,
-    x: Math.random() * 100 + 100,
-    y: 100,
-    z: 999,
-    rotateX: 0,
-    rotateY: 0,
-    rotateZ: 0,
-    props: {
-      text: '我是文本',
+  return createChartConfig<DrTextPropsInterface>(
+    DrConst.THIS_PLUGIN_TYPE,
+    {
+      text: '文本占位符',
       fontSize: 14,
     },
-  }
-  return config
+    {
+      title: '文本'
+    }
+  )
 }
 /**
  * 定义组件交互定义

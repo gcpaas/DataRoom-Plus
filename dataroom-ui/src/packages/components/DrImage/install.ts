@@ -1,5 +1,6 @@
 import { defineAsyncComponent } from 'vue'
 import type { ChartConfig, Behavior } from '../type/define'
+import { createChartConfig } from '../type/define'
 import { DrConst } from '@/packages/_common/_constant.ts'
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
@@ -21,24 +22,15 @@ export type DrImageConfig = ChartConfig<DrImagePropsInterface>
  * @constructor
  */
 const getInstance = (): DrImageConfig => {
-  const config: DrImageConfig = {
-    id: Math.random().toString(),
-    i: Math.random().toString(),
-    type: DrConst.THIS_PLUGIN_TYPE,
-    title: '文本',
-    w: 150,
-    h: 100,
-    x: Math.random() * 100 + 100,
-    y: 100,
-    z: 100,
-    rotateX: 0,
-    rotateY: 0,
-    rotateZ: 0,
-    props: {
+  return createChartConfig<DrImagePropsInterface>(
+    DrConst.THIS_PLUGIN_TYPE,
+    {
       url: ''
     },
-  }
-  return config
+    {
+      title: '图片',
+    }
+  )
 }
 /**
  * 定义组件交互定义
