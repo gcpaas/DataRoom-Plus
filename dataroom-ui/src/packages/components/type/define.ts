@@ -56,8 +56,20 @@ export interface ChartConfig<T> {
   props: T,
   // 图表交互
   behaviors?: {
-    [key: string]: string
+    // key 为 交互名称，value 为交互的行为定义
+    [key: string]: {
+      disabled?: boolean
+      actions: ChartAction[]
+    }
   }
+}
+
+
+export interface ChartAction {
+  // 行为类型，暂时仅支持高代码
+  type: string | 'code'
+  // JS代码
+  code: string
 }
 
 /**
