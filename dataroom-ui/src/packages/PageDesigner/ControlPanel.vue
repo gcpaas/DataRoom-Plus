@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import {computed, defineAsyncComponent, reactive, ref} from 'vue'
 import type {PageBasicConfig} from "@/packages/_common/_type.ts";
-import {resourceApi} from '@/packages/resource/api'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {getCookie, getCookieName} from '@/packages/_common/_cookie'
 import {Delete, Picture, Plus, Setting} from '@element-plus/icons-vue'
@@ -133,114 +132,110 @@ const deleteTimer = (index: number) => {
   <div class="control-panel">
     <el-tabs v-model="activeTab" class="control-tabs">
       <el-tab-pane label="配置" name="config">
-        <el-scrollbar class="tab-scrollbar">
-          <div class="tab-content">
-            <el-form label-width="80px" label-position="left" size="small" v-if="basicConfig.background">
-              <!-- 背景填充方式 -->
-              <el-form-item label="背景填充">
-                <el-radio-group v-model="basicConfig.background.fill">
-                  <el-radio value="color">颜色</el-radio>
-                  <el-radio value="image">图片</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="背景颜色" v-if="basicConfig.background.fill === 'color'">
-                <el-color-picker v-model="basicConfig.background.color" show-alpha></el-color-picker>
-              </el-form-item>
-              <template v-if="basicConfig.background.fill === 'image'">
-                <el-form-item label="背景图片">
-                  <div class="bg-upload-section">
-                    <el-upload
-                      :action="uploadUrl"
-                      :headers="uploadHeaders"
-                      :on-success="handleBgUploadSuccess"
-                      :on-error="handleUploadError"
-                      :show-file-list="false"
-                      accept="image/*"
-                      class="bg-uploader"
-                    >
-                      <div class="bg-preview-box">
-                        <el-image
-                          v-if="basicConfig.background.url"
-                          :src="getResourceUrl(basicConfig.background.url)"
-                          fit="contain"
-                          class="bg-image"
-                          lazy
-                        >
-                          <template #error>
-                            <div class="bg-placeholder">
-                              <el-icon>
-                                <Picture/>
-                              </el-icon>
-                              <span>加载失败</span>
-                            </div>
-                          </template>
-                        </el-image>
-                        <div v-else class="bg-placeholder">
-                          <el-icon>
-                            <Picture/>
-                          </el-icon>
-                          <span>点击上传背景图</span>
-                        </div>
+        <div class="tab-content">
+          <el-form label-width="80px" label-position="left" size="small" v-if="basicConfig.background">
+            <!-- 背景填充方式 -->
+            <el-form-item label="背景填充">
+              <el-radio-group v-model="basicConfig.background.fill">
+                <el-radio value="color">颜色</el-radio>
+                <el-radio value="image">图片</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="背景颜色" v-if="basicConfig.background.fill === 'color'">
+              <el-color-picker v-model="basicConfig.background.color" show-alpha></el-color-picker>
+            </el-form-item>
+            <template v-if="basicConfig.background.fill === 'image'">
+              <el-form-item label="背景图片">
+                <div class="bg-upload-section">
+                  <el-upload
+                    :action="uploadUrl"
+                    :headers="uploadHeaders"
+                    :on-success="handleBgUploadSuccess"
+                    :on-error="handleUploadError"
+                    :show-file-list="false"
+                    accept="image/*"
+                    class="bg-uploader"
+                  >
+                    <div class="bg-preview-box">
+                      <el-image
+                        v-if="basicConfig.background.url"
+                        :src="getResourceUrl(basicConfig.background.url)"
+                        fit="contain"
+                        class="bg-image"
+                        lazy
+                      >
+                        <template #error>
+                          <div class="bg-placeholder">
+                            <el-icon>
+                              <Picture/>
+                            </el-icon>
+                            <span>加载失败</span>
+                          </div>
+                        </template>
+                      </el-image>
+                      <div v-else class="bg-placeholder">
+                        <el-icon>
+                          <Picture/>
+                        </el-icon>
+                        <span>点击上传背景图</span>
                       </div>
-                    </el-upload>
-                  </div>
-                </el-form-item>
+                    </div>
+                  </el-upload>
+                </div>
+              </el-form-item>
 
-                <el-form-item label="透明度">
-                  <el-input-number v-model="basicConfig.background.opacity" :min="0" :max="100" :step="1" controls-position="right" style="width: 100%"/>
-                </el-form-item>
+              <el-form-item label="透明度">
+                <el-input-number v-model="basicConfig.background.opacity" :min="0" :max="100" :step="1" controls-position="right" style="width: 100%"/>
+              </el-form-item>
 
-                <el-form-item label="填充方式">
-                  <el-select v-model="basicConfig.background.repeat" placeholder="请选择填充方式">
-                    <el-option label="不重复" value="no-repeat"></el-option>
-                    <el-option label="重复" value="repeat"></el-option>
-                    <el-option label="水平重复" value="repeat-x"></el-option>
-                    <el-option label="垂直重复" value="repeat-y"></el-option>
-                  </el-select>
-                </el-form-item>
-              </template>
-            </el-form>
-          </div>
-        </el-scrollbar>
+              <el-form-item label="填充方式">
+                <el-select v-model="basicConfig.background.repeat" placeholder="请选择填充方式">
+                  <el-option label="不重复" value="no-repeat"></el-option>
+                  <el-option label="重复" value="repeat"></el-option>
+                  <el-option label="水平重复" value="repeat-x"></el-option>
+                  <el-option label="垂直重复" value="repeat-y"></el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-form>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="交互" name="interaction">
-        <el-scrollbar class="tab-scrollbar">
-          <div class="tab-content">
-            <div class="timer-header">
-              <span class="timer-title">定时器列表</span>
-              <el-button type="primary" size="small" @click="addTimer">
-                <el-icon>
-                  <Plus/>
+        <div class="tab-content">
+          <div class="timer-header">
+            <span class="timer-title">定时器列表</span>
+            <el-button type="primary" size="small" @click="addTimer">
+              <el-icon>
+                <Plus/>
+              </el-icon>
+              添加定时器
+            </el-button>
+          </div>
+          <div class="timer-list">
+            <div class="timer-item" v-for="(timer, index) in timers" :key="timer.id">
+              <div class="timer-info">
+                <div class="timer-name">{{ timer.name }}</div>
+                <div class="timer-desc">{{ timer.interval }} 毫秒1次</div>
+              </div>
+              <div class="timer-controls">
+                <el-switch
+                  v-model="timer.enabled"
+                  size="small"
+                  @change="(val: boolean) => toggleTimer(timer, val)"
+                />
+                <el-icon class="setting-icon" @click="openTimerConfig(timer, index)">
+                  <Setting/>
                 </el-icon>
-                添加定时器
-              </el-button>
+                <el-icon class="delete-icon" @click="deleteTimer(index)">
+                  <Delete/>
+                </el-icon>
+              </div>
             </div>
-            <div class="timer-list">
-              <div class="timer-item" v-for="(timer, index) in timers" :key="timer.id">
-                <div class="timer-info">
-                  <div class="timer-name">{{ timer.name }}</div>
-                  <div class="timer-desc">{{ timer.interval }} 毫秒1次</div>
-                </div>
-                <div class="timer-controls">
-                  <el-switch
-                    v-model="timer.enabled"
-                    size="small"
-                    @change="(val: boolean) => toggleTimer(timer, val)"
-                  />
-                  <el-icon class="setting-icon" @click="openTimerConfig(timer, index)">
-                    <Setting/>
-                  </el-icon>
-                  <el-icon class="delete-icon" @click="deleteTimer(index)">
-                    <Delete/>
-                  </el-icon>
-                </div>
-              </div>
-              <div v-if="timers.length === 0" class="empty-timer">
-                <el-empty description="暂无定时器，请点击上方按钮添加" :image-size="80"/>
-              </div>
+            <div v-if="timers.length === 0" class="empty-timer">
+              <el-empty description="暂无定时器，请点击上方按钮添加" :image-size="80"/>
             </div>
           </div>
-        </el-scrollbar>
+        </div>
       </el-tab-pane>
     </el-tabs>
 
@@ -269,55 +264,10 @@ const deleteTimer = (index: number) => {
     :deep(.el-tabs__header) {
       margin-bottom: 0;
       border-bottom: none;
-      background-color: var(--el-bg-color);
+      padding: 0 16px;
     }
 
-    :deep(.el-tabs__nav-wrap) {
-      &::after {
-        display: none;
-      }
-
-      .el-tabs__nav-prev,
-      .el-tabs__nav-next {
-        display: none !important;
-      }
-    }
-
-    :deep(.el-tabs__nav) {
-      position: relative;
-      width: 100%;
-      background-color: var(--el-fill-color-lighter);
-      border-radius: 8px;
-      padding: 4px;
-      display: flex;
-      gap: 4px;
-    }
-
-    :deep(.el-tabs__item) {
-      flex: 1;
-      height: 32px;
-      line-height: 32px;
-      text-align: center;
-      border-radius: 6px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      font-size: 13px;
-      color: var(--el-text-color-regular);
-      padding: 0 12px;
-      z-index: 1;
-
-      &:hover {
-        color: var(--el-color-primary);
-      }
-
-      &.is-active {
-        color: var(--el-color-primary);
-        background-color: var(--el-bg-color);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        font-weight: 500;
-      }
-    }
-
-    :deep(.el-tabs__active-bar) {
+    :deep(.el-tabs__nav-wrap)::after {
       display: none;
     }
 
@@ -326,20 +276,10 @@ const deleteTimer = (index: number) => {
       overflow: hidden;
     }
 
-    .tab-scrollbar {
-      height: 100%;
-
-      :deep(.el-scrollbar__wrap) {
-        overflow-x: hidden;
-      }
-
-      :deep(.el-scrollbar__bar) {
-        z-index: 10 !important;
-      }
-    }
-
     .tab-content {
       padding: 16px;
+      height: 100%;
+      overflow-y: auto;
 
       .placeholder {
         color: var(--el-text-color-secondary);
