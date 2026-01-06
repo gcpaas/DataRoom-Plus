@@ -190,9 +190,12 @@ watch(
                 style="cursor: pointer;"
               ></el-input>
             </el-form-item>
-            <el-form-item 
-              v-for="field in datasetFields" 
-              :key="field.name" 
+            <el-form-item
+              label="字段绑定"
+            ></el-form-item>
+            <el-form-item
+              v-for="field in datasetFields"
+              :key="field.name"
               :label="field.desc"
               :prop="'fields.' + field.name"
               :required="field.required"

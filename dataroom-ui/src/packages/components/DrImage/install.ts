@@ -51,7 +51,8 @@ const datasetFields: ChartDatasetField[] = [
   {
     name: 'url',
     desc: '图片地址',
-    required: false
+    required: false,
+    multiple: false
   }
 ]
 

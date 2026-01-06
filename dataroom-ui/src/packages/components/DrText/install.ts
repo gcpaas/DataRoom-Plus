@@ -59,7 +59,8 @@ const datasetFields: ChartDatasetField[] = [
   {
     name: 'text',
     desc: '文本值',
-    required: false
+    required: false,
+    multiple: false
   }
 ]
 
