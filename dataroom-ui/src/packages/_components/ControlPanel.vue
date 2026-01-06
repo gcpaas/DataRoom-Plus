@@ -50,16 +50,10 @@ const initComponentData = () => {
 
 // 加载数据集名称
 const loadDatasetName = async () => {
+  datasetName.value = ''
   if (chartConfig.value.dataset?.code) {
-    try {
-      const detail = await datasetApi.detail(chartConfig.value.dataset?.code)
-      datasetName.value = detail.name
-    } catch (error) {
-      console.error('加载数据集名称失败:', error)
-      datasetName.value = ''
-    }
-  } else {
-    datasetName.value = ''
+    const detail = await datasetApi.detail(chartConfig.value.dataset?.code)
+    datasetName.value = detail.name
   }
 }
 
@@ -86,7 +80,7 @@ const handleConfirmDataset = () => {
     // 更新数据集名称到输入框
     datasetName.value = selectedDataset.value.name
     // 保存数据集编码到chartConfig
-    chartConfig.value.dataset = selectedDataset.value.code
+    chartConfig.value.dataset.code = selectedDataset.value.code
     datasetDialogVisible.value = false
   }
 }
@@ -193,7 +187,7 @@ watch(
                   @change="(val: boolean) => toggleBehavior(behavior, val)"
                 />
                 <el-icon class="setting-icon" @click="openBehaviorConfig(behavior)">
-                  <Setting />
+                  <Setting/>
                 </el-icon>
               </div>
             </div>
