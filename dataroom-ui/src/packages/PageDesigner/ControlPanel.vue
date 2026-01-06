@@ -356,9 +356,9 @@ const deleteTimer = (index: number) => {
         border-bottom: 1px solid var(--el-border-color-lighter);
 
         .timer-title {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 500;
-          color: var(--el-text-color-primary);
+          color: var(--dr-text1);
         }
       }
 
