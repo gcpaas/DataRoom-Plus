@@ -9,10 +9,10 @@
     <img alt="Company" src="https://img.shields.io/badge/公司-科大国创云网科技有限公司-blue.svg">
     <a href="http://gcpaas.gccloud.com"><img src="https://img.shields.io/badge/%E9%A2%84%E8%A7%88-演示环境-yellow" alt="预览"></a>
 </p>
-🔥DataRoom-Plus是一款基于SpringBoot3.x、Vue3.x、Element-plus、G2Plot、Echarts等技术栈的大屏设计器，具备大屏设计、预览能力，支持MySQL、Oracle、PostgreSQL、SQLServer、ElasticSearch、JSON、HTTP、Groovy等数据集接入，使用简单，完全免费，代码开源。<br/>
+🔥DataRoom-Plus是一款基于SpringBoot3.x、JDK17、Vue3.x、Element-plus、G2Plot、Echarts等技术栈的大屏设计器，具备大屏设计、预览能力，支持MySQL、Oracle、PostgreSQL、SQLServer、ElasticSearch、JSON、HTTP、Groovy等数据集接入，使用简单，完全免费，代码开源。<br/>
 
 ## 特别说明
-功能未开发完成, 请勿用于生产环境
+<span style="color: red;font-szie:20px;font-weight: bold;">功能未开发完成, 请勿用于生产环境, 持续更新中...</span>
 
 ## 系统截图
 
