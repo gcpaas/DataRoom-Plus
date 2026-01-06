@@ -122,6 +122,8 @@ export interface ChartDatasetField {
   desc: string
   // 是否必填
   required: boolean
+  // 是否多选
+  multiple: boolean
 }
 
 /**

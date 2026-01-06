@@ -1,7 +1,7 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
 import {computed, ref, watch, defineAsyncComponent} from 'vue'
-import type {Behavior, ChartConfig} from '../components/type/define.ts'
+import type {Behavior, ChartConfig, ChartDatasetField} from '../components/type/define.ts'
 import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity} from '@/packages/dataset/api'
@@ -28,7 +28,7 @@ const chartConfig = computed(() => chart)
 const datasetDialogVisible = ref(false)
 const selectedDataset = ref<DatasetEntity | null>(null)
 const datasetName = ref('')
-const datasetFields = ref<any[]>([])
+const datasetFields = ref<ChartDatasetField[]>([])
 const behaviors = ref<Behavior[]>([])
 const behaviorConfigDialogVisible = ref(false)
 const currentBehavior = ref<Behavior | null>(null)
