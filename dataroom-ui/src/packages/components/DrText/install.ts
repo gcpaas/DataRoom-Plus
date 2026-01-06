@@ -57,9 +57,9 @@ const behaviors: Behavior[] = [
  */
 const datasetFields: ChartDatasetField[] = [
   {
-    name: 'xField',
+    name: 'text',
     desc: '文本值',
-    required: true
+    required: false
   }
 ]
 

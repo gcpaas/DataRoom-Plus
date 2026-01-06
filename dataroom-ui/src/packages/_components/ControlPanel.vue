@@ -94,7 +94,10 @@ const isBehaviorEnabled = (behavior: Behavior): boolean => {
     return false
   }
   const behaviorConfig = chartConfig.value.behaviors[behavior.method]
-  return behaviorConfig && !behaviorConfig.disabled
+  if (!behaviorConfig) {
+    return false
+  }
+  return !behaviorConfig.disabled
 }
 
 /**
@@ -106,14 +109,15 @@ const toggleBehavior = (behavior: Behavior, enabled: boolean) => {
   if (!chartConfig.value.behaviors) {
     chartConfig.value.behaviors = {}
   }
-  if (!chartConfig.value.behaviors[behavior.method]) {
+  let oriBehavior = chartConfig.value.behaviors[behavior.method]
+  if (!oriBehavior) {
     chartConfig.value.behaviors[behavior.method] = {
       disabled: !enabled,
       actions: []
     }
-  } else {
-    chartConfig.value.behaviors[behavior.method].disabled = !enabled
+    return
   }
+  oriBehavior.disabled = !enabled
 }
 
 /**
