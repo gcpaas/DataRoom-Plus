@@ -11,14 +11,14 @@ import type {DrImageConfig, DrImagePropsInterface} from "@/packages/components/D
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
 const resourceLibVisible = ref(true)
-const selectedResources = ref<ResourceEntity[]>([])
+const selectedResource = ref<ResourceEntity | null>(null)
 
 /**
  * 处理选中资源的更新
- * @param resources
+ * @param resource
  */
-const handleSelectedResourcesUpdate = (resources: ResourceEntity[]) => {
-  selectedResources.value = resources
+const handleSelectedResourceUpdate = (resource: ResourceEntity | null) => {
+  selectedResource.value = resource
 }
 
 /**
@@ -32,14 +32,12 @@ const onClose = () => {
  * 确定添加素材到画布
  */
 const onConfirm = () => {
-  if (selectedResources.value.length === 0) {
+  if (!selectedResource.value) {
     return
   }
-  // 遍历选中的素材,添加到画布
-  selectedResources.value.forEach(item => {
-    const chartInst = canvasInst.addChart('DrImage') as DrImageConfig
-    chartInst.props.url = item.url!
-  })
+  // 添加选中的素材到画布
+  const chartInst = canvasInst.addChart('DrImage') as DrImageConfig
+  chartInst.props.url = selectedResource.value.url!
   resourceLibVisible.value = false
 }
 
@@ -47,11 +45,11 @@ const onConfirm = () => {
  * 复制素材地址到剪贴板
  */
 const onCopyUrl = async () => {
-  if (selectedResources.value.length === 0) {
+  if (!selectedResource.value) {
     ElMessage.warning('请先选择素材')
     return
   }
-  const url = selectedResources.value[0].url
+  const url = selectedResource.value.url
   if (!url) {
     ElMessage.error('该素材没有地址信息')
     return
@@ -59,7 +57,7 @@ const onCopyUrl = async () => {
   try {
     // 使用Clipboard API复制到剪贴板
     await navigator.clipboard.writeText(url)
-    ElMessage.success('地址已复制到剪贴板')
+    ElMessage.success('地址已复制，您可以粘贴到需要素材地址的地方')
     resourceLibVisible.value = false
   } catch (error) {
     console.error('复制失败:', error)
@@ -70,11 +68,11 @@ const onCopyUrl = async () => {
 <template>
   <el-dialog v-model="resourceLibVisible" title="素材库" width="80%">
     <div class="resource-lib-wrapper">
-      <ResourceManage :selectable="true" @update:selectedResources="handleSelectedResourcesUpdate" />
+      <ResourceManage :selectable="true" @update:selectedResource="handleSelectedResourceUpdate" />
     </div>
     <template #footer>
       <el-button @click="onClose">取消</el-button>
-      <el-button type="success" @click="onCopyUrl">复制地址</el-button>
+      <el-button type="primary" @click="onCopyUrl" plain>复制地址</el-button>
       <el-button type="primary" @click="onConfirm">确定</el-button>
     </template>
   </el-dialog>

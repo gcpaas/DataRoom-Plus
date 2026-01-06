@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 
 const emit = defineEmits<{
-  'update:selectedResources': [resources: ResourceEntity[]]
+  'update:selectedResource': [resource: ResourceEntity | null]
 }>()
 
 const searchName = ref('')
@@ -192,21 +192,20 @@ const handleCardClick = (item: ResourceEntity) => {
 }
 
 /**
- * 切换资源选中状态（单选模式）
+ * 切换资源选中状态(单选模式)
  * @param item
  */
 const toggleResourceSelection = (item: ResourceEntity) => {
-  // 单选模式：直接替换为当前选中项
+  // 单选模式:直接替换为当前选中项
   const isSameItem = selectedResource.value?.id === item.id
   if (isSameItem) {
-    // 如果点击的是已选中的项，则取消选中
+    // 如果点击的是已选中的项,则取消选中
     selectedResource.value = null
   } else {
     // 否则替换为当前项
     selectedResource.value = item
   }
-  // 发送数组格式以保持接口兼容
-  emit('update:selectedResources', selectedResource.value ? [selectedResource.value] : [])
+  emit('update:selectedResource', selectedResource.value)
 }
 
 /**
