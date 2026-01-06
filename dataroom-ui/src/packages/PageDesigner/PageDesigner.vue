@@ -31,6 +31,7 @@ const addChart = (type: string) => {
   chartInst.w = 16
   chartInst.h = 5
   chartList.value.push(chartInst)
+  return chartInst
 }
 const leftToolPanelShow = ref(true)
 const rightControlPanelShow = ref(true)
@@ -456,6 +457,7 @@ onMounted(() => {
         height: 30px;
         object-fit: contain;
         cursor: pointer;
+        width: 44px;
       }
 
       & .title {

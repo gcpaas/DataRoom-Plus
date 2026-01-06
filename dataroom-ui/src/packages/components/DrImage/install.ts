@@ -7,7 +7,7 @@ const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
 const controlPanel = defineAsyncComponent(() => import('./panel/index.vue'))
 
-interface DrImagePropsInterface {
+export interface DrImagePropsInterface {
   // 地址
   url: string
 }

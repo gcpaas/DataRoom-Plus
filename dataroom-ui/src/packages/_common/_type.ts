@@ -12,7 +12,11 @@ interface ComponentLibTagInterface {
  * 画布实例
  */
 interface CanvasInst {
-  addChart: (type: string) => void
+  /**
+   * 新增图表，返回图表实例
+   * @param type
+   */
+  addChart: (type: string) => ChartConfig<unknown>
   chartList: Ref<Array<ChartConfig<unknown>>>
   activeChartById: (id: string) => void
   switchRightControlPanel: (open: boolean) => void

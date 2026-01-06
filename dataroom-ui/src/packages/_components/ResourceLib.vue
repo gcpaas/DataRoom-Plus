@@ -5,6 +5,7 @@ import type { CanvasInst } from '@/packages/_common/_type.ts'
 import { DrConst } from '@/packages/_common/_constant.ts'
 import ResourceManage from '@/packages/resource/index.vue'
 import type { ResourceEntity } from '@/packages/resource/api'
+import type {DrImageConfig, DrImagePropsInterface} from "@/packages/components/DrImage/install.ts";
 
 const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
@@ -35,8 +36,8 @@ const onConfirm = () => {
   }
   // 遍历选中的素材,添加到画布
   selectedResources.value.forEach(item => {
-    console.log('添加素材到画布:', item)
-    canvasInst.addChart('DrImage')
+    const chartInst = canvasInst.addChart('DrImage') as DrImageConfig
+    chartInst.props.url = item.url!
   })
   resourceLibVisible.value = false
 }
