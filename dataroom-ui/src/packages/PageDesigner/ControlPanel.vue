@@ -203,13 +203,8 @@ const deleteTimer = (index: number) => {
       <el-tab-pane label="交互" name="interaction">
         <div class="tab-content">
           <div class="timer-header">
-            <span class="timer-title">定时器列表</span>
-            <el-button type="primary" size="small" @click="addTimer">
-              <el-icon>
-                <Plus/>
-              </el-icon>
-              添加定时器
-            </el-button>
+            <span class="timer-title">定时器</span>
+            <el-button type="primary" size="small" plain @click="addTimer">添加定时器</el-button>
           </div>
           <div class="timer-list">
             <div class="timer-item" v-for="(timer, index) in timers" :key="timer.id">
@@ -293,7 +288,6 @@ const deleteTimer = (index: number) => {
         justify-content: space-between;
         margin-bottom: 16px;
         padding-bottom: 12px;
-        border-bottom: 1px solid var(--el-border-color-lighter);
 
         .timer-title {
           font-size: 14px;
@@ -309,15 +303,11 @@ const deleteTimer = (index: number) => {
           justify-content: space-between;
           padding: 12px;
           margin-bottom: 12px;
-          background: var(--el-fill-color-light);
+          background: var(--dr-bg2);
           border-radius: 6px;
-          border: 1px solid var(--el-border-color-lighter);
+          border: 1px solid var(--dr-border);
           transition: all 0.3s;
-
-          &:hover {
-            background: var(--el-fill-color);
-            border-color: var(--el-color-primary-light-7);
-          }
+          cursor: pointer;
 
           .timer-info {
             flex: 1;
