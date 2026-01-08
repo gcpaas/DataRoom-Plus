@@ -176,3 +176,30 @@ export function createChartConfig<T>(
     ...overrides,
   }
 }
+
+
+/**
+ * 组件必须实现的方法接口
+ */
+export interface IComponentLifecycle {
+  /**
+   * 组件初始化方法
+   * 用于组件加载时的初始化逻辑
+   */
+  init: () => void | Promise<void>
+
+  /**
+   * 用于重新加载组件数据
+   */
+  refreshData: () => void | Promise<void>
+  /**
+   * 触发组件行为方法
+   * @param action
+   */
+  triggerAction: (action: ChartAction) => void | Promise<void>
+  /**
+   * 组件销毁前的清理方法
+   * 用于清理定时器、取消订阅等
+   */
+  destroy?: () => void
+}
