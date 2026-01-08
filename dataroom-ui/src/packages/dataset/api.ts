@@ -98,6 +98,16 @@ export interface DatasetRunRequest {
 }
 
 /**
+ * 数据集执行请求
+ */
+export interface DatasetRun4ChartRequest {
+  datasetCode: string
+  paramMap?: Record<string, any>
+  returnSingleValue: boolean
+}
+
+
+/**
  * 数据集测试请求
  */
 export interface DatasetTestRequest {
@@ -111,9 +121,8 @@ export interface DatasetTestRequest {
 export interface DatasetRunResponse {
   data?: any
   outputList?: DatasetOutputParam[]
-  success?: boolean
-  message?: string
 }
+
 
 /**
  * 数据集API
@@ -123,7 +132,7 @@ export const datasetApi = {
    * 查询列表
    */
   list(params?: { name?: string; parentCode?: string }) {
-    return request.get<DatasetEntity[]>('/dataRoom/dataset/list', { params })
+    return request.get<DatasetEntity[]>('/dataRoom/dataset/list', {params})
   },
 
   /**
@@ -159,6 +168,25 @@ export const datasetApi = {
    */
   run(data: DatasetRunRequest) {
     return request.post<DatasetRunResponse>('/dataRoom/dataset/run', data)
+  },
+  /**
+   * 执行数据集、转为图表需要的数据
+   * @param data
+   */
+  run4Chart(req: DatasetRun4ChartRequest) {
+    return request.post<DatasetRunResponse>('/dataRoom/dataset/run', req).then((res) => {
+      console.log("数据集响应结果", res)
+      res.data = res.data ?? []
+      res.data instanceof Array ? res.data : [res.data]
+      if (req.returnSingleValue) {
+        if (res.data.length == 0) {
+          res.data = {}
+          return res
+        }
+        res.data = res.data[0]
+      }
+      return res
+    })
   },
 
   /**

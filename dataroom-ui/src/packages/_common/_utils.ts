@@ -154,3 +154,4 @@ export const getResourceUrl = (url: string): string => {
   const resourceBaseUrl = import.meta.env.VITE_RESOURCE_BASE_URL
   return resourceBaseUrl + (resourceBaseUrl.endsWith('/') ? '' : '/') + (url.startsWith('/') ? url.substring(1) : url)
 }
+

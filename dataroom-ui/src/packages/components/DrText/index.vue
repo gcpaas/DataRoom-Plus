@@ -8,8 +8,9 @@ export default defineComponent({
 </script>
 <script setup lang="ts">
 import type {DrTextConfig} from './install.ts'
-import {onMounted, onBeforeUnmount} from "vue";
+import {onMounted, onBeforeUnmount, computed, ref} from "vue";
 import type {ChartAction, IComponentLifecycle} from '@/packages/components/type/define.ts'
+import {datasetApi} from "@/packages/dataset/api.ts";
 
 const {chart} = defineProps<{
   chart: DrTextConfig
@@ -19,11 +20,35 @@ const {chart} = defineProps<{
 const init = () => {
   console.log("初始化文本组件")
   // 组件初始化逻辑
+  autoRefreshData()
 }
 
-const refreshData = () => {
-  console.log("刷新文本组件")
-  // 组件刷新逻辑
+const fillDatasetParams = () => {
+  // 根据当前chart配置的数据集字段的来源，生成参数
+
+
+}
+
+const autoRefreshData = () => {
+  console.log("加载文本组件",chart.dataset?.code.trim().length)
+  if (!chart.dataset?.code) {
+    console.log("组件 %s 未配置数据集", chart.id)
+    return
+  }
+  // 生成参数
+  datasetApi.run4Chart({
+    datasetCode: chart.dataset.code,
+    paramMap: {},
+    returnSingleValue: true
+  }).then((res) => {
+    changeData(res.data)
+  })
+}
+
+const changeData = (datasetValue: any) => {
+  const textFieldName = chart.dataset?.fields?.text ?? 'text'
+  const text = datasetValue?.[textFieldName] ?? ''
+  textValue.value = text
 }
 
 const destroy = () => {
@@ -48,14 +73,17 @@ onBeforeUnmount(() => {
 // 暴露必须实现的方法，使用接口类型约束
 defineExpose<IComponentLifecycle>({
   init,
-  refreshData,
+  autoRefreshData,
+  changeData,
   triggerAction,
   destroy
 })
+
+const textValue = ref('')
 </script>
 
 <template>
-  <div class="dr-text">{{ chart.props.text }}</div>
+  <div class="dr-text">{{ textValue || chart.props.text }}</div>
 </template>
 
 <style scoped>

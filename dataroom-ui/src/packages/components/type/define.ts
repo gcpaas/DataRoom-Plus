@@ -75,11 +75,11 @@ export interface ChartConfig<T> {
     params: {
       // key 为数据集入参名称，value 为当前入参是通过何种方式获取
       [key: string]: {
-        // 来源,暂时仅支持全局变量
-        from: string | 'globalVar'
-        // 变量名称
+        // 来源,暂时仅支持全局变量、固定值
+        from: string | 'globalVar' | 'fixed'
+        // 变量名称、仅当 from = globalVar 时有效
         variableName: string
-        // 默认值
+        // 默认值、或固定值
         defaultValue: string
       }
     }
@@ -187,11 +187,15 @@ export interface IComponentLifecycle {
    * 用于组件加载时的初始化逻辑
    */
   init: () => void | Promise<void>
-
   /**
-   * 用于重新加载组件数据
+   * 更新数据
    */
-  refreshData: () => void | Promise<void>
+  autoRefreshData: () => void | Promise<void>
+  /**
+   * 修改数据
+   * @param data
+   */
+  changeData: (data: any) => void | Promise<void>
   /**
    * 触发组件行为方法
    * @param action
