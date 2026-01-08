@@ -219,12 +219,12 @@ export const fillDatasetParams = (
           const scriptFunc = new Function(globalVar.script)
           let returnValue = scriptFunc()
           if (!returnValue){
-            console.error(`全局变量: ${paramConfig.variableName} ,脚本执行后未返回值，将使用默认值: ${paramValue}, 脚本: ${globalVar.script}`)
+            console.error(`全局变量: ${paramConfig.variableName} 脚本执行后未返回值，将使用默认值  ${paramValue}, 脚本: ${globalVar.script}`)
             returnValue = paramValue
           }
           paramValue = returnValue
         } catch (error) {
-          console.error(`组件: ${chart.id} ,执行全局变量: ${globalVar.name} 的脚本失败，脚本: ${globalVar.script} , 异常: `, error)
+          console.error(`组件: ${chart.id} 执行全局变量  ${globalVar.name} 的脚本失败，脚本: ${globalVar.script} , 异常: `, error)
         }
       }
       paramMap[paramName] = paramValue
