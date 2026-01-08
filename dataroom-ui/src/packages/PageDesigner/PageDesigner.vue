@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/components/AutoInstall.ts'
-import {type CSSProperties, nextTick, onMounted, reactive} from 'vue'
+import {type CSSProperties, nextTick, onMounted, onUnmounted, reactive, watch} from 'vue'
 import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
-import {fillDatasetParams, getChartById, getResourceUrl} from '@/packages/_common/_utils.ts'
+import {fillDatasetParams, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -21,6 +21,9 @@ const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
 const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
 const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
+
+// 定时器管理器
+let timerManager: TimerManager | null = null
 
 const addChart = (type: string) => {
   const chartInst: ChartConfig<unknown> = getComponentInstance(type)
@@ -350,6 +353,41 @@ const computedCanvasMainContainerStyle  = computed(() => {
 
   return styles
 })
+
+/**
+ * 初始化定时器管理器
+ */
+const initTimerManager = () => {
+  if (!timerManager) {
+    timerManager = new TimerManager(chartList, globalVariable, basicConfig)
+  }
+  return timerManager
+}
+
+/**
+ * 监听定时器配置变化
+ */
+watch(
+  () => basicConfig.value.timers,
+  (newTimers) => {
+    console.log('定时器配置发生变化', newTimers)
+    
+    if (!timerManager) {
+      return
+    }
+    
+    if (!newTimers) {
+      // 如果定时器配置被清空，停止所有定时器
+      timerManager.clearAllTimers()
+      return
+    }
+    
+    // 重新加载所有定时器
+    timerManager.reloadAllTimers()
+  },
+  { deep: true }
+)
+
 onMounted(() => {
   // 获取路由中code 参数
   const code: string = route.params.pageCode as string
@@ -363,7 +401,23 @@ onMounted(() => {
       basicConfig.value.timers = []
     }
     globalVariable.value = res.pageConfig?.globalVariableList || []
+    
+    // 页面加载完成后，初始化并启动所有启用的定时器
+    nextTick(() => {
+      const manager = initTimerManager()
+      manager.reloadAllTimers()
+    })
   })
+})
+
+/**
+ * 组件卸载时清理所有定时器
+ */
+onUnmounted(() => {
+  if (timerManager) {
+    timerManager.clearAllTimers()
+    timerManager = null
+  }
 })
 </script>
 

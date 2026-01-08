@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getComponent, getComponentInstance } from '@DrPackage/components/AutoInstall.ts'
-import {ref, provide, onMounted, computed, type CSSProperties} from 'vue'
+import {ref, provide, onMounted, onUnmounted, computed, type CSSProperties, nextTick, watch} from 'vue'
 import { GridLayout, GridItem } from 'vue-grid-layout-v3'
 import type { ChartConfig } from '@DrPackage/components/type/define.ts'
 import {pageApi} from "@/packages/page/api.ts";
 import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
 import {useRoute} from "vue-router";
-import {getResourceUrl} from "@/packages/_common/_utils.ts";
+import {getResourceUrl, TimerManager} from "@/packages/_common/_utils.ts";
 
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
@@ -14,8 +14,45 @@ const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
 const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
 const route = useRoute()
 
+// 定时器管理器
+let timerManager: TimerManager | null = null
+
 // 提供全局变量列表给子组件
 provide('globalVariableList', globalVariable)
+
+/**
+ * 初始化定时器管理器
+ */
+const initTimerManager = () => {
+  if (!timerManager) {
+    timerManager = new TimerManager(chartList, globalVariable, basicConfig)
+  }
+  return timerManager
+}
+
+/**
+ * 监听定时器配置变化
+ */
+watch(
+  () => basicConfig.value.timers,
+  (newTimers) => {
+    console.log('[预览模式] 定时器配置发生变化', newTimers)
+    
+    if (!timerManager) {
+      return
+    }
+    
+    if (!newTimers) {
+      // 如果定时器配置被清空，停止所有定时器
+      timerManager.clearAllTimers()
+      return
+    }
+    
+    // 重新加载所有定时器
+    timerManager.reloadAllTimers()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
   // 获取路由中code 参数
@@ -28,7 +65,23 @@ onMounted(() => {
     chartList.value = res.pageConfig?.chartList || []
     basicConfig.value = res.pageConfig?.basicConfig || {}
     globalVariable.value = res.pageConfig?.globalVariableList || []
+    
+    // 页面加载完成后，初始化并启动所有启用的定时器
+    nextTick(() => {
+      const manager = initTimerManager()
+      manager.reloadAllTimers()
+    })
   })
+})
+
+/**
+ * 组件卸载时清理所有定时器
+ */
+onUnmounted(() => {
+  if (timerManager) {
+    timerManager.clearAllTimers()
+    timerManager = null
+  }
 })
 
 

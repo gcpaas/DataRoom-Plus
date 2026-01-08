@@ -1,5 +1,7 @@
 import type {ChartConfig, ChartDatasetParam} from '@/packages/components/type/define.ts'
-import type {GlobalVariable} from '@/packages/_common/_type.ts'
+import type {GlobalVariable, PageBasicConfig} from '@/packages/_common/_type.ts'
+import {type Ref} from 'vue'
+import {ElMessage} from 'element-plus'
 
 /**
  * 根据图表HTML对象获取对应的图表配置
@@ -233,3 +235,146 @@ export const fillDatasetParams = (
   return paramMap
 }
 
+/**
+ * 定时器管理类
+ * 用于管理页面中的定时器，包括启动、停止、执行等操作
+ */
+export class TimerManager {
+  // 定时器实例映射表
+  private timerIntervalMap: Map<string, number> = new Map()
+  // 图表列表引用
+  private chartList: Ref<ChartConfig<unknown>[]>
+  // 全局变量引用
+  private globalVariable: Ref<GlobalVariable[]>
+  // 基础配置引用
+  private basicConfig: Ref<PageBasicConfig>
+
+  constructor(
+    chartList: Ref<ChartConfig<unknown>[]>,
+    globalVariable: Ref<GlobalVariable[]>,
+    basicConfig: Ref<PageBasicConfig>
+  ) {
+    this.chartList = chartList
+    this.globalVariable = globalVariable
+    this.basicConfig = basicConfig
+  }
+
+  /**
+   * 执行定时器动作
+   * @param timer 定时器配置
+   */
+  private executeTimerActions(timer: any): void {
+    if (!timer.actions || timer.actions.length === 0) {
+      return
+    }
+
+    console.log(`执行定时器 [${timer.name}] 的动作，共 ${timer.actions.length} 个动作`)
+
+    // 依次执行所有动作
+    timer.actions.forEach((action: any, index: number) => {
+      try {
+        if (action.type === 'code' && action.code) {
+          console.log(`执行定时器动作 [${action.name}]`)
+          // 创建执行上下文，提供常用对象
+          const context = {
+            chartList: this.chartList.value,
+            globalVariable: this.globalVariable.value,
+            basicConfig: this.basicConfig.value,
+            console: console,
+            ElMessage: ElMessage,
+            // 提供工具方法
+            getChartById: (id: string) => getChartById(id, this.chartList.value),
+            getResourceUrl: getResourceUrl,
+            fillDatasetParams: (chart: ChartConfig<unknown>) =>
+              fillDatasetParams(chart, this.globalVariable.value),
+          }
+          // 使用 Function 构造器执行代码
+          const func = new Function('context', `with(context) { ${action.code} }`)
+          func(context)
+        }
+      } catch (error) {
+        console.error(`定时器动作 [${action.name}] 执行失败:`, error)
+        ElMessage.error(`定时器动作 [${action.name}] 执行失败: ${error}`)
+      }
+    })
+  }
+
+  /**
+   * 启动定时器
+   * @param timer 定时器配置
+   */
+  startTimer(timer: any): void {
+    if (!timer.enabled || !timer.id) {
+      return
+    }
+
+    // 如果已存在，先清除
+    this.stopTimer(timer.id)
+
+    console.log(`启动定时器 [${timer.name}]，间隔: ${timer.interval}ms`)
+
+    // 创建新的定时器
+    const intervalId = window.setInterval(() => {
+      this.executeTimerActions(timer)
+    }, timer.interval)
+
+    this.timerIntervalMap.set(timer.id, intervalId)
+  }
+
+  /**
+   * 停止定时器
+   * @param timerId 定时器ID
+   */
+  stopTimer(timerId: string): void {
+    const intervalId = this.timerIntervalMap.get(timerId)
+    if (intervalId) {
+      window.clearInterval(intervalId)
+      this.timerIntervalMap.delete(timerId)
+      console.log(`停止定时器 [${timerId}]`)
+    }
+  }
+
+  /**
+   * 重新加载所有定时器
+   */
+  reloadAllTimers(): void {
+    console.log('重新加载所有定时器')
+
+    // 清除所有现有定时器
+    this.clearAllTimers()
+
+    // 启动所有启用的定时器
+    if (this.basicConfig.value.timers) {
+      this.basicConfig.value.timers.forEach((timer) => {
+        if (timer.enabled) {
+          this.startTimer(timer)
+        }
+      })
+    }
+  }
+
+  /**
+   * 清除所有定时器
+   */
+  clearAllTimers(): void {
+    console.log('清除所有定时器')
+    this.timerIntervalMap.forEach((intervalId) => {
+      window.clearInterval(intervalId)
+    })
+    this.timerIntervalMap.clear()
+  }
+
+  /**
+   * 获取当前运行中的定时器数量
+   */
+  getRunningTimerCount(): number {
+    return this.timerIntervalMap.size
+  }
+
+  /**
+   * 获取所有运行中的定时器ID列表
+   */
+  getRunningTimerIds(): string[] {
+    return Array.from(this.timerIntervalMap.keys())
+  }
+}
