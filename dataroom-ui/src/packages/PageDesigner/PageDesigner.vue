@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/components/AutoInstall.ts'
-import {type CSSProperties, nextTick, onMounted, onUnmounted, reactive, watch} from 'vue'
+import {type CSSProperties, getCurrentInstance, nextTick, onMounted, onUnmounted, reactive, watch} from 'vue'
 import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
-import {fillDatasetParams, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
+import {fillDatasetParams, findComponentByKey, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -95,6 +95,17 @@ const switchRightControlPanel = (open: boolean = true) => {
 const switchPageControlPanel = () => {
   switchRightControlPanel(true)
   rightControlPanelSetting.value = true
+}
+
+const parent = getCurrentInstance()
+
+const onHistory = () => {
+  if (parent == null) {
+    console.error('getCurrentInstance is null')
+    return
+  }
+  const child = findComponentByKey(parent,"b7c0d3df-a145-44ea-9808-70b7462c05e3");
+  console.log(child)
 }
 
 /**
@@ -324,6 +335,7 @@ const onSave = () => {
     })
   })
 }
+
 const computedCanvasMainContainerStyle  = computed(() => {
   const background = basicConfig.value.background
   if (!background) {
@@ -371,17 +383,17 @@ watch(
   () => basicConfig.value.timers,
   (newTimers) => {
     console.log('定时器配置发生变化', newTimers)
-    
+
     if (!timerManager) {
       return
     }
-    
+
     if (!newTimers) {
       // 如果定时器配置被清空，停止所有定时器
       timerManager.clearAllTimers()
       return
     }
-    
+
     // 重新加载所有定时器
     timerManager.reloadAllTimers()
   },
@@ -401,7 +413,7 @@ onMounted(() => {
       basicConfig.value.timers = []
     }
     globalVariable.value = res.pageConfig?.globalVariableList || []
-    
+
     // 页面加载完成后，初始化并启动所有启用的定时器
     nextTick(() => {
       const manager = initTimerManager()
@@ -429,7 +441,7 @@ onUnmounted(() => {
         <div class="title">{{ pageStageEntity?.name }}</div>
       </div>
       <div style="margin-right: 8px">
-        <el-button @click="switchPageControlPanel" size="small">历史</el-button>
+        <el-button @click="onHistory" size="small">历史</el-button>
         <el-button @click="switchPageControlPanel" size="small">设置</el-button>
         <el-button @click="onPreview" size="small">预览</el-button>
         <el-button @click="onSave" size="small" type="primary">保存</el-button>

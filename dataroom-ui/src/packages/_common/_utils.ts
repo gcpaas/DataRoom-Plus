@@ -1,7 +1,8 @@
-import type {ChartConfig, ChartDatasetParam} from '@/packages/components/type/define.ts'
+import type {ChartConfig} from '@/packages/components/type/define.ts'
 import type {GlobalVariable, PageBasicConfig} from '@/packages/_common/_type.ts'
 import {type Ref} from 'vue'
 import {ElMessage} from 'element-plus'
+import type {ComponentInternalInstance, VNode} from "@vue/runtime-core";
 
 /**
  * 根据图表HTML对象获取对应的图表配置
@@ -220,7 +221,7 @@ export const fillDatasetParams = (
           // 使用 Function 构造器创建并执行脚本
           const scriptFunc = new Function(globalVar.script)
           let returnValue = scriptFunc()
-          if (!returnValue){
+          if (!returnValue) {
             console.error(`全局变量: ${paramConfig.variableName} 脚本执行后未返回值，将使用默认值  ${paramValue}, 脚本: ${globalVar.script}`)
             returnValue = paramValue
           }
@@ -377,4 +378,48 @@ export class TimerManager {
   getRunningTimerIds(): string[] {
     return Array.from(this.timerIntervalMap.keys())
   }
+}
+
+/**
+ * 递归查找指定id的组件实例（支持任意层级）
+ * @param {Object} parentInstance - 父组件实例
+ * @param {string} componentKey - 要查找的组件id
+ * @returns {Object|null} 匹配的组件实例
+ */
+export function findComponentByKey(parentInstance: ComponentInternalInstance, componentKey: string) {
+  // 边界校验：父实例不存在/目标id为空，直接返回null
+  if (!parentInstance || !parentInstance.vnode || !componentKey) {
+    console.error('参数错误：父实例不存在/目标id为空')
+    return null
+  }
+  console.log('开始递归查找组件实例',componentKey)
+  // 递归遍历组件树的核心逻辑
+  const traverseVNode = (vnode: VNode): ComponentInternalInstance | undefined => {
+    // 检查当前vnode对应的组件是否匹配目标id
+    console.log(vnode)
+    if (vnode.component) {
+      const compInstance = vnode.component;
+      // 兼容props.id和vnode.props.id两种场景（覆盖大多数使用情况）
+      console.log(compInstance.props)
+      const compId = compInstance.props?.chart?.id || vnode.props?.chart?.id;
+      if (compId === componentKey) {
+        console.info('找到组件实例',compInstance)
+        return compInstance; // 找到目标，立即返回
+      }
+    }
+    // 递归遍历子vnode（处理嵌套层级：子组件、孙组件等）
+    if (vnode.children && vnode.children.length) {
+      for (const childVNode of vnode.children as VNode[]) {
+        const found = traverseVNode(childVNode);
+        if (found) {
+          return found
+        }
+      }
+    }
+    // 未找到
+    return undefined;
+  };
+
+  // 从父组件的vnode开始遍历
+  return traverseVNode(parentInstance.vnode);
 }

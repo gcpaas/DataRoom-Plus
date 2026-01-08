@@ -83,7 +83,7 @@ const textValue = ref('')
 </script>
 
 <template>
-  <div class="dr-text">{{ textValue || chart.props.text }}</div>
+  <div class="dr-text" :id="chart.id">{{ textValue || chart.props.text }}</div>
 </template>
 
 <style scoped>

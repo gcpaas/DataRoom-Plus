@@ -18,10 +18,28 @@ interface CanvasInst {
    * @param type
    */
   addChart: (type: string) => ChartConfig<unknown>
+  /**
+   * 获取所有图表配置
+   */
   chartList: Ref<Array<ChartConfig<unknown>>>
+  /**
+   * 激活指定图表
+   * @param id
+   */
   activeChartById: (id: string) => void
+  /**
+   * 激活右侧配置面板
+   * @param id
+   */
   switchRightControlPanel: (open: boolean) => void
+  /**
+   * 删除图表
+   * @param id
+   */
   onChartDeleteClick: (chartId: string) => void
+  /**
+   * 填充数据集参数
+   */
   fillDatasetParams: (chart: ChartConfig<unknown>) => Record<string, any>
 }
 
