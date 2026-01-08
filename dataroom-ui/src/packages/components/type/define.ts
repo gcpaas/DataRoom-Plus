@@ -73,15 +73,8 @@ export interface ChartConfig<T> {
     script: string
     // 数据集入参、如果数据集需要入参的话
     params: {
-      // key 为数据集入参名称，value 为当前入参是通过何种方式获取
-      [key: string]: {
-        // 来源,暂时仅支持全局变量、固定值
-        from: string | 'globalVar' | 'fixed'
-        // 变量名称、仅当 from = globalVar 时有效
-        variableName: string
-        // 默认值、或固定值
-        defaultValue: string
-      }
+      // key 为数据集入参名称，value 为当前入参的配置
+      [key: string]: ChartDatasetParam
     }
   }
 }
@@ -138,6 +131,18 @@ export interface ChartDatasetField {
   required: boolean
   // 是否多选
   multiple: boolean
+}
+
+/**
+ * 图表数据集参数定义
+ */
+export interface ChartDatasetParam {
+  // 来源，暂时仅支持全局变量、固定值
+  from: string | 'globalVar' | 'fixed'
+  // 变量名称、仅当 from = globalVar 时有效
+  variableName: string
+  // 默认值、或固定值
+  defaultValue: any
 }
 
 /**

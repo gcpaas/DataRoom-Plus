@@ -13,6 +13,10 @@ const chartList = ref<ChartConfig<unknown>[]>([])
 const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
 const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
 const route = useRoute()
+
+// 提供全局变量列表给子组件
+provide('globalVariableList', globalVariable)
+
 onMounted(() => {
   // 获取路由中code 参数
   const code: string = route.params.pageCode as string

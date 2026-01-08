@@ -107,6 +107,8 @@ const canvasInst = reactive<CanvasInst>({
   },
 })
 provide(DrConst.CANVAS_INST, canvasInst)
+// 提供全局变量列表给子组件
+provide('globalVariableList', globalVariable)
 
 // 核心：使用计算属性生成main区域的样式对象
 const mainStyle = computed(() => {

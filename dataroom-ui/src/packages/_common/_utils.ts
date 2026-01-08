@@ -1,4 +1,5 @@
-import type {ChartConfig} from '@/packages/components/type/define.ts'
+import type {ChartConfig, ChartDatasetParam} from '@/packages/components/type/define.ts'
+import type {GlobalVariable} from '@/packages/_common/_type.ts'
 
 /**
  * 根据图表HTML对象获取对应的图表配置
@@ -153,5 +154,64 @@ export const getResourceUrl = (url: string): string => {
   }
   const resourceBaseUrl = import.meta.env.VITE_RESOURCE_BASE_URL
   return resourceBaseUrl + (resourceBaseUrl.endsWith('/') ? '' : '/') + (url.startsWith('/') ? url.substring(1) : url)
+}
+
+/**
+ * 填充数据集参数
+ * @param datasetParams
+ * @param globalVariableList
+ */
+export const fillDatasetParams = (
+  datasetParams: Record<string, ChartDatasetParam> | undefined,
+  globalVariableList: GlobalVariable[]
+): Record<string, any> => {
+  const paramMap: Record<string, any> = {}
+
+  if (!datasetParams) {
+    return paramMap
+  }
+
+  // 从 window 地址栏中获取 URL 参数
+  const urlParams = new URLSearchParams(window.location.search)
+
+  // 遍历数据集参数配置
+  Object.keys(datasetParams).forEach(paramName => {
+    const paramConfig = datasetParams[paramName]
+
+    let paramValue = paramConfig.defaultValue // 默认使用默认值
+
+    // 根据参数来源获取实际值
+    if (paramConfig.from === 'globalVar' && paramConfig.variableName) {
+      // 从全局变量获取值
+      const globalVar = globalVariableList.find(v => v.name === paramConfig.variableName)
+      if (globalVar) {
+        if (globalVar.from === 'static') {
+          // 静态变量：直接使用默认值
+          paramValue = globalVar.defaultValue
+        } else if (globalVar.from === 'url' && globalVar.urlName) {
+          // URL参数：从地址栏查询参数中获取
+          paramValue = urlParams.get(globalVar.urlName) || globalVar.defaultValue
+        }
+
+        // 如果配置了脚本，执行脚本处理
+        if (globalVar.script && globalVar.script.trim()) {
+          try {
+            // 使用 Function 构造器创建并执行脚本
+            const scriptFunc = new Function('value', 'defaultValue', globalVar.script)
+            paramValue = scriptFunc(paramValue, globalVar.defaultValue) || paramValue
+          } catch (error) {
+            console.error(`全局变量 ${globalVar.name} 脚本执行失败:`, error)
+          }
+        }
+      }
+    } else if (paramConfig.from === 'fixed') {
+      // 固定值：使用默认值
+      paramValue = paramConfig.defaultValue
+    }
+
+    paramMap[paramName] = paramValue
+  })
+
+  return paramMap
 }
 
