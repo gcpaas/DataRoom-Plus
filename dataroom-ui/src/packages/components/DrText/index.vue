@@ -8,18 +8,17 @@ export default defineComponent({
 </script>
 <script setup lang="ts">
 import type {DrTextConfig} from './install.ts'
-import {onMounted, onBeforeUnmount, computed, ref, inject} from "vue";
+import {onMounted, onBeforeUnmount, ref, inject} from "vue";
 import type {ChartAction, IComponentLifecycle} from '@/packages/components/type/define.ts'
 import {datasetApi} from "@/packages/dataset/api.ts";
-import type {GlobalVariable} from '@/packages/_common/_type.ts'
-import {fillDatasetParams} from '@/packages/_common/_utils.ts'
+import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
 
 const {chart} = defineProps<{
   chart: DrTextConfig
 }>()
 
-// 注入全局变量列表
-const globalVariableList = inject<GlobalVariable[]>('globalVariableList', [])
+
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 
 // 实现必须的方法
 const init = () => {
@@ -29,13 +28,14 @@ const init = () => {
 }
 
 const autoRefreshData = () => {
-  console.log("加载文本组件",chart.dataset?.code.trim().length)
+  console.log("加载文本组件", chart.dataset?.code.trim().length)
   if (!chart.dataset?.code) {
     console.log("组件 %s 未配置数据集", chart.id)
     return
   }
   // 生成参数 - 使用通用工具函数
-  const paramMap = fillDatasetParams(chart.dataset.params, globalVariableList)
+  const paramMap = canvasInst.fillDatasetParams(chart)
+  console.log("参数", paramMap)
   datasetApi.run4Chart({
     datasetCode: chart.dataset.code,
     paramMap: paramMap,

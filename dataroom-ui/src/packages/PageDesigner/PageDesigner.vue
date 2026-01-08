@@ -5,7 +5,7 @@ import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
-import {getChartById, getResourceUrl} from '@/packages/_common/_utils.ts'
+import {fillDatasetParams, getChartById, getResourceUrl} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -105,6 +105,9 @@ const canvasInst = reactive<CanvasInst>({
   onChartDeleteClick: (chartId: string) => {
     chartList.value = chartList.value.filter((item) => item.id != chartId)
   },
+  fillDatasetParams:(chart: ChartConfig<unknown>)=>{
+    return fillDatasetParams(chart, globalVariable.value)
+  }
 })
 provide(DrConst.CANVAS_INST, canvasInst)
 // 提供全局变量列表给子组件

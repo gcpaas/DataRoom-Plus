@@ -1,5 +1,6 @@
 import {type Component, type Ref} from 'vue'
 import type {ChartAction, ChartConfig} from '@DrPackage/components/type/define.ts'
+import {fillDatasetParams} from "@/packages/_common/_utils.ts";
 
 interface ComponentLibTagInterface {
   // 类型名称
@@ -21,6 +22,7 @@ interface CanvasInst {
   activeChartById: (id: string) => void
   switchRightControlPanel: (open: boolean) => void
   onChartDeleteClick: (chartId: string) => void
+  fillDatasetParams: (chart: ChartConfig<unknown>) => Record<string, any>
 }
 
 /**

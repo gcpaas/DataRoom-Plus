@@ -162,56 +162,69 @@ export const getResourceUrl = (url: string): string => {
  * @param globalVariableList
  */
 export const fillDatasetParams = (
-  datasetParams: Record<string, ChartDatasetParam> | undefined,
+  chart: ChartConfig<unknown>,
   globalVariableList: GlobalVariable[]
 ): Record<string, any> => {
   const paramMap: Record<string, any> = {}
-
+  const datasetParams = chart.dataset.params
   if (!datasetParams) {
+    console.error(`组件 ${chart.id} 数据集参数未配置`)
     return paramMap
   }
-
   // 从 window 地址栏中获取 URL 参数
   const urlParams = new URLSearchParams(window.location.search)
 
   // 遍历数据集参数配置
-  Object.keys(datasetParams).forEach(paramName => {
+  for (const paramName of Object.keys(datasetParams)) {
     const paramConfig = datasetParams[paramName]
-
-    let paramValue = paramConfig.defaultValue // 默认使用默认值
-
-    // 根据参数来源获取实际值
-    if (paramConfig.from === 'globalVar' && paramConfig.variableName) {
-      // 从全局变量获取值
-      const globalVar = globalVariableList.find(v => v.name === paramConfig.variableName)
-      if (globalVar) {
-        if (globalVar.from === 'static') {
-          // 静态变量：直接使用默认值
-          paramValue = globalVar.defaultValue
-        } else if (globalVar.from === 'url' && globalVar.urlName) {
-          // URL参数：从地址栏查询参数中获取
-          paramValue = urlParams.get(globalVar.urlName) || globalVar.defaultValue
-        }
-
-        // 如果配置了脚本，执行脚本处理
-        if (globalVar.script && globalVar.script.trim()) {
-          try {
-            // 使用 Function 构造器创建并执行脚本
-            const scriptFunc = new Function('value', 'defaultValue', globalVar.script)
-            paramValue = scriptFunc(paramValue, globalVar.defaultValue) || paramValue
-          } catch (error) {
-            console.error(`全局变量 ${globalVar.name} 脚本执行失败:`, error)
-          }
-        }
-      }
-    } else if (paramConfig.from === 'fixed') {
+    if (!paramConfig) {
+      console.error(`组件 ${chart.id} 数据集参数 ${paramName} 未正确配置`)
+      continue
+    }
+    // 默认使用默认值
+    let paramValue = paramConfig.defaultValue
+    paramMap[paramName] = paramValue
+    if (paramConfig.from === 'fixed') {
       // 固定值：使用默认值
       paramValue = paramConfig.defaultValue
+      paramMap[paramName] = paramValue
+      continue
     }
-
-    paramMap[paramName] = paramValue
-  })
-
+    // 根据参数来源获取实际值
+    if (paramConfig.from === 'globalVar') {
+      if (!paramConfig.variableName) {
+        console.error(`组件 ${chart.id} 数据集参数 ${paramName} 的全局变量名称未配置`)
+        continue
+      }
+      // 从全局变量获取值
+      const globalVar = globalVariableList.find(v => v.name === paramConfig.variableName)
+      if (!globalVar) {
+        console.error(`全局变量 ${paramConfig.variableName} 不存在`)
+        continue
+      }
+      if (globalVar.from === 'static') {
+        // 静态变量：直接使用默认值
+        paramValue = globalVar.defaultValue
+      } else if (globalVar.from === 'url') {
+        if (!globalVar.urlName) {
+          console.error(`全局变量 ${paramConfig.variableName} 的URL参数名称未配置`)
+          continue
+        }
+        paramValue = urlParams.get(globalVar.urlName) || globalVar.defaultValue
+      }
+      // 如果配置了脚本，执行脚本处理
+      if (globalVar.script && globalVar.script.trim()) {
+        try {
+          // 使用 Function 构造器创建并执行脚本
+          const scriptFunc = new Function('value', 'defaultValue', globalVar.script)
+          paramValue = scriptFunc(paramValue, globalVar.defaultValue) || paramValue
+        } catch (error) {
+          console.error(`组件 ${chart.id} 执行全局变量 ${globalVar.name} 脚本时失败:`, error)
+        }
+      }
+      paramMap[paramName] = paramValue
+    }
+  }
   return paramMap
 }
 
