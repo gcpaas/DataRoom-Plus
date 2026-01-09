@@ -102,7 +102,7 @@ const switchPageControlPanel = () => {
 
 
 const onHistory = () => {
-  canvasInst.triggerChartAction('b7c0d3df-a145-44ea-9808-70b7462c05e3',{
+  canvasInst.triggerChartAction('b7c0d3df-a145-44ea-9808-70b7462c05e3', {
     name: 'history',
     type: 'code',
     code: 'console.log("hello")'
@@ -123,7 +123,7 @@ const canvasInst = reactive<CanvasInst>({
   fillDatasetParams: (chart: ChartConfig<unknown>) => {
     return fillDatasetParams(chart, globalVariable.value)
   },
-  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance|null) => {
+  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance | null) => {
     if (!chartInstance) {
       console.error(`注册组件 ${charId} 的实例失败，实例为空`)
       return
@@ -138,9 +138,15 @@ const canvasInst = reactive<CanvasInst>({
     }
     return chartInstance
   },
-  triggerChartAction: (charId: string, action: ChartAction) => {
+  triggerChartAction: (charId: string = 'unknown', action: ChartAction) => {
+    if (action.type === 'code') {
+      // 高代码直接执行
+
+      return;
+    }
     const chartInstance = canvasInst.getChartInstanceById(charId)
     chartInstance.exposed?.triggerAction(action)
+    return
   }
 })
 provide(DrConst.CANVAS_INST, canvasInst)
