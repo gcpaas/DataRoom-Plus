@@ -11,7 +11,7 @@ import {useRouter, useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
 import {pageApi} from "@/packages/page/api.ts";
-import {ComponentInternalInstance} from "@vue/runtime-core";
+import {type ComponentInternalInstance} from "@vue/runtime-core";
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
@@ -105,6 +105,7 @@ const onHistory = () => {
   canvasInst.triggerChartAction('b7c0d3df-a145-44ea-9808-70b7462c05e3',{
     name: 'history',
     type: 'code',
+    code: 'console.log("hello")'
   })
 }
 
@@ -122,7 +123,7 @@ const canvasInst = reactive<CanvasInst>({
   fillDatasetParams: (chart: ChartConfig<unknown>) => {
     return fillDatasetParams(chart, globalVariable.value)
   },
-  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance) => {
+  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance|null) => {
     if (!chartInstance) {
       console.error(`注册组件 ${charId} 的实例失败，实例为空`)
       return
