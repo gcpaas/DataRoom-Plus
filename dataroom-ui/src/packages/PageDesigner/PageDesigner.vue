@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import {getComponent, getComponentInstance, getPanelComponent} from '@DrPackage/components/AutoInstall.ts'
-import {type CSSProperties, getCurrentInstance, nextTick, onMounted, onUnmounted, reactive, watch} from 'vue'
-import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide} from 'vue'
-import {GridLayout, GridItem} from 'vue-grid-layout-v3'
+import {type Component, computed, type CSSProperties, defineAsyncComponent, nextTick, onMounted, onUnmounted, provide, reactive, ref, shallowRef, watch} from 'vue'
+import {GridItem, GridLayout} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
-import type {ChartAction, ChartConfig} from '../components/type/define.ts'
-import {fillDatasetParams, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
+import type {ChartConfig} from '../components/type/define.ts'
+import {getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
 import type {GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
-import {useRouter, useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
 import {pageApi} from "@/packages/page/api.ts";
@@ -367,7 +366,7 @@ const computedCanvasMainContainerStyle = computed(() => {
  */
 const initTimerManager = () => {
   if (!timerManager) {
-    timerManager = new TimerManager(canvasInst,chartList, globalVariable, basicConfig)
+    timerManager = new TimerManager(canvasInst, basicConfig)
   }
   return timerManager
 }

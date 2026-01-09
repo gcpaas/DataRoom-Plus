@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getComponent, getComponentInstance } from '@DrPackage/components/AutoInstall.ts'
+import {getComponent, getComponentInstance} from '@DrPackage/components/AutoInstall.ts'
 import {ref, provide, onMounted, onUnmounted, computed, type CSSProperties, nextTick, watch} from 'vue'
-import { GridLayout, GridItem } from 'vue-grid-layout-v3'
-import type { ChartConfig } from '@DrPackage/components/type/define.ts'
+import {GridLayout, GridItem} from 'vue-grid-layout-v3'
+import type {ChartConfig} from '@DrPackage/components/type/define.ts'
 import {pageApi} from "@/packages/page/api.ts";
 import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
 import {useRoute} from "vue-router";
@@ -22,7 +22,7 @@ let timerManager: TimerManager | null = null
 /**
  * 创建画布实例供子组件使用
  */
-const { canvasInst } = useCanvasInst({
+const {canvasInst} = useCanvasInst({
   chartList,
   globalVariable
 })
@@ -36,7 +36,7 @@ provide('globalVariableList', globalVariable)
  */
 const initTimerManager = () => {
   if (!timerManager) {
-    timerManager = new TimerManager(chartList, globalVariable, basicConfig)
+    timerManager = new TimerManager(chartList, basicConfig)
   }
   return timerManager
 }
@@ -62,7 +62,7 @@ watch(
     // 重新加载所有定时器
     timerManager.reloadAllTimers()
   },
-  { deep: true }
+  {deep: true}
 )
 
 onMounted(() => {
@@ -96,7 +96,7 @@ onUnmounted(() => {
 })
 
 
-const computedCanvasMainContainerStyle  = computed(() => {
+const computedCanvasMainContainerStyle = computed(() => {
   const background = basicConfig.value.background
   if (!background) {
     return {}
