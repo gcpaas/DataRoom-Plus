@@ -39,4 +39,8 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // 自定义打包输出目录名称，默认是 dist，可以改为其他名称如 'build'、'output' 等
+    outDir: 'dataRoomFront'
+  },
 })
