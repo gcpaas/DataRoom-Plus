@@ -416,7 +416,7 @@ watch(
 </template>
 
 <style scoped lang="scss">
-@import "./assets/index.scss";
+@use "./assets/index.scss";
 
 .control-panel {
   width: 100%;
