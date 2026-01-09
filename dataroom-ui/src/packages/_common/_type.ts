@@ -120,18 +120,20 @@ interface PageBasicConfig {
     repeat: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y'
   }
   // 定时器配置列表
-  timers?: {
-    // 定时器ID
-    id: string
-    // 定时器名称
-    name: string
-    // 是否启用
-    enabled: boolean
-    // 定时器间隔，单位毫秒
-    interval: number
-    // 执行的动作
-    actions: ChartAction[]
-  }[]
+  timers?: PageTimer[]
+}
+
+interface PageTimer {
+// 定时器ID
+  id: string
+  // 定时器名称
+  name: string
+  // 是否启用
+  enabled: boolean
+  // 定时器间隔，单位毫秒
+  interval: number
+  // 执行的动作
+  actions: ChartAction[]
 }
 
 /**
@@ -200,4 +202,4 @@ interface GlobalVariable {
   script?: string
 }
 
-export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageBasicConfig, PageStageEntity}
+export type {CanvasInst, LeftToolBar, ComponentLibTagInterface, GlobalVariable, PageBasicConfig, PageStageEntity,PageTimer}
