@@ -7,6 +7,8 @@ import {pageApi} from "@/packages/page/api.ts";
 import type {GlobalVariable, PageBasicConfig, PageStageEntity} from "@/packages/_common/_type.ts";
 import {useRoute} from "vue-router";
 import {getResourceUrl, TimerManager} from "@/packages/_common/_utils.ts";
+import {useCanvasInst} from '@/packages/_common/useCanvasInst.ts'
+import {DrConst} from '@/packages/_common/_constant.ts'
 
 const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
@@ -17,6 +19,14 @@ const route = useRoute()
 // 定时器管理器
 let timerManager: TimerManager | null = null
 
+/**
+ * 创建画布实例供子组件使用
+ */
+const { canvasInst } = useCanvasInst({
+  chartList,
+  globalVariable
+})
+provide(DrConst.CANVAS_INST, canvasInst)
 // 提供全局变量列表给子组件
 provide('globalVariableList', globalVariable)
 

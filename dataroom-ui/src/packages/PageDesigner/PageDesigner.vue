@@ -6,12 +6,12 @@ import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartAction, ChartConfig} from '../components/type/define.ts'
 import {fillDatasetParams, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
-import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
+import type {GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter, useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {DrConst} from '@/packages/_common/_constant.ts'
 import {pageApi} from "@/packages/page/api.ts";
-import {type ComponentInternalInstance} from "@vue/runtime-core";
+import {useCanvasInst} from '@/packages/_common/useCanvasInst.ts'
 
 const ContextMenu = defineAsyncComponent(() => import('@/packages/PageDesigner/ContextMenu.vue'))
 const router = useRouter()
@@ -22,8 +22,6 @@ const pageStageEntity = ref<PageStageEntity>()
 const chartList = ref<ChartConfig<unknown>[]>([])
 const basicConfig = ref<PageBasicConfig>({} as PageBasicConfig)
 const globalVariable = ref<GlobalVariable[]>([] as GlobalVariable[])
-type ChartInstanceMap = Record<string, ComponentInternalInstance>
-const chartInstanceMap: ChartInstanceMap = {}
 
 // 定时器管理器
 let timerManager: TimerManager | null = null
@@ -112,42 +110,12 @@ const onHistory = () => {
 /**
  * 子组件注入使用
  */
-const canvasInst = reactive<CanvasInst>({
-  addChart: addChart,
-  chartList: chartList,
-  activeChartById: activeChartById,
-  switchRightControlPanel: switchRightControlPanel,
-  onChartDeleteClick: (chartId: string) => {
-    chartList.value = chartList.value.filter((item) => item.id != chartId)
-  },
-  fillDatasetParams: (chart: ChartConfig<unknown>) => {
-    return fillDatasetParams(chart, globalVariable.value)
-  },
-  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance | null) => {
-    if (!chartInstance) {
-      console.error(`注册组件 ${charId} 的实例失败，实例为空`)
-      return
-    }
-    chartInstanceMap[charId] = chartInstance
-  },
-  getChartInstanceById: (charId: string) => {
-    const chartInstance = chartInstanceMap[charId]
-    if (!chartInstance) {
-      console.error(`获取组件 ${charId} 的实例失败，实例为空`)
-      throw new Error(`组件 ${charId} 的实例为空`)
-    }
-    return chartInstance
-  },
-  triggerChartAction: (charId: string = 'unknown', action: ChartAction) => {
-    if (action.type === 'code') {
-      // 高代码直接执行
-
-      return;
-    }
-    const chartInstance = canvasInst.getChartInstanceById(charId)
-    chartInstance.exposed?.triggerAction(action)
-    return
-  }
+const { canvasInst } = useCanvasInst({
+  chartList,
+  globalVariable,
+  addChart,
+  activeChartById,
+  switchRightControlPanel
 })
 provide(DrConst.CANVAS_INST, canvasInst)
 // 提供全局变量列表给子组件

@@ -1,0 +1,74 @@
+import { reactive, type Ref } from 'vue'
+import type { CanvasInst, GlobalVariable } from '@/packages/_common/_type.ts'
+import type { ChartAction, ChartConfig } from '@DrPackage/components/type/define.ts'
+import { fillDatasetParams } from '@/packages/_common/_utils.ts'
+import { DrConst } from '@/packages/_common/_constant.ts'
+import { type ComponentInternalInstance } from '@vue/runtime-core'
+
+type ChartInstanceMap = Record<string, ComponentInternalInstance>
+
+interface UseCanvasInstOptions {
+  chartList: Ref<ChartConfig<unknown>[]>
+  globalVariable: Ref<GlobalVariable[]>
+  addChart?: (type: string) => ChartConfig<unknown>
+  activeChartById?: (id: string) => void
+  switchRightControlPanel?: (open: boolean) => void
+}
+
+/**
+ * 创建画布实例的组合式函数
+ * 用于在设计器和预览器中共享组件实例管理逻辑
+ */
+export function useCanvasInst(options: UseCanvasInstOptions) {
+  const { chartList, globalVariable, addChart, activeChartById, switchRightControlPanel } = options
+  
+  const chartInstanceMap: ChartInstanceMap = {}
+
+  const canvasInst = reactive<CanvasInst>({
+    addChart: addChart || (() => {
+      throw new Error('addChart 方法未实现')
+    }),
+    chartList: chartList,
+    activeChartById: activeChartById || (() => {
+      console.warn('activeChartById 方法未实现')
+    }),
+    switchRightControlPanel: switchRightControlPanel || (() => {
+      console.warn('switchRightControlPanel 方法未实现')
+    }),
+    onChartDeleteClick: (chartId: string) => {
+      chartList.value = chartList.value.filter((item) => item.id != chartId)
+    },
+    fillDatasetParams: (chart: ChartConfig<unknown>) => {
+      return fillDatasetParams(chart, globalVariable.value)
+    },
+    registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance | null) => {
+      if (!chartInstance) {
+        console.error(`注册组件 ${charId} 的实例失败，实例为空`)
+        return
+      }
+      chartInstanceMap[charId] = chartInstance
+    },
+    getChartInstanceById: (charId: string) => {
+      const chartInstance = chartInstanceMap[charId]
+      if (!chartInstance) {
+        console.error(`获取组件 ${charId} 的实例失败，实例为空`)
+        throw new Error(`组件 ${charId} 的实例为空`)
+      }
+      return chartInstance
+    },
+    triggerChartAction: (charId: string = 'unknown', action: ChartAction) => {
+      if (action.type === 'code') {
+        // 高代码直接执行
+        return
+      }
+      const chartInstance = canvasInst.getChartInstanceById(charId)
+      chartInstance.exposed?.triggerAction(action)
+      return
+    }
+  })
+
+  return {
+    canvasInst,
+    chartInstanceMap
+  }
+}
