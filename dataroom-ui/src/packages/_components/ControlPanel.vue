@@ -40,6 +40,15 @@ const currentBehavior = ref<Behavior | null>(null)
 const datasetOutputList = ref<DatasetOutputParam[]>([])
 // 数据集输入参数列表
 const datasetInputList = ref<DatasetInputParam[]>([])
+// 计算属性：过滤出有效的数据集输入参数
+const validDatasetInputList = computed(() => {
+  if (!chartConfig.value.dataset?.params) {
+    return []
+  }
+  return datasetInputList.value.filter(input => {
+    return chartConfig.value.dataset.params && chartConfig.value.dataset.params[input.name]
+  })
+})
 // 表单引用
 const dataFormRef = ref()
 // 表单校验规则
@@ -92,6 +101,9 @@ const initDatasetParams = () => {
   }
   // 为每个入参初始化配置（如果不存在）
   datasetInputList.value.forEach(input => {
+    if (!chartConfig.value.dataset.params) {
+      chartConfig.value.dataset.params = {}
+    }
     if (!chartConfig.value.dataset.params[input.name]) {
       chartConfig.value.dataset.params[input.name] = {
         from: 'globalVar',
@@ -181,6 +193,17 @@ const openBehaviorConfig = (behavior: Behavior) => {
 }
 
 /**
+ * 获取数据集参数配置
+ * @param paramName 参数名称
+ */
+const getParamConfig = (paramName: string) => {
+  if (!chartConfig.value.dataset?.params) {
+    return null
+  }
+  return chartConfig.value.dataset.params[paramName] || null
+}
+
+/**
  * 监听组件实例变化
  * 当chart.id改变时，说明切换了不同的组件实例，需要重新初始化
  * immediate: true 确保首次进入时也会执行
@@ -264,61 +287,63 @@ watch(
             </el-collapse-item>
 
             <!-- 数据集参数绑定 -->
-            <el-collapse-item name="params" title="数据集参数绑定" v-if="datasetInputList.length > 0">
+            <el-collapse-item name="params" title="数据集参数绑定" v-if="validDatasetInputList.length > 0">
               <el-form :model="chartConfig.dataset" label-width="100px" label-position="left" size="small">
-                <div v-for="inputParam in datasetInputList" :key="inputParam.name" class="param-item">
-                  <div class="param-header">
-                    <span class="param-name">{{ inputParam.name }}</span>
-                    <span class="param-desc" v-if="inputParam.desc">（{{ inputParam.desc }}）</span>
-                  </div>
+                <template v-for="inputParam in validDatasetInputList" :key="inputParam.name">
+                  <div class="param-item">
+                    <div class="param-header">
+                      <span class="param-name">{{ inputParam.name }}</span>
+                      <span class="param-desc" v-if="inputParam.desc">（{{ inputParam.desc }}）</span>
+                    </div>
 
-                  <el-form-item label="参数来源">
-                    <el-select
-                      v-model="chartConfig.dataset.params[inputParam.name]?.from"
-                      placeholder="请选择参数来源"
-                      style="width: 100%"
-                    >
-                      <el-option label="全局变量" value="globalVar"></el-option>
-                    </el-select>
-                  </el-form-item>
-
-                  <el-form-item label="变量名称">
-                    <el-select
-                      v-if="chartConfig.dataset.params[inputParam.name]?.from === 'globalVar'"
-                      v-model="chartConfig.dataset.params[inputParam.name]?.variableName"
-                      placeholder="请选择全局变量"
-                      filterable
-                      clearable
-                      style="width: 100%"
-                    >
-                      <el-option
-                        v-for="gVar in globalVariableList"
-                        :key="gVar.id"
-                        :label="gVar.name"
-                        :value="gVar.name"
+                    <el-form-item label="参数来源" v-if="getParamConfig(inputParam.name)">
+                      <el-select
+                        v-model="getParamConfig(inputParam.name)!.from"
+                        placeholder="请选择参数来源"
+                        style="width: 100%"
                       >
-                        <div class="custom-option">
-                          <span class="option-name">{{ gVar.name }}</span>
-                          <span class="option-desc">{{ gVar.remark }}</span>
-                        </div>
-                      </el-option>
-                    </el-select>
-                    <el-input
-                      v-else
-                      v-model="chartConfig.dataset.params[inputParam.name]?.variableName"
-                      placeholder="请输入变量名称"
-                      style="width: 100%"
-                    ></el-input>
-                  </el-form-item>
+                        <el-option label="全局变量" value="globalVar"></el-option>
+                      </el-select>
+                    </el-form-item>
 
-                  <el-form-item label="默认值">
-                    <el-input
-                      v-model="chartConfig.dataset.params[inputParam.name]?.defaultValue"
-                      placeholder="请输入默认值"
-                      style="width: 100%"
-                    ></el-input>
-                  </el-form-item>
-                </div>
+                    <el-form-item label="变量名称" v-if="getParamConfig(inputParam.name)">
+                      <el-select
+                        v-if="getParamConfig(inputParam.name)!.from === 'globalVar'"
+                        v-model="getParamConfig(inputParam.name)!.variableName"
+                        placeholder="请选择全局变量"
+                        filterable
+                        clearable
+                        style="width: 100%"
+                      >
+                        <el-option
+                          v-for="gVar in globalVariableList"
+                          :key="gVar.id"
+                          :label="gVar.name"
+                          :value="gVar.name"
+                        >
+                          <div class="custom-option">
+                            <span class="option-name">{{ gVar.name }}</span>
+                            <span class="option-desc">{{ gVar.remark }}</span>
+                          </div>
+                        </el-option>
+                      </el-select>
+                      <el-input
+                        v-else
+                        v-model="getParamConfig(inputParam.name)!.variableName"
+                        placeholder="请输入变量名称"
+                        style="width: 100%"
+                      ></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="默认值" v-if="getParamConfig(inputParam.name)">
+                      <el-input
+                        v-model="getParamConfig(inputParam.name)!.defaultValue"
+                        placeholder="请输入默认值"
+                        style="width: 100%"
+                      ></el-input>
+                    </el-form-item>
+                  </div>
+                </template>
               </el-form>
             </el-collapse-item>
 
