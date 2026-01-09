@@ -82,14 +82,11 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
     triggerChartAction: (charId: string = 'unknown', action: ChartAction) => {
       if (action.type === 'code') {
         try {
-          const context = {
-            getChartById: getChartById
-          }
-          const func = new Function('context', `with(context) { ${action.code} }`)
-          func(context)
+          const func = new Function('canvasInst', `${action.code}`)
+          func(canvasInst)
         } catch (error) {
-          console.error(`定时器动作 [${action.name}] 执行失败:`, error)
-          ElMessage.error(`定时器动作 [${action.name}] 执行失败: ${error}`)
+          console.error(`动作 [${action.name}] 执行失败:`, error)
+          ElMessage.error(`动作 [${action.name}] 执行失败: ${error}`)
         }
         return
       }
@@ -106,24 +103,25 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
         return
       }
       for (const key of Object.keys(chart.behaviors)) {
-        if (key === 'click') {
-          const behavior = chart.behaviors[key]
-          if (!behavior) {
+        if (behaviorName !== key) {
+          continue
+        }
+        const behavior = chart.behaviors[key]
+        if (!behavior) {
+          continue
+        }
+        if (behavior.disabled) {
+          continue
+        }
+        if (!behavior.actions || behavior.actions.length == 0) {
+          continue
+        }
+        for (let i = 0; i < behavior.actions.length; i++) {
+          const action = behavior.actions[i]
+          if (!action) {
             continue
           }
-          if (behavior.disabled) {
-            continue
-          }
-          if (!behavior.actions || behavior.actions.length == 0) {
-            continue
-          }
-          for (let i = 0; i < behavior.actions.length; i++) {
-            const action = behavior.actions[i]
-            if (!action) {
-              continue
-            }
-            canvasInst.triggerChartAction(chart.id, action)
-          }
+          canvasInst.triggerChartAction(chart.id, action)
         }
       }
     },
