@@ -55,6 +55,17 @@ interface CanvasInst {
    * @param chart
    */
   fillDatasetParams: (chart: ChartConfig<unknown>) => Record<string, any>
+  /**
+   * 获取指定名称全局变量值
+   * @param globalVariableName
+   */
+  getGlobalVariableValue: (globalVariableName: string) => any
+  /**
+   * 更新指定名称全局变量值
+   * @param globalVariableName
+   * @param value
+   */
+  updateGlobalVariableValue: (globalVariableName: string, value: any) => void
 }
 
 /**
