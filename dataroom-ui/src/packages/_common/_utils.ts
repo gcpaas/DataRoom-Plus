@@ -1,6 +1,6 @@
 import type {ChartConfig} from '@/packages/components/type/define.ts'
-import type {PageBasicConfig, PageTimer} from '@/packages/_common/_type.ts'
-import {type Ref} from 'vue'
+import type {CanvasInst, PageBasicConfig, PageTimer} from '@/packages/_common/_type.ts'
+import {type Reactive, reactive, type Ref} from 'vue'
 import {ElMessage} from 'element-plus'
 
 /**
@@ -166,12 +166,12 @@ export class TimerManager {
   // 定时器实例映射表
   private timerIntervalMap: Map<string, number> = new Map()
   // 画布实例引用
-  private canvasInst: any
+  private canvasInst: Reactive<CanvasInst>
   // 基础配置引用
   private basicConfig: Ref<PageBasicConfig>
 
   constructor(
-    canvasInst: any,
+    canvasInst: Reactive<CanvasInst>,
     basicConfig: Ref<PageBasicConfig>
   ) {
     this.canvasInst = canvasInst
@@ -191,7 +191,7 @@ export class TimerManager {
     timer.actions.forEach((action: any, index: number) => {
       try {
         if (action.type === 'code' && action.code) {
-
+          this.canvasInst.triggerChartAction('', action)
         }
       } catch (error) {
         console.error(`定时器动作 [${action.name}] 执行失败:`, error)

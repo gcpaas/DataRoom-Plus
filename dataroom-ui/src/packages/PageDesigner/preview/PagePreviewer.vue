@@ -36,7 +36,7 @@ provide('globalVariableList', globalVariable)
  */
 const initTimerManager = () => {
   if (!timerManager) {
-    timerManager = new TimerManager(chartList, basicConfig)
+    timerManager = new TimerManager(canvasInst, basicConfig)
   }
   return timerManager
 }
