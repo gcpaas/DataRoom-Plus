@@ -229,7 +229,8 @@ const triggerAutoRefresh = () => {
   try {
     canvasInst.triggerChartAction(chart.id, {
       name: 'autoRefreshData',
-      type: 'code'
+      type: 'code',
+      code: ''
     })
   } catch (error) {
     console.error('触发自动刷新失败:', error)

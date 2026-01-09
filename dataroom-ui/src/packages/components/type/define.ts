@@ -204,8 +204,9 @@ export interface IComponentLifecycle {
   /**
    * 触发组件行为方法，用于通过组件实例方法调用
    * @param action
+   * @param data 其他方法入参
    */
-  triggerAction: (action: ChartAction) => void | Promise<void>
+  triggerAction: (action: ChartAction, data: any) => void | Promise<void>
   /**
    * 注册当前组件实例
    * @param action

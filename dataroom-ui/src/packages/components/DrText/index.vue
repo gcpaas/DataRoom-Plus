@@ -57,9 +57,17 @@ const destroy = () => {
   // 清理逻辑（可选）
 }
 
-const triggerAction = (action: ChartAction) => {
+const triggerAction = (action: ChartAction, data: any) => {
   console.log("触发文本组件行为", action)
   // 行为逻辑（可选）
+  if (action.name == 'autoRefreshData') {
+    autoRefreshData()
+    return
+  }
+  if (action.name == 'changeData') {
+    changeData(data)
+    return
+  }
 }
 
 const currentInstance = getCurrentInstance()
