@@ -95,10 +95,24 @@ defineExpose<IComponentLifecycle>({
 })
 
 const textValue = ref('')
+
+const onTextClick = () => {
+  if (!chart.behaviors) {
+    return
+  }
+  Object.keys(chart.behaviors).forEach((key)=>{
+    const behavior = chart.behaviors[key]
+    if (!behavior) {
+      return
+    }
+    console.log(behavior?.actions)
+  })
+}
+
 </script>
 
 <template>
-  <div class="dr-text" :id="chart.id">{{ textValue || chart.props.text }}</div>
+  <div class="dr-text" :id="chart.id" @click="onTextClick">{{ textValue || chart.props.text }}</div>
 </template>
 
 <style scoped>

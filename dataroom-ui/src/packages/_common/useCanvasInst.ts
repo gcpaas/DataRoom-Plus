@@ -1,8 +1,9 @@
 import {reactive, type Ref} from 'vue'
 import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
 import type {ChartAction, ChartConfig} from '@DrPackage/components/type/define.ts'
-import {fillDatasetParams} from '@/packages/_common/_utils.ts'
+import {fillDatasetParams, getChartById, getResourceUrl} from '@/packages/_common/_utils.ts'
 import {type ComponentInternalInstance} from '@vue/runtime-core'
+import {ElMessage} from "element-plus";
 
 type ChartInstanceMap = Record<string, ComponentInternalInstance>
 
@@ -50,7 +51,16 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
     },
     triggerChartAction: (charId: string = 'unknown', action: ChartAction) => {
       if (action.type === 'code') {
-        // 高代码直接执行
+        try {
+          const context = {
+            getChartById: getChartById
+          }
+          const func = new Function('context', `with(context) { ${action.code} }`)
+          func(context)
+        } catch (error) {
+          console.error(`定时器动作 [${action.name}] 执行失败:`, error)
+          ElMessage.error(`定时器动作 [${action.name}] 执行失败: ${error}`)
+        }
         return
       }
       const chartInstance = canvasInst.getChartInstanceById(charId)
