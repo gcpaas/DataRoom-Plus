@@ -5,7 +5,7 @@ import {type Component, computed, defineAsyncComponent, ref, shallowRef, provide
 import {GridLayout, GridItem} from 'vue-grid-layout-v3'
 import {v4 as uuidv4} from 'uuid'
 import type {ChartConfig} from '../components/type/define.ts'
-import {fillDatasetParams, findComponentByKey, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
+import {fillDatasetParams, getChartById, getResourceUrl, TimerManager} from '@/packages/_common/_utils.ts'
 import type {CanvasInst, GlobalVariable, LeftToolBar, PageBasicConfig, PageStageEntity} from '@/packages/_common/_type.ts'
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -104,8 +104,6 @@ const onHistory = () => {
     console.error('getCurrentInstance is null')
     return
   }
-  const child = findComponentByKey(parent,"b7c0d3df-a145-44ea-9808-70b7462c05e3");
-  console.log(child)
 }
 
 /**

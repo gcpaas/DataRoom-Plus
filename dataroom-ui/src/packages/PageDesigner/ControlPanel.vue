@@ -5,6 +5,7 @@ import type {PageBasicConfig} from "@/packages/_common/_type.ts";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {getCookie, getCookieName} from '@/packages/_common/_cookie'
 import {Delete, Picture, Plus, Setting} from '@element-plus/icons-vue'
+import type {ChartAction} from "@/packages/components/type/define.ts";
 
 /**
  * 懒加载定时器配置对话框
@@ -22,13 +23,7 @@ interface Timer {
   name: string
   enabled: boolean
   interval: number // 间隔时间（毫秒）
-  actions: TimerAction[]
-}
-
-interface TimerAction {
-  name: string
-  type: 'code'
-  code: string
+  actions: ChartAction[]
 }
 
 // 定时器列表

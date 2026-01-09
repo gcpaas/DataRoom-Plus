@@ -3,6 +3,7 @@
 import {computed, ref, watch} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Delete, Plus, Rank} from '@element-plus/icons-vue'
+import type {ChartAction} from "@/packages/components/type/define.ts";
 
 interface TimerAction {
   name: string
@@ -15,7 +16,7 @@ interface Timer {
   name: string
   enabled: boolean
   interval: number
-  actions: TimerAction[]
+  actions: ChartAction[]
 }
 
 const props = defineProps<{
@@ -87,6 +88,9 @@ const handleDrop = (e: DragEvent, dropIndex: number) => {
   e.preventDefault()
   if (dragStartIndex.value !== -1 && dragStartIndex.value !== dropIndex) {
     const dragItem = props.timer.actions[dragStartIndex.value]
+    if (!dragItem) {
+      return
+    }
     props.timer.actions.splice(dragStartIndex.value, 1)
     props.timer.actions.splice(dropIndex, 0, dragItem)
 

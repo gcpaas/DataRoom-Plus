@@ -40,7 +40,7 @@ const getBehaviorConfig = () => {
 // 获取actions列表
 const actions = computed(() => {
   const config = getBehaviorConfig()
-  return config.actions || []
+  return config?.actions || []
 })
 
 // 当前选中的action
@@ -54,6 +54,9 @@ const currentAction = computed(() => {
 // 添加新的action
 const addAction = () => {
   const config = getBehaviorConfig()
+  if (!config) {
+    return
+  }
   // 自动生成动作名称
   const actionCount = config.actions.length + 1
   const newAction: ChartAction = {
@@ -69,6 +72,9 @@ const addAction = () => {
 // 删除action
 const deleteAction = (index: number) => {
   const config = getBehaviorConfig()
+  if (!config) {
+    return
+  }
   config.actions.splice(index, 1)
   // 调整选中索引
   if (activeActionIndex.value >= config.actions.length) {
@@ -92,7 +98,13 @@ const handleDrop = (e: DragEvent, dropIndex: number) => {
   e.preventDefault()
   if (dragStartIndex.value !== -1 && dragStartIndex.value !== dropIndex) {
     const config = getBehaviorConfig()
+    if (!config) {
+      return
+    }
     const dragItem = config.actions[dragStartIndex.value]
+    if (!dragItem) {
+      return;
+    }
     config.actions.splice(dragStartIndex.value, 1)
     config.actions.splice(dropIndex, 0, dragItem)
 

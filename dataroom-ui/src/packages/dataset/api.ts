@@ -77,6 +77,12 @@ export interface DatasetEntity {
   delFlag?: string
 }
 
+export class DirectoryDataset{
+
+}
+
+
+
 /**
  * 树节点数据
  */

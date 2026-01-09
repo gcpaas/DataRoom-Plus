@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, defineAsyncComponent, nextTick } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ref, onMounted, computed, defineAsyncComponent, nextTick} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   Folder,
   Document,
@@ -12,8 +12,8 @@ import {
   Search,
   ArrowDown
 } from '@element-plus/icons-vue'
-import { datasetApi, type DatasetEntity, type DatasetTreeNode } from './api'
-import { dataSourceApi } from '../dataSource/api'
+import {datasetApi, type DatasetEntity, type DatasetTreeNode} from './api'
+import {dataSourceApi} from '../dataSource/api'
 
 // 定义 props
 const props = defineProps<{
@@ -188,20 +188,21 @@ const handleAddFolder = (node?: DatasetTreeNode) => {
     inputPattern: /\S+/,
     inputErrorMessage: '名称不能为空'
   })
-    .then(async ({ value }) => {
+    .then(async ({value}) => {
       try {
         await datasetApi.insert({
           name: value,
           datasetType: 'directory',
           parentCode: node?.code || 'root'
-        })
+        } as DatasetEntity)
         ElMessage.success('新增成功')
         loadTree()
       } catch (error) {
         console.error('新增失败:', error)
       }
     })
-    .catch(() => {})
+    .catch(() => {
+    })
 }
 
 /**
@@ -217,10 +218,10 @@ const handleAddDataset = (datasetType: 'json' | 'http' | 'relational', node?: Da
     outputList: [],
     dataset:
       datasetType === 'json'
-        ? { datasetType: 'json', json: '' }
+        ? {datasetType: 'json', json: ''}
         : datasetType === 'http'
-          ? { datasetType: 'http', url: '', method: 'GET', headerList: [], body: '', respJsonPath: '' }
-          : { datasetType: 'relational', sql: '' }
+          ? {datasetType: 'http', url: '', method: 'GET', headerList: [], body: '', respJsonPath: ''}
+          : {datasetType: 'relational', sql: ''}
   }
   dialogVisible.value = true
 }
@@ -238,7 +239,7 @@ const handleEditNode = async (node: DatasetTreeNode) => {
       inputErrorMessage: '名称不能为空',
       inputValue: node.label
     })
-      .then(async ({ value }) => {
+      .then(async ({value}) => {
         try {
           const detail = await datasetApi.detail(node.code!)
           await datasetApi.update({
@@ -251,7 +252,8 @@ const handleEditNode = async (node: DatasetTreeNode) => {
           console.error('更新失败:', error)
         }
       })
-      .catch(() => {})
+      .catch(() => {
+      })
   } else {
     // 编辑数据集
     handleEdit()
@@ -279,7 +281,8 @@ const handleDeleteNode = (node: DatasetTreeNode) => {
         console.error('删除失败:', error)
       }
     })
-    .catch(() => {})
+    .catch(() => {
+    })
 }
 
 /**
@@ -437,7 +440,7 @@ const handleTestAndSave = async () => {
         >
           <template #prefix>
             <el-icon class="search-icon">
-              <Search />
+              <Search/>
             </el-icon>
           </template>
         </el-input>
@@ -450,12 +453,17 @@ const handleTestAndSave = async () => {
           }
         ">
           <el-button type="primary" :icon="Plus">
-            新增<el-icon class="el-icon--right"><ArrowDown /></el-icon>
+            新增
+            <el-icon class="el-icon--right">
+              <ArrowDown/>
+            </el-icon>
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="addFolder">
-                <el-icon><Folder /></el-icon>
+                <el-icon>
+                  <Folder/>
+                </el-icon>
                 <span>新增目录</span>
               </el-dropdown-item>
               <el-dropdown-item command="addJson">
@@ -488,10 +496,10 @@ const handleTestAndSave = async () => {
 
               <div class="node-content">
                 <el-icon v-if="data.datasetType === 'directory'">
-                  <Folder />
+                  <Folder/>
                 </el-icon>
                 <el-icon v-else>
-                  <Document />
+                  <Document/>
                 </el-icon>
                 <span class="node-label">{{ node.label }}</span>
               </div>
@@ -509,13 +517,15 @@ const handleTestAndSave = async () => {
                 "
               >
                 <el-icon class="more-icon" @click.stop>
-                  <MoreFilled />
+                  <MoreFilled/>
                 </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <template v-if="data.datasetType === 'directory'">
                       <el-dropdown-item command="addFolder">
-                        <el-icon><Folder /></el-icon>
+                        <el-icon>
+                          <Folder/>
+                        </el-icon>
                         <span>新增目录</span>
                       </el-dropdown-item>
                       <el-dropdown-item command="addJson">
@@ -532,11 +542,15 @@ const handleTestAndSave = async () => {
                       </el-dropdown-item>
                     </template>
                     <el-dropdown-item command="edit">
-                      <el-icon><Edit /></el-icon>
+                      <el-icon>
+                        <Edit/>
+                      </el-icon>
                       <span>编辑</span>
                     </el-dropdown-item>
                     <el-dropdown-item command="delete" divided>
-                      <el-icon><Delete /></el-icon>
+                      <el-icon>
+                        <Delete/>
+                      </el-icon>
                       <span>删除</span>
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -552,9 +566,9 @@ const handleTestAndSave = async () => {
       <template v-if="selectedNode">
         <div class="right-header">
           <el-tabs v-model="activeTab" class="dataset-tabs">
-            <el-tab-pane label="数据预览" name="preview" />
-            <el-tab-pane v-if="selectedNode.datasetType !== 'json'" label="入参预览" name="inputParams" />
-            <el-tab-pane label="字段说明" name="outputParams" />
+            <el-tab-pane label="数据预览" name="preview"/>
+            <el-tab-pane v-if="selectedNode.datasetType !== 'json'" label="入参预览" name="inputParams"/>
+            <el-tab-pane label="字段说明" name="outputParams"/>
           </el-tabs>
           <div class="right-actions">
             <el-button link :icon="Edit" @click="handleEdit">编辑</el-button>
@@ -574,14 +588,14 @@ const handleTestAndSave = async () => {
                   min-width="120"
                 />
               </el-table>
-              <el-empty v-if="!previewLoading && previewData.length === 0" description="暂无数据" />
+              <el-empty v-if="!previewLoading && previewData.length === 0" description="暂无数据"/>
             </div>
 
             <!-- 入参预览 -->
             <div v-show="activeTab === 'inputParams'" class="params-container">
               <el-table :data="selectedNode.inputList || []" border style="width: 100%">
-                <el-table-column prop="name" label="参数名" min-width="120" />
-                <el-table-column prop="type" label="类型" min-width="100" />
+                <el-table-column prop="name" label="参数名" min-width="120"/>
+                <el-table-column prop="type" label="类型" min-width="100"/>
                 <el-table-column prop="required" label="必填" width="80">
                   <template #default="{ row }">
                     <el-tag :type="row.required ? 'danger' : 'info'" size="small">
@@ -589,8 +603,8 @@ const handleTestAndSave = async () => {
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column prop="defaultVal" label="默认值" min-width="120" />
-                <el-table-column prop="desc" label="描述" min-width="150" />
+                <el-table-column prop="defaultVal" label="默认值" min-width="120"/>
+                <el-table-column prop="desc" label="描述" min-width="150"/>
               </el-table>
               <el-empty
                 v-if="!selectedNode.inputList || selectedNode.inputList.length === 0"
@@ -602,9 +616,9 @@ const handleTestAndSave = async () => {
             <!-- 出参预览 -->
             <div v-show="activeTab === 'outputParams'" class="params-container">
               <el-table :data="selectedNode.outputList || []" border style="width: 100%">
-                <el-table-column prop="name" label="参数名" min-width="120" />
-                <el-table-column prop="type" label="类型" min-width="100" />
-                <el-table-column prop="desc" label="描述" min-width="150" />
+                <el-table-column prop="name" label="参数名" min-width="120"/>
+                <el-table-column prop="type" label="类型" min-width="100"/>
+                <el-table-column prop="desc" label="描述" min-width="150"/>
               </el-table>
               <el-empty
                 v-if="!selectedNode.outputList || selectedNode.outputList.length === 0"
@@ -615,7 +629,7 @@ const handleTestAndSave = async () => {
           </el-scrollbar>
         </div>
       </template>
-      <el-empty v-else description="请选择数据集" :image-size="200" />
+      <el-empty v-else description="请选择数据集" :image-size="200"/>
     </div>
 
     <!-- 编辑对话框 -->

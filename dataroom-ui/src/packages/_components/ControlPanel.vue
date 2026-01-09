@@ -1,6 +1,6 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {computed, ref, watch, defineAsyncComponent, inject} from 'vue'
+import {computed, ref, watch, defineAsyncComponent} from 'vue'
 import type {Behavior, ChartConfig, ChartDatasetField} from '../components/type/define.ts'
 import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
@@ -271,10 +271,10 @@ watch(
                     <span class="param-name">{{ inputParam.name }}</span>
                     <span class="param-desc" v-if="inputParam.desc">（{{ inputParam.desc }}）</span>
                   </div>
-                  
+
                   <el-form-item label="参数来源">
                     <el-select
-                      v-model="chartConfig.dataset.params[inputParam.name].from"
+                      v-model="chartConfig.dataset.params[inputParam.name]?.from"
                       placeholder="请选择参数来源"
                       style="width: 100%"
                     >
@@ -284,8 +284,8 @@ watch(
 
                   <el-form-item label="变量名称">
                     <el-select
-                      v-if="chartConfig.dataset.params[inputParam.name].from === 'globalVar'"
-                      v-model="chartConfig.dataset.params[inputParam.name].variableName"
+                      v-if="chartConfig.dataset.params[inputParam.name]?.from === 'globalVar'"
+                      v-model="chartConfig.dataset.params[inputParam.name]?.variableName"
                       placeholder="请选择全局变量"
                       filterable
                       clearable
@@ -305,7 +305,7 @@ watch(
                     </el-select>
                     <el-input
                       v-else
-                      v-model="chartConfig.dataset.params[inputParam.name].variableName"
+                      v-model="chartConfig.dataset.params[inputParam.name]?.variableName"
                       placeholder="请输入变量名称"
                       style="width: 100%"
                     ></el-input>
@@ -313,7 +313,7 @@ watch(
 
                   <el-form-item label="默认值">
                     <el-input
-                      v-model="chartConfig.dataset.params[inputParam.name].defaultValue"
+                      v-model="chartConfig.dataset.params[inputParam.name]?.defaultValue"
                       placeholder="请输入默认值"
                       style="width: 100%"
                     ></el-input>
@@ -562,12 +562,12 @@ watch(
   .param-header {
     margin-bottom: 12px;
     font-weight: 500;
-    
+
     .param-name {
       color: var(--dr-text);
       font-size: 14px;
     }
-    
+
     .param-desc {
       color: var(--el-text-color-secondary);
       font-size: 12px;
