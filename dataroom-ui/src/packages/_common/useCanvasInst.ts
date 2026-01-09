@@ -11,7 +11,6 @@ interface UseCanvasInstOptions {
   globalVariable: Ref<GlobalVariable[]>
   addChart?: (type: string) => ChartConfig<unknown>
   activeChartById?: (id: string) => void
-  switchRightControlPanel?: (open: boolean) => void
 }
 
 /**
@@ -19,7 +18,7 @@ interface UseCanvasInstOptions {
  * 用于在设计器和预览器中共享组件实例管理逻辑
  */
 export function useCanvasInst(options: UseCanvasInstOptions) {
-  const {chartList, globalVariable, addChart, activeChartById, switchRightControlPanel} = options
+  const {chartList, globalVariable, addChart, activeChartById} = options
 
   const chartInstanceMap: ChartInstanceMap = {}
 
@@ -31,12 +30,6 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
     activeChartById: activeChartById || (() => {
       throw new Error('activeChartById 方法未实现')
     }),
-    switchRightControlPanel: switchRightControlPanel || (() => {
-      console.warn('switchRightControlPanel 方法未实现')
-    }),
-    onChartDeleteClick: (chartId: string) => {
-      chartList.value = chartList.value.filter((item) => item.id != chartId)
-    },
     fillDatasetParams: (chart: ChartConfig<unknown>) => {
       return fillDatasetParams(chart, globalVariable.value)
     },

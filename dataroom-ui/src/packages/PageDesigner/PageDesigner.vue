@@ -114,8 +114,7 @@ const { canvasInst } = useCanvasInst({
   chartList,
   globalVariable,
   addChart,
-  activeChartById,
-  switchRightControlPanel
+  activeChartById
 })
 provide(DrConst.CANVAS_INST, canvasInst)
 // 提供全局变量列表给子组件
@@ -261,6 +260,14 @@ const onRightClick = (e: MouseEvent, chart: ChartConfig<unknown>) => {
     contextMenuVisible.value = true
   })
 }
+/**
+ * 删除组件
+ * @param chartId
+ */
+const onChartDeleteClick = (chartId: string) => {
+  chartList.value = chartList.value.filter((item) => item.id != chartId)
+}
+
 /**
  * 右击菜单样式
  */
@@ -518,7 +525,7 @@ onUnmounted(() => {
   <ComponentLib v-if="componentLibVisible" ref="componentLibRef"></ComponentLib>
   <ResourceLib v-if="resourceLibVisible" ref="resourceLibRef"></ResourceLib>
   <GlobalVariableComponent v-if="globalVariableVisible" ref="globalVariableRef" :globalVariable="globalVariable"></GlobalVariableComponent>
-  <ContextMenu v-if="contextMenuVisible" ref="contextMenuRef" :style="computedContextMenuStyle" :chart="activeChart"></ContextMenu>
+  <ContextMenu v-if="contextMenuVisible" ref="contextMenuRef" :style="computedContextMenuStyle" :chart="activeChart" @switch-right-control-panel="switchRightControlPanel" @delete-chart="onChartDeleteClick"></ContextMenu>
 </template>
 
 <style scoped lang="scss">

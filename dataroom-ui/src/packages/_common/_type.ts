@@ -28,16 +28,6 @@ interface CanvasInst {
    */
   activeChartById: (id: string) => void
   /**
-   * 激活右侧配置面板
-   * @param id
-   */
-  switchRightControlPanel: (open: boolean) => void
-  /**
-   * 删除图表
-   * @param id
-   */
-  onChartDeleteClick: (chartId: string) => void
-  /**
    * 注册图表组件实例
    * @param charId 图表唯一表示
    * @param chartInstance 实例对象

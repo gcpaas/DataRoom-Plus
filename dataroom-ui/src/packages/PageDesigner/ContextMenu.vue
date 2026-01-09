@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, ref } from 'vue'
-import { DrConst } from '@/packages/_common/_constant.ts'
-import type { CanvasInst } from '@/packages/_common/_type.ts'
-
-const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
-
+import { onMounted, onUnmounted, ref } from 'vue'
 import type { ChartConfig } from '@/packages/components/type/define.ts'
 import { ElMessage } from 'element-plus'
 
@@ -13,6 +8,11 @@ const props = defineProps<{
 }>()
 // 确保拿到的chart非空
 const chart = props.chart!
+
+const emit = defineEmits<{
+  switchRightControlPanel: [open: boolean]
+  deleteChart: [chartId: string]
+}>()
 
 onMounted(() => {
   document.addEventListener('click', onOutsideClick)
@@ -41,15 +41,15 @@ const onOutsideClick = (e: MouseEvent) => {
  * 点击配置
  */
 const onChartConfigClick = () => {
-  canvasInst.switchRightControlPanel(true)
+  emit('switchRightControlPanel', true)
   contextMenuVisible.value = false
 }
 /**
  * 删除组件
  */
 const onChartDeleteClick = () => {
-  canvasInst.switchRightControlPanel(false)
-  canvasInst.onChartDeleteClick(chart.id)
+  emit('switchRightControlPanel', false)
+  emit('deleteChart', chart.id)
   contextMenuVisible.value = false
 }
 
