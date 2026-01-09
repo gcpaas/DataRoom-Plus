@@ -1,9 +1,8 @@
-import { reactive, type Ref } from 'vue'
-import type { CanvasInst, GlobalVariable } from '@/packages/_common/_type.ts'
-import type { ChartAction, ChartConfig } from '@DrPackage/components/type/define.ts'
-import { fillDatasetParams } from '@/packages/_common/_utils.ts'
-import { DrConst } from '@/packages/_common/_constant.ts'
-import { type ComponentInternalInstance } from '@vue/runtime-core'
+import {reactive, type Ref} from 'vue'
+import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
+import type {ChartAction, ChartConfig} from '@DrPackage/components/type/define.ts'
+import {fillDatasetParams} from '@/packages/_common/_utils.ts'
+import {type ComponentInternalInstance} from '@vue/runtime-core'
 
 type ChartInstanceMap = Record<string, ComponentInternalInstance>
 
@@ -20,8 +19,8 @@ interface UseCanvasInstOptions {
  * 用于在设计器和预览器中共享组件实例管理逻辑
  */
 export function useCanvasInst(options: UseCanvasInstOptions) {
-  const { chartList, globalVariable, addChart, activeChartById, switchRightControlPanel } = options
-  
+  const {chartList, globalVariable, addChart, activeChartById, switchRightControlPanel} = options
+
   const chartInstanceMap: ChartInstanceMap = {}
 
   const canvasInst = reactive<CanvasInst>({
@@ -30,7 +29,7 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
     }),
     chartList: chartList,
     activeChartById: activeChartById || (() => {
-      console.warn('activeChartById 方法未实现')
+      throw new Error('activeChartById 方法未实现')
     }),
     switchRightControlPanel: switchRightControlPanel || (() => {
       console.warn('switchRightControlPanel 方法未实现')

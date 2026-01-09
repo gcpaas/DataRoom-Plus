@@ -27,6 +27,7 @@ const { canvasInst } = useCanvasInst({
   globalVariable
 })
 provide(DrConst.CANVAS_INST, canvasInst)
+
 // 提供全局变量列表给子组件
 provide('globalVariableList', globalVariable)
 
@@ -47,17 +48,17 @@ watch(
   () => basicConfig.value.timers,
   (newTimers) => {
     console.log('[预览模式] 定时器配置发生变化', newTimers)
-    
+
     if (!timerManager) {
       return
     }
-    
+
     if (!newTimers) {
       // 如果定时器配置被清空，停止所有定时器
       timerManager.clearAllTimers()
       return
     }
-    
+
     // 重新加载所有定时器
     timerManager.reloadAllTimers()
   },
@@ -75,7 +76,7 @@ onMounted(() => {
     chartList.value = res.pageConfig?.chartList || []
     basicConfig.value = res.pageConfig?.basicConfig || {}
     globalVariable.value = res.pageConfig?.globalVariableList || []
-    
+
     // 页面加载完成后，初始化并启动所有启用的定时器
     nextTick(() => {
       const manager = initTimerManager()
