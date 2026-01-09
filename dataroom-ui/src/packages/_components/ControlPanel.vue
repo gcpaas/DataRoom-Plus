@@ -146,6 +146,8 @@ const handleConfirmDataset = () => {
     // 初始化参数配置
     initDatasetParams()
     datasetDialogVisible.value = false
+    // 触发自动刷新
+    triggerAutoRefresh()
   }
 }
 
@@ -217,6 +219,23 @@ watch(
   {immediate: true}
 )
 
+/**
+ * 触发组件自动刷新数据
+ */
+const triggerAutoRefresh = () => {
+  if (!chart.id) {
+    return
+  }
+  try {
+    canvasInst.triggerChartAction(chart.id, {
+      name: 'autoRefreshData',
+      type: 'code'
+    })
+  } catch (error) {
+    console.error('触发自动刷新失败:', error)
+  }
+}
+
 </script>
 
 <template>
@@ -270,6 +289,7 @@ watch(
                     default-first-option
                     clearable
                     style="width: 100%"
+                    @change="triggerAutoRefresh"
                   >
                     <el-option
                       v-for="output in datasetOutputList"
@@ -302,6 +322,7 @@ watch(
                         v-model="getParamConfig(inputParam.name)!.from"
                         placeholder="请选择参数来源"
                         style="width: 100%"
+                        @change="triggerAutoRefresh"
                       >
                         <el-option label="全局变量" value="globalVar"></el-option>
                       </el-select>
@@ -315,6 +336,7 @@ watch(
                         filterable
                         clearable
                         style="width: 100%"
+                        @change="triggerAutoRefresh"
                       >
                         <el-option
                           v-for="gVar in globalVariableList"
@@ -333,6 +355,7 @@ watch(
                         v-model="getParamConfig(inputParam.name)!.variableName"
                         placeholder="请输入变量名称"
                         style="width: 100%"
+                        @change="triggerAutoRefresh"
                       ></el-input>
                     </el-form-item>
 
@@ -341,6 +364,7 @@ watch(
                         v-model="getParamConfig(inputParam.name)!.defaultValue"
                         placeholder="请输入默认值"
                         style="width: 100%"
+                        @change="triggerAutoRefresh"
                       ></el-input>
                     </el-form-item>
                   </div>
@@ -358,6 +382,7 @@ watch(
                     :rows="8"
                     placeholder="请输入数据处理JS脚本"
                     style="width: 100%"
+                    @change="triggerAutoRefresh"
                   ></el-input>
                 </el-form-item>
               </el-form>
