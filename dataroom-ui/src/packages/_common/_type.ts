@@ -1,6 +1,7 @@
 import {type Component, type Ref} from 'vue'
 import type {ChartAction, ChartConfig} from '@DrPackage/components/type/define.ts'
 import {fillDatasetParams} from "@/packages/_common/_utils.ts";
+import {ComponentInternalInstance} from "@vue/runtime-core";
 
 interface ComponentLibTagInterface {
   // 类型名称
@@ -38,9 +39,21 @@ interface CanvasInst {
    */
   onChartDeleteClick: (chartId: string) => void
   /**
-   * 填充数据集参数
+   * 注册图表组件实例
+   * @param charId 图表唯一表示
+   * @param chartInstance 实例对象
    */
-  fillDatasetParams: (chart: ChartConfig<unknown>) => Record<string, any>
+  registerChartInstance: (charId: string, chartInstance: ComponentInternalInstance) => void
+  /**
+   * 获取投入表组件实例
+   * @param charId
+   */
+  getChartInstanceById: (charId: string) => ComponentInternalInstance
+  /**
+   * 触发组件行为
+   * @param action
+   */
+  triggerChartAction: (charId: string, action: ChartAction) => any
 }
 
 /**

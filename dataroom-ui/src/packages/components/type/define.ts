@@ -193,19 +193,24 @@ export interface IComponentLifecycle {
    */
   init: () => void | Promise<void>
   /**
-   * 更新数据
+   * 更新数据、先获取数据集、然后 changeData
    */
   autoRefreshData: () => void | Promise<void>
   /**
-   * 修改数据
+   * 修改数据、不用重新获取数据集，直接用给定的数据刷新
    * @param data
    */
   changeData: (data: any) => void | Promise<void>
   /**
-   * 触发组件行为方法
+   * 触发组件行为方法，用于通过组件实例方法调用
    * @param action
    */
   triggerAction: (action: ChartAction) => void | Promise<void>
+  /**
+   * 注册当前组件实例
+   * @param action
+   */
+  registerCurrentInstance: (action: ChartAction) => void | Promise<void>
   /**
    * 组件销毁前的清理方法
    * 用于清理定时器、取消订阅等

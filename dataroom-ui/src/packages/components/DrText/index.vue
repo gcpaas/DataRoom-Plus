@@ -8,7 +8,7 @@ export default defineComponent({
 </script>
 <script setup lang="ts">
 import type {DrTextConfig} from './install.ts'
-import {onMounted, onBeforeUnmount, ref, inject} from "vue";
+import {onMounted, onBeforeUnmount, ref, inject, getCurrentInstance} from "vue";
 import type {ChartAction, IComponentLifecycle} from '@/packages/components/type/define.ts'
 import {datasetApi} from "@/packages/dataset/api.ts";
 import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
@@ -23,6 +23,7 @@ const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 // 实现必须的方法
 const init = () => {
   console.log("初始化文本组件")
+  registerCurrentInstance()
   // 组件初始化逻辑
   autoRefreshData()
 }
@@ -61,6 +62,11 @@ const triggerAction = (action: ChartAction) => {
   // 行为逻辑（可选）
 }
 
+const currentInstance = getCurrentInstance()
+const registerCurrentInstance = () => {
+  console.log("注册文本组件实例")
+  canvasInst.registerChartInstance(chart.id, currentInstance)
+}
 // 使用 onMounted 调用初始化
 onMounted(() => {
   init()
@@ -76,6 +82,7 @@ defineExpose<IComponentLifecycle>({
   autoRefreshData,
   changeData,
   triggerAction,
+  registerCurrentInstance:
   destroy
 })
 
