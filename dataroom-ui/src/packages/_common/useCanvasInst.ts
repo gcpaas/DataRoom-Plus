@@ -66,7 +66,37 @@ export function useCanvasInst(options: UseCanvasInstOptions) {
       const chartInstance = canvasInst.getChartInstanceById(charId)
       chartInstance.exposed?.triggerAction(action)
       return
-    }
+    },
+    triggerChartBehavior: (charId: string, behaviorName: string, triggerData: any) => {
+      const chart = getChartById(charId, chartList.value)
+      if (!chart) {
+        return
+      }
+      if (!chart.behaviors) {
+        return;
+      }
+      for (const key of Object.keys(chart.behaviors)) {
+        if (key === 'click') {
+          const behavior = chart.behaviors[key]
+          if (!behavior) {
+            continue
+          }
+          if (behavior.disabled) {
+            continue
+          }
+          if (!behavior.actions || behavior.actions.length == 0) {
+            continue
+          }
+          for (let i = 0; i < behavior.actions.length; i++) {
+            const action = behavior.actions[i]
+            if (!action) {
+              continue
+            }
+            canvasInst.triggerChartAction(chart.id, action)
+          }
+        }
+      }
+    },
   })
 
   return {

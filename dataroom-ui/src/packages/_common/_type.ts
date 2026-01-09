@@ -44,6 +44,13 @@ interface CanvasInst {
    */
   triggerChartAction: (charId: string, action: ChartAction) => any
   /**
+   * 触发图表行为
+   * @param charId
+   * @param behaviorName 触发的行为事件名称
+   * @param triggerData 触发时额外的参数
+   */
+  triggerChartBehavior: (charId: string, behaviorEventName: string, triggerData: any) => any
+  /**
    * 填充数据集参数
    * @param chart
    */

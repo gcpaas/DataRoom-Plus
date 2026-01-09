@@ -97,16 +97,7 @@ defineExpose<IComponentLifecycle>({
 const textValue = ref('')
 
 const onTextClick = () => {
-  if (!chart.behaviors) {
-    return
-  }
-  Object.keys(chart.behaviors).forEach((key)=>{
-    const behavior = chart.behaviors[key]
-    if (!behavior) {
-      return
-    }
-    console.log(behavior?.actions)
-  })
+  canvasInst.triggerChartBehavior(chart.id, 'click', {text: textValue.value})
 }
 
 </script>

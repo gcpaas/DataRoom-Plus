@@ -100,11 +100,6 @@ const switchPageControlPanel = () => {
 
 
 const onHistory = () => {
-  canvasInst.triggerChartAction('b7c0d3df-a145-44ea-9808-70b7462c05e3', {
-    name: 'history',
-    type: 'code',
-    code: 'console.log("hello")'
-  })
 }
 
 /**
