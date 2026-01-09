@@ -105,7 +105,7 @@ const onHistory = () => {
 /**
  * 子组件注入使用
  */
-const { canvasInst } = useCanvasInst({
+const {canvasInst} = useCanvasInst({
   chartList,
   globalVariable,
   addChart,
@@ -367,7 +367,7 @@ const computedCanvasMainContainerStyle = computed(() => {
  */
 const initTimerManager = () => {
   if (!timerManager) {
-    timerManager = new TimerManager(chartList, globalVariable, basicConfig)
+    timerManager = new TimerManager(canvasInst,chartList, globalVariable, basicConfig)
   }
   return timerManager
 }

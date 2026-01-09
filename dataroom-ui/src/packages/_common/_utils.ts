@@ -1,5 +1,5 @@
 import type {ChartConfig} from '@/packages/components/type/define.ts'
-import type {GlobalVariable, PageBasicConfig} from '@/packages/_common/_type.ts'
+import type {CanvasInst, GlobalVariable, PageBasicConfig} from '@/packages/_common/_type.ts'
 import {type Ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import type {ComponentInternalInstance, VNode} from "@vue/runtime-core";
@@ -173,6 +173,7 @@ export class TimerManager {
   private basicConfig: Ref<PageBasicConfig>
 
   constructor(
+    canvasInst: CanvasInst,
     chartList: Ref<ChartConfig<unknown>[]>,
     globalVariable: Ref<GlobalVariable[]>,
     basicConfig: Ref<PageBasicConfig>
