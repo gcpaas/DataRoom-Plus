@@ -1,5 +1,8 @@
 import { defineAsyncComponent } from 'vue'
 import type { ChartConfig, Behavior } from '../type/define'
+import {createChartConfig} from "../type/define";
+import {DrConst} from "@/packages/_common/_constant.ts";
+import type {DrTextConfig} from "@/packages/components/DrText/install.ts";
 // 注册组件
 const component = defineAsyncComponent(() => import('./index.vue'))
 // 注册组件配置面板
@@ -22,26 +25,18 @@ export type RemoteComponentConfig = ChartConfig<RemoteComponentProps>
  * @constructor
  */
 const getInstance = (): RemoteComponentConfig => {
-  const config: RemoteComponentConfig = {
-    id: Math.random().toString(),
-    i: Math.random().toString(),
-    type: 'RemoteComponent',
-    title: '远程组件',
-    w: 100,
-    h: 100,
-    x: 100,
-    y: 100,
-    z: 999,
-    rotateX: 0,
-    rotateY: 0,
-    rotateZ: 0,
-    props: {
-      text: '我是远程组件啊',
+  return createChartConfig<RemoteComponentProps>(
+    DrConst.THIS_PLUGIN_TYPE,
+    {
+      text: '文本占位符',
       fontSize: 14,
     },
-  }
-  return config
+    {
+      title: '文本'
+    }
+  )
 }
+
 /**
  * 定义组件交互定义
  */

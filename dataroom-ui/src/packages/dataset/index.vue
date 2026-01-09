@@ -44,6 +44,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const currentDataset = ref<DatasetEntity>({
   name: '',
+  code: '',
   datasetType: 'json',
   parentCode: 'root'
 })

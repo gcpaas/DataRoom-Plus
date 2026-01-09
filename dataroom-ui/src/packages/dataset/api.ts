@@ -62,7 +62,7 @@ export interface RelationalDataset extends BaseDataset {
 export interface DatasetEntity {
   id?: string
   name: string
-  code: string
+  code?: string
   dataSourceCode?: string
   datasetType: 'directory' | 'json' | 'http' | 'relational'
   parentCode?: string
