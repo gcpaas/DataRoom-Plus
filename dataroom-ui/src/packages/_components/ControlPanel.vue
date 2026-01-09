@@ -1,13 +1,14 @@
 <!-- 控制面板 -->
 <script setup lang="ts">
-import {computed, ref, watch, defineAsyncComponent} from 'vue'
+import {computed, ref, watch, defineAsyncComponent, inject} from 'vue'
 import type {Behavior, ChartConfig, ChartDatasetField} from '../components/type/define.ts'
 import {Pointer, Setting} from "@element-plus/icons-vue";
 import {getComponentBehaviors, getComponentDatasetFields} from "@/packages/components/AutoInstall.ts";
 import type {DatasetEntity, DatasetInputParam, DatasetOutputParam} from '@/packages/dataset/api'
 import {datasetApi} from '@/packages/dataset/api'
-import type {GlobalVariable} from '@/packages/_common/_type.ts'
-
+import type {CanvasInst, GlobalVariable} from '@/packages/_common/_type.ts'
+import {DrConst} from "@/packages/_common/_constant.ts";
+const canvasInst = inject(DrConst.CANVAS_INST) as CanvasInst
 /**
  * 懒加载数据集管理页面
  */
