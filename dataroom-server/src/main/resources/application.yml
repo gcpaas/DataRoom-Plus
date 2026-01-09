@@ -10,7 +10,7 @@ spring:
   web:
     resources:
       add-mappings: true
-      static-locations: classpath:/static/,classpath:/META-INF/resources/,classpath:/META-INF/resources/webjars/,file:${dataroom.resource.basePath}
+      static-locations: classpath:/static/,classpath:/META-INF/resources/,classpath:/META-INF/resources/webjars/,file:${dataroom.resource.basePath},file:${dataroom.resource.uiPath}
   profiles:
     active: kdgc
     include: base

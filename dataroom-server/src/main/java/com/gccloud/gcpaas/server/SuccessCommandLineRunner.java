@@ -33,6 +33,7 @@ public class SuccessCommandLineRunner implements CommandLineRunner {
         RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
         long startTimeMillis = runtimeMxBean.getStartTime();
         log.info("启动耗时: {} 毫秒", System.currentTimeMillis() - startTimeMillis);
+        log.info("DataRoom启动成功 ^_^，使用问题请反馈到 https://gitee.com/gcpaas/DataRoom-Plus/issues");
         log.info(LINE);
     }
 }

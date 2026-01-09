@@ -1,5 +1,4 @@
 import {fileURLToPath, URL} from 'node:url'
-import path from 'path'
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -19,12 +18,12 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     AutoImport({
-      resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
+      resolvers: [ElementPlusResolver({importStyle: 'sass'})],
     }),
     Components({
-      resolvers: [ElementPlusResolver({ importStyle: 'sass' })]
+      resolvers: [ElementPlusResolver({importStyle: 'sass'})]
     }),
-    ElementPlus({ useSource: true }),
+    ElementPlus({useSource: true}),
     ReplaceThisPluginType(),
   ],
   resolve: {

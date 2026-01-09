@@ -55,7 +55,7 @@ export interface ChartConfig<T> {
   // 图表交互
   behaviors?: {
     // key 为 交互名称，与Behavior中的name保持一致，value 为交互的行为定义
-    [key: string]: {
+    [behaviorName: string]: {
       disabled: boolean
       actions: ChartAction[]
     }
