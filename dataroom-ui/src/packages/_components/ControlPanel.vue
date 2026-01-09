@@ -229,7 +229,7 @@ const triggerAutoRefresh = () => {
   try {
     canvasInst.triggerChartAction(chart.id, {
       name: 'autoRefreshData',
-      type: 'code',
+      type: 'autoRefreshData',
       code: ''
     })
   } catch (error) {
