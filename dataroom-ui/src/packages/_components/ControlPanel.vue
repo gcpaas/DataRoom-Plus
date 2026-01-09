@@ -137,7 +137,7 @@ const handleConfirmDataset = () => {
     // 更新数据集名称到输入框
     datasetName.value = selectedDataset.value.name
     // 保存数据集编码到chartConfig
-    chartConfig.value.dataset.code = selectedDataset.value.code
+    chartConfig.value.dataset.code = selectedDataset.value.code??''
     // 更新输出字段列表
     datasetOutputList.value = selectedDataset.value.outputList || []
     // 更新输入参数列表
